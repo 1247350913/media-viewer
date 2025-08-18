@@ -39,18 +39,14 @@ app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) creat
 // Select valid vault folder and index it
 ipcMain.handle('select-and-index-vault', async () => {
   while (true) {
-    const result = await dialog.showOpenDialog({
-      properties: ["openDirectory"],
-    });
-
-    if (result.canceled || result.filePaths.length === 0) { return null; }
+    const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
+    if (result.canceled || result.filePaths.length === 0) return null;
 
     const selectedPath = result.filePaths[0];
     const folderName = path.basename(selectedPath);
 
-    if (folderName === "Content") { return selectedPath; }
+    if (folderName === "Content") return selectedPath;
 
-    // Invalid
     await dialog.showMessageBox({
       type: "warning",
       message: "Wrong folder. Please select the Vault 'Content' folder or Cancel.",
