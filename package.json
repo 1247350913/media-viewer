@@ -5,7 +5,7 @@
   "type": "commonjs",
   "main": "dist/electron/main.js",
   "scripts": {
-    "dev": "concurrently -k \"tsc -p tsconfig.electron.json --watch\" \"vite\" \"wait-on http://localhost:5173 dist/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 electron dist/electron/main.js\"",
+    "dev": "concurrently -k \"tsc -p tsconfig.electron.json --watch\" \"vite\" \"wait-on http://localhost:5173 dist/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 electron --inspect=9229 dist/electron/main.js\"",
     "dev:watch-electron": "wait-on http://localhost:5173 dist/electron/main.js && nodemon --watch dist/electron --ext js --delay 100ms --exec \"electron dist/electron/main.js\"",
     "build": "vite build && tsc -p tsconfig.electron.json",
     "start": "electron dist/electron/main.js"
@@ -21,6 +21,7 @@
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
     "concurrently": "^9.2.0",
+    "cross-env": "^10.0.0",
     "electron": "^37.2.6",
     "eslint": "^9.30.1",
     "eslint-plugin-react-hooks": "^5.2.0",
