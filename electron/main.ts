@@ -4,6 +4,12 @@ import * as fs from 'fs';
 
 let win: BrowserWindow | null = null;
 
+// Disable warnings in dev mode
+if (!app.isPackaged) {
+  process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+}
+
+// Create the electron window
 async function createWindow() {
   win = new BrowserWindow({
     width: 1000,
@@ -14,29 +20,40 @@ async function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-
-  const devUrl = process.env.VITE_DEV_SERVER_URL;
+  // dev = use Vite server | prod = use built file
+  const devUrl = process.env.ELECTRON_START_URL; // e.g. http://localhost:5173
   if (devUrl) {
     await win.loadURL(devUrl);
     win.webContents.openDevTools({ mode: 'detach' });
   } else {
-    await win.loadFile(path.join(__dirname, '../index.html'));
+    await win.loadFile(path.join(__dirname, '../index.html')); // prod
   }
 }
 
+// Window lifecycle
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
-ipcMain.handle('select-and-index-vault', async () => {
-  const { canceled, filePaths } = await dialog.showOpenDialog({ properties: ['openDirectory'] });
-  if (canceled || !filePaths[0]) return [];
 
-  const root = filePaths[0];
-  try {
-    const entries = fs.readdirSync(root, { withFileTypes: true });
-    return entries.map(e => (e.isDirectory() ? `${e.name}/` : e.name));
-  } catch {
-    return [];
+// Select valid vault folder and index it
+ipcMain.handle('select-and-index-vault', async () => {
+  while (true) {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory"],
+    });
+
+    if (result.canceled || result.filePaths.length === 0) { return null; }
+
+    const selectedPath = result.filePaths[0];
+    const folderName = path.basename(selectedPath);
+
+    if (folderName === "Content") { return selectedPath; }
+
+    // Invalid
+    await dialog.showMessageBox({
+      type: "warning",
+      message: "Wrong folder. Please select the Vault 'Content' folder or Cancel.",
+    });
   }
 });

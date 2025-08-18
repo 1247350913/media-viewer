@@ -5,7 +5,7 @@
   "type": "commonjs",
   "main": "dist/electron/main.js",
   "scripts": {
-    "dev": "concurrently -k \"tsc -p tsconfig.electron.json --watch\" \"vite\" \"pnpm:dev:watch-electron\"",
+    "dev": "concurrently -k \"tsc -p tsconfig.electron.json --watch\" \"vite\" \"wait-on http://localhost:5173 dist/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 electron dist/electron/main.js\"",
     "dev:watch-electron": "wait-on http://localhost:5173 dist/electron/main.js && nodemon --watch dist/electron --ext js --delay 100ms --exec \"electron dist/electron/main.js\"",
     "build": "vite build && tsc -p tsconfig.electron.json",
     "start": "electron dist/electron/main.js"
