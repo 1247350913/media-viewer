@@ -1,5 +1,3 @@
-export {};
-
 declare global {
   interface Window {
     api: {
@@ -7,3 +5,5 @@ declare global {
     };
   }
 }
+
+export {};

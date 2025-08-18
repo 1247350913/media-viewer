@@ -2,13 +2,11 @@
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.electron.json" }
   ],
   "compilerOptions": {
-    "types": ["node"]
-  },
-  "include": [
-    "src",
-    "global.d.ts"
-  ]
+    "types": ["node"],
+    "noEmit": true
+  }
 }
