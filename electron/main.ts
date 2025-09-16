@@ -1,10 +1,12 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as fsp from "node:fs/promises";
 
 let win: BrowserWindow | null = null;
 
-/** Setup */
+// ============================ Setup ============================
+
 if (!app.isPackaged) {
   process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
   app.commandLine.appendSwitch('remote-debugging-port', '9223');
@@ -30,15 +32,16 @@ async function createWindow() {
   }
 }
 
-
 /** App lifecycle */
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
 
+// ============================ Handlers ============================
+
 /** Select valid vault folder and return its path */
-ipcMain.handle('select-vault', async () => {
+ipcMain.handle('vault:select', async () => {
   while (true) {
     const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
     if (result.canceled || result.filePaths.length === 0) return null;
@@ -56,7 +59,7 @@ ipcMain.handle('select-vault', async () => {
 });
 
 /** Return level 1 array of movies in Content/Movies */
-ipcMain.handle('l1-movies', async (_evt, contentPath: string) => {
+ipcMain.handle('movies:list-level1', async (_evt, contentPath: string) => {
   const moviesDir = path.join(contentPath, 'Movies');
   const out: Array<{ title: string; year?: number; posterPath?: string }> = [];
 
@@ -69,6 +72,8 @@ ipcMain.handle('l1-movies', async (_evt, contentPath: string) => {
     const dirDetails = await getJsonDetails(dirPath);
     if (dirDetails && dirDetails.title) {
       out.push({ title: dirDetails.title, year: dirDetails.year, posterPath: path.join(dirPath, "poster.webp") });
+    } else {
+      console.warn(`No valid JSON details found in folder: ${entry.name}`);
     }
   }
   // Sort case-insensitive by title
@@ -76,7 +81,31 @@ ipcMain.handle('l1-movies', async (_evt, contentPath: string) => {
   return out;
 });
 
-/** Helpers */
+/** Poster Handler */
+const posterCache = new Map<string, string>();
+
+ipcMain.handle("poster:read", async (_evt, filePath: string) => {
+  if (posterCache.has(filePath)) {
+    return posterCache.get(filePath);
+  }
+  try {
+    const buf = await fsp.readFile(filePath);
+    const ext = path.extname(filePath).toLowerCase();
+    const mime =
+      ext === ".webp" ? "image/webp" :
+      ext === ".png"  ? "image/png"  :
+      ext === ".jpg" || ext === ".jpeg" ? "image/jpeg" :
+      "application/octet-stream";
+    const dataUrl = `data:${mime};base64,${buf.toString("base64")}`;
+    posterCache.set(filePath, dataUrl);
+    return dataUrl;
+  } catch {
+    return null;
+  }
+});
+
+
+// ============================ Helpers ============================
 
 /** Reurn the JSON details from a movie folder */
 async function getJsonDetails(dirPath: string) {

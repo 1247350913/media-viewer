@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ScreenProps, MovieCard } from "./";
+import Poster from "../components/Poster";
 
 type Props = ScreenProps["Browse"];
 
@@ -59,7 +60,7 @@ function Browse({ contentPath, kind, onBack }: Props) {
           <div className="movie-card">
             <div className="poster">
               {m.posterPath ? 
-              (<img src={m.posterPath} alt={`${m.title} poster`} className="poster-img"/>) : 
+              (<Poster path={m.posterPath} title={m.title} />) : 
               (<div className="poster-fallback" aria-hidden />)}
             </div>
             <div className="card-body">
