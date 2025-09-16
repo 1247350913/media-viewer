@@ -1,7 +1,8 @@
-export type Screen = 'Launch' | 'MediaType' | 'Browse';
+export type Screen = 'Launch' | 'Browse';
 export type MediaKind = 'all' | 'movies' | 'shows';
-export type MovieCard = {
+export type MediaCard = {
   title: string;
+  kind: MediaKind
   year?: number;
   posterPath?: string;
 };
@@ -15,11 +16,9 @@ export type ScreenProps = {
   };
   Browse: {
     contentPath: string;
-    kind: MediaKind;
     onBack: () => void;
   };
 };
 
 export { default as Launch } from './Launch';
-export { default as MediaType } from './MediaType';
 export { default as Browse } from './Browse';

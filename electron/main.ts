@@ -58,27 +58,18 @@ ipcMain.handle('vault:select', async () => {
   }
 });
 
-/** Return level 1 array of movies in Content/Movies */
-ipcMain.handle('movies:list-level1', async (_evt, contentPath: string) => {
-  const moviesDir = path.join(contentPath, 'Movies');
-  const out: Array<{ title: string; year?: number; posterPath?: string }> = [];
-
-  // Level 1: folders in Movies
-  const lvl1Entries = fs.readdirSync(moviesDir, { withFileTypes: true })
-  // Iterate over level 1
-  for (const entry of lvl1Entries) {
-    if (!entry.isDirectory()) continue;
-    const dirPath = path.join(moviesDir, entry.name);
-    const dirDetails = await getJsonDetails(dirPath);
-    if (dirDetails && dirDetails.title) {
-      out.push({ title: dirDetails.title, year: dirDetails.year, posterPath: path.join(dirPath, "poster.webp") });
-    } else {
-      console.warn(`No valid JSON details found in folder: ${entry.name}`);
-    }
+/** level1-all */
+ipcMain.handle('content:list-level1-all', async (_evt, contentPath: string) => {
+  let subdirs: import("node:fs").Dirent[] = [];
+  try { 
+    subdirs = (await fsp.readdir(contentPath, { withFileTypes: true })).filter(e => e.isDirectory());
+  } catch {
+    return [];
   }
-  // Sort case-insensitive by title
-  out.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
-  return out;
+  const lists = await Promise.all( subdirs.map(d => listLevel1(path.join(contentPath, d.name))) );
+  const flat = lists.flat();
+  flat.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
+  return flat;
 });
 
 /** Poster Handler */
@@ -120,4 +111,35 @@ async function getJsonDetails(dirPath: string) {
     console.error(`Error parsing JSON from file: ${jsonFile}`, error);
     return null;
   }
+}
+
+/** get medaKind */
+function inferKindFromDir(dirPath: string): "movies" | "shows" | "docs" | "other" {
+  const base = path.basename(dirPath).toLowerCase();
+  if (base === "movies") return "movies";
+  if (base === "shows")  return "shows";
+  if (base === "docs" || base === "documentaries") return "docs";
+  return "other";
+}
+
+/** list-level1 */
+async function listLevel1(mediaKindPath: string) {
+  const kind = inferKindFromDir(mediaKindPath);
+  const out: Array<{ title: string; kind: string; year?: number; posterPath?: string }> = [];
+
+  const lvl1Entries = fs.readdirSync(mediaKindPath, { withFileTypes: true })
+
+  for (const entry of lvl1Entries) {
+    if (!entry.isDirectory()) continue;
+    const dirPath = path.join(mediaKindPath, entry.name);
+    const dirDetails = await getJsonDetails(dirPath);
+    if (dirDetails && dirDetails.title) {
+      out.push({ title: dirDetails.title, kind, year: dirDetails.year, posterPath: path.join(dirPath, "poster.webp") });
+    } else {
+      console.warn(`No valid JSON details found in folder: ${entry.name}`);
+    }
+  }
+
+  out.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
+  return out;
 }

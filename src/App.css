@@ -20,11 +20,7 @@
 }
 
 /* ---------------------------------------------------------------------
-   Screen 2 - SelectType
-  ---------------------------------------------------------------------- */
-
-/* ---------------------------------------------------------------------
-   Screen 3 - Browse
+   Screen 2 - Browse
   ---------------------------------------------------------------------- */
 
 /* Browse layout wrapper */
@@ -48,6 +44,7 @@
   justify-content: center; 
 }
 
+/* Back Button */
 .back {
   justify-self: start;
   padding: 6px 10px;
@@ -58,6 +55,7 @@
   cursor: pointer;
 }
 
+/* Search Bar */
 .search {
   width: 100%;
   max-width: 720px;
@@ -76,6 +74,7 @@
   }
 }
 
+/* Profile */
 .profile {
   place-items: center;
   justify-self: end;
@@ -102,6 +101,37 @@
   background: #f5f5f5;
   color: #777;
 }
+
+/* Type Filter Button */
+.kind-filter {
+  position: relative;
+}
+.kind-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 180px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid #e4e4e4;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  display: grid;
+  gap: 4px;
+  z-index: 20;
+}
+.kind-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: #f7f7f7;
+  color: #333;
+  text-align: left;
+  cursor: pointer;
+}
+.kind-item:hover { background: #fff; border-color: #dcdcdc; }
+.kind-item.is-active { background: #eef2ff; border-color: #c7d2fe; }
 
 /* Cards grid */
 .cards {
@@ -144,13 +174,11 @@
   align-items: center;
   justify-content: center;
 }
-
 .poster-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .poster-fallback {
   width: 100%;
   height: 100%;
@@ -163,13 +191,11 @@
   flex-direction: column;
   gap: 6px;
 }
-
 .title-row {
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
-
 .title {
   font-weight: 600;
   font-size: 1.05rem;
@@ -178,7 +204,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .meta {
   color: #666;
   font-size: .9rem;
