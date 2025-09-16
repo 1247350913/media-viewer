@@ -5,9 +5,13 @@
   "type": "commonjs",
   "main": "dist/electron/main.js",
   "scripts": {
-    "dev": "concurrently -k \"tsc -p tsconfig.electron.json --watch\" \"vite\" \"wait-on http://localhost:5173 dist/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 electron --inspect=9229 dist/electron/main.js\"",
-    "dev:watch-electron": "wait-on http://localhost:5173 dist/electron/main.js && nodemon --watch dist/electron --ext js --delay 100ms --exec \"electron dist/electron/main.js\"",
-    "build": "vite build && tsc -p tsconfig.electron.json",
+    "dev": "run-p -l dev:typecheck dev:vite dev:electron",
+    "dev:typecheck": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
+    "dev:vite": "vite",
+    "dev:electron": "wait-on tcp:5173 dist/electron/main.js && nodemon -q --watch dist/electron --ext js --delay 100ms --exec \"cross-env ELECTRON_START_URL=http://localhost:5173 electron --inspect=9229 --remote-debugging-port=9223 dist/electron/main.js\"",
+    "build": "run-s build:renderer build:main",
+    "build:renderer": "vite build",
+    "build:main": "tsc -p tsconfig.electron.json",
     "start": "electron dist/electron/main.js"
   },
   "dependencies": {
@@ -27,6 +31,8 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "nodemon": "^3.1.10",
+    "npm-run-all": "^4.1.5",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4",

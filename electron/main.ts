@@ -4,12 +4,12 @@ import * as fs from 'fs';
 
 let win: BrowserWindow | null = null;
 
-// Disable warnings in dev mode
+/** Setup */
 if (!app.isPackaged) {
   process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
+  app.commandLine.appendSwitch('remote-debugging-port', '9223');
 }
 
-// Create the electron window
 async function createWindow() {
   win = new BrowserWindow({
     width: 1000,
@@ -20,36 +20,75 @@ async function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-  // dev = use Vite server | prod = use built file
+
   const devUrl = process.env.ELECTRON_START_URL; // e.g. http://localhost:5173
   if (devUrl) {
     await win.loadURL(devUrl);
     win.webContents.openDevTools({ mode: 'detach' });
   } else {
-    await win.loadFile(path.join(__dirname, '../index.html')); // prod
+    await win.loadFile(path.join(__dirname, '../index.html'));
   }
 }
 
-// Window lifecycle
+
+/** App lifecycle */
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
 
-// Select valid vault folder and index it
-ipcMain.handle('select-and-index-vault', async () => {
+/** Select valid vault folder and return its path */
+ipcMain.handle('select-vault', async () => {
   while (true) {
-    const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
+    const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
     if (result.canceled || result.filePaths.length === 0) return null;
 
     const selectedPath = result.filePaths[0];
     const folderName = path.basename(selectedPath);
 
-    if (folderName === "Content") return selectedPath;
+    if (folderName === 'Content') return selectedPath;
 
     await dialog.showMessageBox({
-      type: "warning",
-      message: "Wrong folder. Please select the Vault 'Content' folder or Cancel.",
+      type: 'warning',
+      message: "Wrong folder. Please select the Vault 'Content' folder, or Cancel.",
     });
   }
 });
+
+/** Return level 1 array of movies in Content/Movies */
+ipcMain.handle('l1-movies', async (_evt, contentPath: string) => {
+  const moviesDir = path.join(contentPath, 'Movies');
+  const out: Array<{ title: string; year?: number; posterPath?: string }> = [];
+
+  // Level 1: folders in Movies
+  const lvl1Entries = fs.readdirSync(moviesDir, { withFileTypes: true })
+  // Iterate over level 1
+  for (const entry of lvl1Entries) {
+    if (!entry.isDirectory()) continue;
+    const dirPath = path.join(moviesDir, entry.name);
+    const dirDetails = await getJsonDetails(dirPath);
+    if (dirDetails && dirDetails.title) {
+      out.push({ title: dirDetails.title, year: dirDetails.year, posterPath: path.join(dirPath, "poster.webp") });
+    }
+  }
+  // Sort case-insensitive by title
+  out.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
+  return out;
+});
+
+/** Helpers */
+
+/** Reurn the JSON details from a movie folder */
+async function getJsonDetails(dirPath: string) {
+  const files = fs.readdirSync(dirPath);
+  const jsonFile = files.find(file => file.toLowerCase().endsWith(".json") && !file.startsWith("."));
+  if (!jsonFile) { return null; }
+  const filePath = path.join(dirPath, jsonFile);
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+  try {
+    return JSON.parse(fileContent);
+  } catch (error) {
+    console.error(`Error parsing JSON from file: ${jsonFile}`, error);
+    return null;
+  }
+}
