@@ -252,17 +252,38 @@
 }
 
 /* ---------------------------------------------------------------------
-   Screen 3 - Selection
+   Screen 3 - Franchise List
+  ---------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------
+   Screen 4 - Series List
+  ---------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------
+   Screen 5 - Show
+  ---------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------
+   Screen 6 - Seasons
+  ---------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------
+   Screen 7 - Selection
   ---------------------------------------------------------------------- */
 
 /* Layout */
-.sel-wrap { padding: 2rem; max-width: 1200px; margin: 0 auto; }
-.sel-header { margin-bottom: 1rem; }
-
+.sel-wrap { 
+  min-height: 100vh;
+}
+.sel-header { 
+  margin-bottom: 20px;
+}
 .sel-grid {
   display: grid;
   grid-template-columns: 360px 1fr;
   gap: 32px;
+  align-items: start;
+  padding: 0 30px;
 }
 @media (max-width: 900px) {
   .sel-grid { grid-template-columns: 1fr; }
@@ -270,35 +291,46 @@
 
 /* Poster */
 .sel-poster {
-  border-radius: 14px;
-  overflow: hidden;
-  background: #111;
-  min-height: 520px;
-  display: grid;
-  place-items: center;
-  outline: 1px solid rgba(255,255,255,0.06);
-  transition: transform 120ms ease, box-shadow 120ms ease, outline-color 120ms ease;
+  width: 100%;
+  align-self: start;
 }
-.sel-poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.sel-poster .poster-fallback { width: 60%; height: 60%; background: #2d2d2d; border-radius: 8px; }
-
-.sel-poster.is-clickable { cursor: pointer; }
-.sel-poster.is-clickable:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
-  outline-color: rgba(100,108,255,0.35);
+.sel-poster-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
-.sel-poster.is-clickable:focus-visible {
-  outline: 2px solid #646cff;
-  box-shadow: 0 0 0 6px rgba(100,108,255,0.15);
+.sel-poster-fallback {
+  width: 100%;
+  background: linear-gradient(180deg, #eee, #ddd);
 }
 
 /* Body */
-.sel-title { margin: 0 0 4px; font-size: 2rem; line-height: 1.2; }
-.sel-meta { color: #9aa0a6; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.sel-meta .dot::before { content: "•"; opacity: 0.7; }
-
-.sel-desc { margin: 12px 0 16px; line-height: 1.6; }
+.sel-title {
+  font-size: 2rem; 
+  line-height: 1.2;
+  text-align: center;
+  margin-bottom: 32px;
+  padding-top: 20px;
+}
+.sel-actions { 
+  display: flex; 
+  gap: 10px; 
+  flex-wrap: wrap; 
+  justify-content: center;
+  margin-bottom: 32px;
+}
+.sel-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.sel-desc { 
+  line-height: 1.6;
+  margin: 0 15px 32px; 
+}
 
 .sel-langs { display: grid; gap: 10px; margin-bottom: 18px; }
 .lang-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -312,7 +344,7 @@
   border: 1px solid rgba(255,255,255,0.12);
 }
 
-.sel-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
 
 /* Buttons */
 .btn {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import type { ScreenName } from "../screens";
 
-function Poster({ path, title }: { path?: string; title: string }) {
+function Poster({ path, title, screenName }: { path?: string; title: string; screenName: ScreenName; }) {
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
@@ -13,11 +14,18 @@ function Poster({ path, title }: { path?: string; title: string }) {
     return () => { alive = false; };
   }, [path]);
 
-  return (
-    <div className="poster">
-      {src ? (<img src={src} alt={`${title} poster`} className="poster-img" />) : (<div className="poster-fallback" aria-hidden />)}
-    </div>
-  );
+  switch (screenName) {
+    case "Browse": return (
+      <div className="poster">
+        {src ? (<img src={src} alt={`${title} poster`} className="poster-img" />) : (<div className="poster-fallback" aria-hidden />)}
+      </div>
+    )
+    case "Selection": return (
+      <div className="sel-poster">
+        {src ? (<img src={src} alt={`${title} poster`} className="sel-poster-img" />) : (<div className="sel-poster-fallback" aria-hidden />)}
+      </div>
+    )
+  }
 }
 
 export default Poster;

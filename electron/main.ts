@@ -1,8 +1,11 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import * as path from "path";
 import * as fs from "fs";
 import * as fsp from "node:fs/promises";
 
+const execFileP = promisify(execFile);
 let win: BrowserWindow | null = null;
 
 // ============================ Setup ============================
@@ -116,7 +119,101 @@ ipcMain.handle("video:play", async (_evt, videoFilePath: string) => {
 
 // ============================ Helpers ============================
 
-/** Reurn the JSON details from a movie folder */
+function inferKindFromDir(dirPath: string): "movies" | "shows" | "docs" | "other" {
+  const base = path.basename(dirPath).toLowerCase();
+  if (base === "movies") return "movies";
+  if (base === "shows")  return "shows";
+  if (base === "docs" || base === "documentaries") return "docs";
+  return "other";
+}
+
+function dedupe<T>(arr: T[]): T[] {
+  return Array.from(new Set(arr));
+}
+
+function heightToQuality(h?: number){
+  if (!h) return "Unknown";
+  if (h >= 7680) return 4320;  //8K
+  if (h >= 3840) return 3840;  //4K
+  if (h >= 2160) return 2160;
+  if (h >= 1440) return 1440;
+  if (h >= 1080) return 1080; 
+  if (h >= 720) return 720;  
+  if (h >= 480) return 480;
+  return "Unknown";
+}
+
+function langFromTags(tags: any): string | undefined {
+  if (!tags) return undefined;
+  const lang = tags.language || tags.LANGUAGE || tags.lang;
+  if (typeof lang === "string" && lang.trim()) return lang.trim().toLowerCase();
+  return undefined;
+}
+
+async function probeVideo(videoFilePath: string) {
+  const ffprobeArgs = [
+    "-v",
+    "error",
+    "-print_format",
+    "json",
+    "-show_format",
+    "-show_streams",
+    "-show_chapters",
+    videoFilePath,
+  ];
+  let json: any | null = null;
+  try {
+    const { stdout } = await execFileP("ffprobe", ffprobeArgs);
+    json = JSON.parse(stdout);
+  } catch (e) {
+    try {
+      const { stdout } = await execFileP("ffprobe.exe", ffprobeArgs);
+      json = JSON.parse(stdout);
+    } catch (e2) {
+      console.warn("[probeVideo] ffprobe not available; returning minimal info.");
+      return {
+        videoFilePath
+      };
+    }
+  }
+
+  const streams: any[] = json?.streams ?? [];
+  const format: any = json?.format ?? {};
+  
+  const v = streams.find((s) => s.codec_type === "video");
+  const height: number | undefined = v?.height;
+  const videoCodec: string | undefined = v?.codec_name;
+  
+  const durStr: string | undefined = format?.duration || v?.duration;
+  const runtimeSeconds = durStr ? Number.parseFloat(durStr) : undefined;
+
+  const audioStreams = streams.filter((s) => s.codec_type === "audio");
+  const audios = dedupe(
+    audioStreams
+    .map((s) => langFromTags(s?.tags))
+    .filter(Boolean) as string[]
+  );
+  
+  const subStreams = streams.filter((s) => s.codec_type === "subtitle");
+  const subs = dedupe(
+    subStreams
+      .map((s) => langFromTags(s?.tags))
+      .filter(Boolean) as string[]
+  );
+
+  const quality = heightToQuality(height);
+
+  return {
+    videoFilePath,
+    quality,
+    videoCodec,
+    runtimeSeconds,
+    audios,
+    subs
+  };
+}
+
+/** Return the JSON details from a movie folder */
 async function getJsonDetails(dirPath: string) {
   const files = fs.readdirSync(dirPath);
   const jsonFile = files.find(file => file.toLowerCase().endsWith(".json") && !file.startsWith("."));
@@ -131,19 +228,29 @@ async function getJsonDetails(dirPath: string) {
   }
 }
 
-/** get medaKind */
-function inferKindFromDir(dirPath: string): "movies" | "shows" | "docs" | "other" {
-  const base = path.basename(dirPath).toLowerCase();
-  if (base === "movies") return "movies";
-  if (base === "shows")  return "shows";
-  if (base === "docs" || base === "documentaries") return "docs";
-  return "other";
+/** Return the mkv details from a "supposed" movie folder */
+async function getvideoDetails(dirPath: string,  exts: string[] = [".mkv", ".mp4"]) {
+  try {
+    const stat = await fsp.stat(dirPath).catch(() => null);
+    if (!stat || !stat.isDirectory()) return null;
+    
+    const files = await fsp.readdir(dirPath);
+    const candidates = files
+      .filter((f) => !f.startsWith("."))
+      .filter((f) => exts.includes(path.extname(f).toLowerCase()));
+    if (candidates.length != 1) { return null; }
+    const filePath = path.join(dirPath, candidates[0]);
+    return probeVideo(filePath);
+    } catch (e) {
+      console.error("[getVideoDetailsByDir] error:", e);
+      return null;
+    }
 }
 
 /** list-level1 */
 async function listLevel1(mediaKindPath: string) {
   const kind = inferKindFromDir(mediaKindPath);
-  const out: Array<{ title: string; kind: string; year?: number; posterPath?: string }> = [];
+  const output: Array<{ title: string; kind: string; year?: number; posterPath?: string }> = [];
 
   const lvl1Entries = fs.readdirSync(mediaKindPath, { withFileTypes: true })
 
@@ -152,12 +259,16 @@ async function listLevel1(mediaKindPath: string) {
     const dirPath = path.join(mediaKindPath, entry.name);
     const dirDetails = await getJsonDetails(dirPath);
     if (dirDetails && dirDetails.title) {
-      out.push({ title: dirDetails.title, kind, year: dirDetails.year, posterPath: path.join(dirPath, "poster.webp") });
+      const videoDetails = await getvideoDetails(dirPath);
+      if (videoDetails) {
+        output.push({ ...dirDetails, ...videoDetails, posterPath: path.join(dirPath, "poster.webp") });
+      } else {
+        output.push( { ...dirDetails, posterPath: path.join(dirPath, "poster.webp") });
+      }
     } else {
       console.warn(`No valid JSON details found in folder: ${entry.name}`);
     }
   }
-
-  out.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
-  return out;
+  output.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
+  return output;
 }

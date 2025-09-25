@@ -1,21 +1,25 @@
-export type Screen = 
-  | { name: "Launch" }
-  | { name: "Browse" }
-  | { name: "Selection"; mediaCard: MediaCard }
-  | { name: "SeriesList"; mediaCard: MediaCard }
-  | { name: "Seasons"; mediaCard: MediaCard }
-  | { name: "Show"; mediaCard: MediaCard }
+export type ScreenName = 
+  | "Launch"
+  | "Browse"
+  | "Selection"
+  | "SeriesList"
+  | "Seasons"
+  | "Show"
 export type MediaKind = 'all' | 'movies' | 'shows';
+export type Quality = 7680 | 3840 | 1440 | 1080 | 720 | 480 | 'Unknown';
 export type MediaCard = {
   title: string;
   kind: MediaKind;
-  year?: number;
   posterPath?: string;
   videoFilePath?: string;
+  sampleFilePath?: string;
+  year?: number;
   description?: string;
-  runtimeMin?: number;
-  audio?: string[];
+  quality?: Quality;
+  runtimeSeconds?: number;
+  audios?: string[];
   subs?: string[];
+  videoCodec?: string;
   isSeries?: boolean;
 };
 export type ScreenProps = {

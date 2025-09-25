@@ -1,40 +1,42 @@
 import { useState } from "react";
 import "./App.css";
-import { Launch, Browse, Selection, Seasons, SeriesList, Show, type Screen, type MediaCard} from "./screens";
+import { Launch, Browse, Selection, Seasons, SeriesList, Show, type ScreenName, type MediaCard} from "./screens";
 
 
 function App() {
-  const [screen, setScreen] = useState<Screen>({name: "Launch"});
+  const [screenName, setScreenName] = useState<ScreenName>("Launch");
   const [contentPath, setContentPath] = useState<string>("");
+  const [selectedCard, setSelectedCard] = useState<MediaCard>({title: "", kind: "all"});
 
   const handleLoaded = (folderPath: string) => {
-    setScreen({name: "Browse"});
     setContentPath(folderPath);
+    setScreenName("Browse");
   };
 
   const handleOpenCard = (card: MediaCard) => {
+    setSelectedCard(card);
     if (card.kind === "shows") {
-      setScreen({ name: "Show", mediaCard: card });
+      setScreenName("Show");
     } else if (card.kind === "movies" && card.isSeries) {
-      setScreen({ name: "SeriesList", mediaCard: card });
+      setScreenName("SeriesList");
     } else {
-      setScreen({ name: "Selection", mediaCard: card });
+      setScreenName("Selection");
     }
   }
    
-  switch (screen.name) {
+  switch (screenName) {
     case "Launch": 
       return (<Launch onLoaded={handleLoaded}/>);
     case "Browse":
       return (<Browse contentPath={contentPath} onOpenCard={handleOpenCard}/>);
     case "Selection":
-      return (<Selection mediaCard={screen.mediaCard} onBack={() => setScreen({name: "Browse"})}/>);
+      return (<Selection mediaCard={selectedCard} onBack={() => setScreenName("Browse")}/>);
     case "Seasons":
-      return (<Seasons mediaCard={screen.mediaCard} onBack={() => setScreen({name: "Browse"})}/>);
+      return (<Seasons mediaCard={selectedCard} onBack={() => setScreenName("Browse")}/>);
     case "SeriesList":
-      return (<SeriesList mediaCard={screen.mediaCard} onBack={() => setScreen({name: "Browse"})}/>);
+      return (<SeriesList mediaCard={selectedCard} onBack={() => setScreenName("Browse")}/>);
     case "Show":
-      return (<Show  mediaCard={screen.mediaCard} onBack={() => setScreen({name: "Browse"})}/>);
+      return (<Show  mediaCard={selectedCard} onBack={() => setScreenName("Browse")}/>);
   }
 }
 

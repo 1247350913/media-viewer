@@ -121,7 +121,7 @@ function Browse({ contentPath, onOpenCard }: Props) {
               {/* Poster */}
               <div className="poster">
                 {m.posterPath ? (
-                  <Poster path={m.posterPath} title={m.title} />
+                  <Poster path={m.posterPath} title={m.title} screenName={"Browse"} />
                 ) : (
                   <div className="poster-fallback" aria-hidden />
                 )}
