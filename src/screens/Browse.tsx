@@ -5,7 +5,7 @@ import Poster from "../components/Poster";
 
 type Props = ScreenProps["Browse"];
 
-function Browse({ contentPath }: Props) {
+function Browse({ contentPath, onOpenCard }: Props) {
   const [cards, setCards] = useState<MediaCard[] | null>(null);
   const [q, setQ] = useState("");
   const [kindFilters, setKindFilters] = useState<MediaKind[]>(["all"]);
@@ -110,7 +110,14 @@ function Browse({ contentPath }: Props) {
       (
         <div className="cards">
           {filtered.map((m, i) => (
-            <div className="movie-card" key={`${m.title}-${m.year ?? ""}-${i}`}>
+            <div
+              key={`${m.title}-${m.year ?? ""}-${i}`}
+              className="movie-card is-clickable" 
+              role="button"
+              tabIndex={0}
+              onClick={() => onOpenCard(m)}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onOpenCard(m)}
+            >
               {/* Poster */}
               <div className="poster">
                 {m.posterPath ? (
@@ -119,7 +126,6 @@ function Browse({ contentPath }: Props) {
                   <div className="poster-fallback" aria-hidden />
                 )}
               </div>
-
               {/* Body */}
               <div className="card-body">
                 <div className="title-row">

@@ -1,6 +1,6 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
-import * as path from 'path';
-import * as fs from 'fs';
+import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
+import * as path from "path";
+import * as fs from "fs";
 import * as fsp from "node:fs/promises";
 
 let win: BrowserWindow | null = null;
@@ -92,6 +92,24 @@ ipcMain.handle("poster:read", async (_evt, filePath: string) => {
     return dataUrl;
   } catch {
     return null;
+  }
+});
+
+/** Play Handler */
+ipcMain.handle("video:play", async (_evt, videoFilePath: string) => {
+  try {
+    if (!videoFilePath || typeof videoFilePath !== "string") {
+      throw new Error("No video path provided.");
+    }
+    const absPath = path.resolve(videoFilePath);
+    await fsp.access(absPath, fs.constants.F_OK);  //ensure the file exists before trying to open it
+    const errMsg = await shell.openPath(absPath);  //opens with the system's default app for the file type
+    if (errMsg) throw new Error(errMsg);
+    return { ok: true };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[video:play] Failed:", msg);
+    return { ok: false, error: msg };
   }
 });
 
