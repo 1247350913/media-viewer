@@ -25,6 +25,9 @@
 
 /* Browse layout wrapper */
 .browse-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding: 16px 20px;
   max-width: 1400px; 
   margin: 0 auto;
@@ -32,11 +35,14 @@
 
 /* Nav Bar */
 .nav {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 50;
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 12px;
   align-items: center;
-  margin-bottom: 10px;
 }
 
 .nav-center { 
@@ -91,8 +97,10 @@
 .filters {
   display: flex;
   justify-content: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #efefef;
   gap: 8px;
-  margin: 12px 0 8px;
+  margin: 8px 0 30px;
 }
 .chip {
   padding: 6px 10px;

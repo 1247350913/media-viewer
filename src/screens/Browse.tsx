@@ -5,11 +5,11 @@ import Poster from "../components/Poster";
 
 type Props = ScreenProps["Browse"];
 
-function Browse({ contentPath, onBack }: Props) {
-  const [cards, setCards] = useState<MediaCard[]>([]);
+function Browse({ contentPath }: Props) {
+  const [cards, setCards] = useState<MediaCard[] | null>(null);
   const [q, setQ] = useState("");
-  const [kind, setKind] = useState<MediaKind>("all");
-  const [showKind, setShowKind] = useState(false);
+  const [kindFilters, setKindFilters] = useState<MediaKind[]>(["all"]);
+  const [showKindsDropdown, setShowKindsDropdown] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -29,22 +29,42 @@ function Browse({ contentPath, onBack }: Props) {
     }
   }
 
+  function toggleKind(k: MediaKind) {
+    if (k === "all") {
+      setKindFilters(["all"]);
+      return;
+    }
+    const withoutAll = kindFilters.filter(x => x !== "all");
+    if (withoutAll.includes(k)) {
+      const next = withoutAll.filter(x => x !== k);
+      setKindFilters(next.length ? next : ["all"]);
+    } else {
+      setKindFilters([...withoutAll, k]);
+    }
+  }
+
   const filtered = useMemo(() => {
+    const list = cards ?? [];
+    const byKind = kindFilters.includes("all")
+      ? list
+      : list.filter(c => kindFilters.includes(c.kind));
+
     const s = q.trim().toLowerCase();
-    const base = cards;
-    if (!s) return base;
-    return base.filter(c =>
+    if (!s) return byKind;
+
+    return byKind.filter(c =>
       c.title.toLowerCase().includes(s) ||
       String(c.year ?? "").includes(s)
     );
-  }, [cards, q, kind]);
+  }, [cards, q, kindFilters]);
 
   return (
     <div className="browse-wrap">
       
       {/* Top nav */}
       <div className="nav">
-        <button className="back" onClick={onBack}>&larr;</button>
+        {/* <button className="back" onClick={onBack}>&larr;</button> */}
+        <div></div>
         <div className="nav-center">
           <input
             className="search"
@@ -59,30 +79,23 @@ function Browse({ contentPath, onBack }: Props) {
       {/* Filters row */}
       <div className="filters">
         <div className="kind-filter">
-          <button
-            className="chip"
-            aria-expanded={showKind}
-            onClick={() => setShowKind((v) => !v)}
-          >
-            Type: {kind === "all" ? "All" : kind.charAt(0).toUpperCase() + kind.slice(1)}
-          </button>
-
-          {showKind && (
+          <button className="chip" aria-expanded={showKindsDropdown} onClick={() => setShowKindsDropdown((v) => !v)}>Type</button>
+          {showKindsDropdown && (
             <div className="kind-menu" role="menu">
-              {(["all", "movies", "shows", "docs"] as MediaKind[]).map((k) => (
-                <button
-                  key={k}
-                  role="menuitemradio"
-                  aria-checked={kind === k}
-                  className={`kind-item${kind === k ? " is-active" : ""}`}
-                  onClick={() => {
-                    setKind(k);
-                    setShowKind(false);
-                  }}
-                >
-                  {k === "all" ? "All" : k.charAt(0).toUpperCase() + k.slice(1)}
-                </button>
-              ))}
+              {(["all", "movies", "shows", "docs"] as MediaKind[]).map(k => {
+                const active = kindFilters.includes(k);
+                return (
+                  <button
+                    key={k}
+                    role="menuitemcheckbox"
+                    aria-checked={active}
+                    className={`kind-item${active ? " is-active" : ""}`}
+                    onClick={() => toggleKind(k)}   // <-- uses the helper
+                  >
+                    {k === "all" ? "All" : k.charAt(0).toUpperCase() + k.slice(1)}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -114,8 +127,8 @@ function Browse({ contentPath, onBack }: Props) {
                 </div>
                 <div className="meta">
                   {m.year ? <span>{m.year}</span> : null}
-                  <span className="dot">•</span>
-                  <span>{(m.kind ?? "movies").toUpperCase()}</span>
+                  {/* <span className="dot">•</span> */}
+                  {/* <span>{(m.kind ?? "movies").toUpperCase()}</span> */}
                 </div>
               </div>
             </div>

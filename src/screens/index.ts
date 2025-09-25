@@ -16,7 +16,6 @@ export type ScreenProps = {
   };
   Browse: {
     contentPath: string;
-    onBack: () => void;
   };
 };
 
