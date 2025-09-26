@@ -11,6 +11,13 @@ function Browse({ contentPath, onOpenCard }: Props) {
   const [kindFilters, setKindFilters] = useState<MediaKind[]>(["all"]);
   const [showKindsDropdown, setShowKindsDropdown] = useState(false);
 
+  const mediaKindsToLabels = {
+    all: "All",
+    movie: "Movies",
+    show: "Shows",
+    documentary: "Documentaries"
+  };
+
   useEffect(() => {
     let alive = true;
     getAllCards(alive);
@@ -80,7 +87,7 @@ function Browse({ contentPath, onOpenCard }: Props) {
           <button className="chip" aria-expanded={showKindsDropdown} onClick={() => setShowKindsDropdown((v) => !v)}>Type</button>
           {showKindsDropdown && (
             <div className="kind-menu" role="menu">
-              {(["all", "movies", "shows", "docs"] as MediaKind[]).map(k => {
+              {(["all", "movie", "show", "documentary"] as MediaKind[]).map(k => {
                 const active = kindFilters.includes(k);
                 return (
                   <button
@@ -90,7 +97,7 @@ function Browse({ contentPath, onOpenCard }: Props) {
                     className={`kind-item${active ? " is-active" : ""}`}
                     onClick={() => toggleKind(k)}   // <-- uses the helper
                   >
-                    {k === "all" ? "All" : k.charAt(0).toUpperCase() + k.slice(1)}
+                    {mediaKindsToLabels[k]}
                   </button>
                 );
               })}
