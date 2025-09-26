@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { ScreenProps, MediaCard, MediaKind } from "./";
+import type { ScreenProps, MediaCard, MediaKind } from "../../shared";
 import Poster from "../components/Poster";
 
 
@@ -48,13 +48,11 @@ function Browse({ contentPath, onOpenCard }: Props) {
     const byKind = kindFilters.includes("all")
       ? list
       : list.filter(c => kindFilters.includes(c.kind));
-
     const s = q.trim().toLowerCase();
     if (!s) return byKind;
 
     return byKind.filter(c =>
-      c.title.toLowerCase().includes(s) ||
-      String(c.year ?? "").includes(s)
+      c.title.toLowerCase().includes(s)
     );
   }, [cards, q, kindFilters]);
 

@@ -17,5 +17,5 @@
     "noFallthroughCasesInSwitch": true,
     "noEmit": true
   },
-  "include": ["src", "global.d.ts"]
+  "include": ["src", "shared/index.ts"]
 }

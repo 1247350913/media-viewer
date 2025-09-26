@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ScreenProps } from "./";
+import type { ScreenProps } from "..";
 import Poster from "../components/Poster";
 
 type Props = ScreenProps["Selection"];

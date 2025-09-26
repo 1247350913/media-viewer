@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ScreenProps } from ".";
+import type { ScreenProps } from "../../shared";
 
 type LaunchProps = ScreenProps["Launch"];
 

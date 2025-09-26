@@ -1,7 +1,10 @@
 import { useState } from "react";
 import "./App.css";
-import { Launch, Browse, Selection, Seasons, SeriesList, Show, type ScreenName, type MediaCard} from "./screens";
+import * as types from "../shared";
+import { Launch, Browse, Selection, Seasons, SeriesList, Show} from "./screens";
 
+type ScreenName = types.ScreenName;
+type MediaCard = types.MediaCard;
 
 function App() {
   const [screenName, setScreenName] = useState<ScreenName>("Launch");
@@ -15,9 +18,9 @@ function App() {
 
   const handleOpenCard = (card: MediaCard) => {
     setSelectedCard(card);
-    if (card.kind === "shows") {
+    if (card.kind === "show") {
       setScreenName("Show");
-    } else if (card.kind === "movies" && card.isSeries) {
+    } else if (card.kind === "movie" && card.isSeries) {
       setScreenName("SeriesList");
     } else {
       setScreenName("Selection");

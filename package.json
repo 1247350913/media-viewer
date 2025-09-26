@@ -3,16 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "type": "commonjs",
-  "main": "dist/electron/main.js",
+  "main": "dist/electron/electron/main.js",
   "scripts": {
     "dev": "run-p -l dev:typecheck dev:vite dev:electron",
     "dev:typecheck": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
     "dev:vite": "vite",
-    "dev:electron": "wait-on tcp:5173 dist/electron/main.js && nodemon -q --watch dist/electron --ext js --delay 100ms --exec \"cross-env ELECTRON_START_URL=http://localhost:5173 electron --inspect=9229 --remote-debugging-port=9223 dist/electron/main.js\"",
+    "dev:electron": "wait-on tcp:5173 dist/electron/electron/main.js && nodemon -q --watch dist/electron --ext js --delay 100ms --exec \"cross-env ELECTRON_START_URL=http://localhost:5173 electron --inspect=9229 --remote-debugging-port=9223 dist/electron/electron/main.js\"",
     "build": "run-s build:renderer build:main",
     "build:renderer": "vite build",
     "build:main": "tsc -p tsconfig.electron.json",
-    "start": "electron dist/electron/main.js"
+    "start": "electron dist/electron/electron/main.js"
   },
   "dependencies": {
     "react": "^19.1.0",

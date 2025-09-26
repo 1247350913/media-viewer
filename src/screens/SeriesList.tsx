@@ -1,4 +1,4 @@
-import type { ScreenProps, MediaCard, MediaKind } from "./";
+import type { ScreenProps, MediaCard, MediaKind } from "..";
 
 
 type Props = ScreenProps["SeriesList"];

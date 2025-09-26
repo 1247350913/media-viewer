@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ScreenName } from "../screens";
+import type { ScreenName } from "..";
 
 function Poster({ path, title, screenName }: { path?: string; title: string; screenName: ScreenName; }) {
   const [src, setSrc] = useState<string | null>(null);

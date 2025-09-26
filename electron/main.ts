@@ -4,6 +4,10 @@ import { promisify } from "node:util";
 import * as path from "path";
 import * as fs from "fs";
 import * as fsp from "node:fs/promises";
+import type * as Shared from "../shared";
+
+type MediaKind = Shared.MediaKind;
+type MediaCard = Shared.MediaCard;
 
 const execFileP = promisify(execFile);
 let win: BrowserWindow | null = null;
@@ -119,12 +123,11 @@ ipcMain.handle("video:play", async (_evt, videoFilePath: string) => {
 
 // ============================ Helpers ============================
 
-function inferKindFromDir(dirPath: string): "movies" | "shows" | "docs" | "other" {
+function inferKindFromDir(dirPath: string):MediaKind {
   const base = path.basename(dirPath).toLowerCase();
-  if (base === "movies") return "movies";
-  if (base === "shows")  return "shows";
-  if (base === "docs" || base === "documentaries") return "docs";
-  return "other";
+  if (base === "movies") return "movie";
+  if (base === "shows")  return "show";
+  return "all";
 }
 
 function dedupe<T>(arr: T[]): T[] {
@@ -249,7 +252,7 @@ async function getvideoDetails(dirPath: string,  exts: string[] = [".mkv", ".mp4
 
 /** list-level1 */
 async function listLevel1(mediaKindPath: string) {
-  const kind = inferKindFromDir(mediaKindPath);
+  const mediaKind = inferKindFromDir(mediaKindPath);
   const output: Array<{ title: string; kind: string; year?: number; posterPath?: string }> = [];
 
   const lvl1Entries = fs.readdirSync(mediaKindPath, { withFileTypes: true })
@@ -258,13 +261,25 @@ async function listLevel1(mediaKindPath: string) {
     if (!entry.isDirectory()) continue;
     const dirPath = path.join(mediaKindPath, entry.name);
     const dirDetails = await getJsonDetails(dirPath);
+    let cardDetails = <MediaCard>{}
     if (dirDetails && dirDetails.title) {
       const videoDetails = await getvideoDetails(dirPath);
       if (videoDetails) {
-        output.push({ ...dirDetails, ...videoDetails, posterPath: path.join(dirPath, "poster.webp") });
+        cardDetails = { 
+          kind: mediaKind, 
+          ...dirDetails, 
+          ...videoDetails, 
+          posterPath: path.join(dirPath, "poster.webp") 
+        };
       } else {
-        output.push( { ...dirDetails, posterPath: path.join(dirPath, "poster.webp") });
+        cardDetails = { 
+          kind: mediaKind, 
+          ...dirDetails, 
+          posterPath: path.join(dirPath, "poster.webp"), 
+          ...(mediaKind==="movie" ? { isSeries: true } : {})
+        }
       }
+      output.push(cardDetails);
     } else {
       console.warn(`No valid JSON details found in folder: ${entry.name}`);
     }
