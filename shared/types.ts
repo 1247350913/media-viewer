@@ -24,6 +24,7 @@ export type MediaCard = {
   subs?: string[];
   videoCodec?: string;
   isSeries?: boolean;
+  dirPath?: string;
 };
 
 export type ScreenProps = {

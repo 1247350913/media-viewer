@@ -26,7 +26,7 @@ function App() {
       setScreenName("Selection");
     }
   }
-   
+
   switch (screenName) {
     case "Launch": 
       return (<Launch onLoaded={handleLoaded}/>);

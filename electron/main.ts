@@ -4,21 +4,25 @@ import { promisify } from "node:util";
 import * as path from "path";
 import * as fs from "fs";
 import * as fsp from "node:fs/promises";
-import type * as Shared from "../shared";
 
+import type * as Shared from "../shared";
+import { heightToQuality } from "../shared/helpers";
 type MediaKind = Shared.MediaKind;
 type MediaCard = Shared.MediaCard;
 
-const execFileP = promisify(execFile);
-let win: BrowserWindow | null = null;
 
 // ============================ Setup ============================
+
+const execFileP = promisify(execFile);
+
+let win: BrowserWindow | null = null;
 
 if (!app.isPackaged) {
   process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true';
   app.commandLine.appendSwitch('remote-debugging-port', '9223');
 }
 
+/** Create the main browser window */
 async function createWindow() {
   win = new BrowserWindow({
     width: 1000,
@@ -79,6 +83,16 @@ ipcMain.handle('content:list-level1-all', async (_evt, contentPath: string) => {
   return flat;
 });
 
+/** list series */
+ipcMain.handle("content:list-series", async (_evt, mediaCard: MediaCard) => {
+  if (!mediaCard || !mediaCard.isSeries) {
+    console.warn("[content:list-series] Invalid mediaCard argument:", mediaCard);
+    return [];
+  }
+  const seriesCards = await listSeries(mediaCard);
+  return seriesCards;
+});
+
 /** Poster Handler */
 const posterCache = new Map<string, string>();
 
@@ -121,7 +135,7 @@ ipcMain.handle("video:play", async (_evt, videoFilePath: string) => {
 });
 
 
-// ============================ Helpers ============================
+// ============================ Server Helpers ============================
 
 function inferKindFromDir(dirPath: string):MediaKind {
   const base = path.basename(dirPath).toLowerCase();
@@ -132,18 +146,6 @@ function inferKindFromDir(dirPath: string):MediaKind {
 
 function dedupe<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
-}
-
-function heightToQuality(h?: number){
-  if (!h) return "Unknown";
-  if (h >= 7680) return 4320;  //8K
-  if (h >= 3840) return 3840;  //4K
-  if (h >= 2160) return 2160;
-  if (h >= 1440) return 1440;
-  if (h >= 1080) return 1080; 
-  if (h >= 720) return 720;  
-  if (h >= 480) return 480;
-  return "Unknown";
 }
 
 function langFromTags(tags: any): string | undefined {
@@ -253,7 +255,7 @@ async function getvideoDetails(dirPath: string,  exts: string[] = [".mkv", ".mp4
 /** list-level1 */
 async function listLevel1(mediaKindPath: string) {
   const mediaKind = inferKindFromDir(mediaKindPath);
-  const output: Array<{ title: string; kind: string; year?: number; posterPath?: string }> = [];
+  const output: Array<MediaCard> = [];
 
   const lvl1Entries = fs.readdirSync(mediaKindPath, { withFileTypes: true })
 
@@ -276,12 +278,52 @@ async function listLevel1(mediaKindPath: string) {
           kind: mediaKind, 
           ...dirDetails, 
           posterPath: path.join(dirPath, "poster.webp"), 
-          ...(mediaKind==="movie" ? { isSeries: true } : {})
+        }
+        if (mediaKind==="movie") {
+          cardDetails = { ...cardDetails, isSeries: true, dirPath };
+        } else {
+          console.warn(`Video file not found in movie folder: ${entry.name}`);
         }
       }
       output.push(cardDetails);
     } else {
       console.warn(`No valid JSON details found in folder: ${entry.name}`);
+    }
+  }
+  output.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
+  return output;
+}
+
+/** list-series */
+async function listSeries(mediaCard: MediaCard) {
+  const seriesDirPath = mediaCard.dirPath;
+  if (!seriesDirPath) {
+    console.warn("[listSeries] mediaCard missing dirPath:", mediaCard);
+    return [];
+  }
+  const output: Array<MediaCard> = [];
+  const entries = fs.readdirSync(seriesDirPath, { withFileTypes: true })
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const dirPath = path.join(seriesDirPath, entry.name);
+    const dirDetails = await getJsonDetails(dirPath);
+    let cardDetails = <MediaCard>{}
+    if (dirDetails && dirDetails.title) {
+      const videoDetails = await getvideoDetails(dirPath);
+      if (videoDetails) {
+        cardDetails = { 
+          kind: mediaCard.kind, 
+          ...dirDetails, 
+          ...videoDetails, 
+          posterPath: path.join(dirPath, "poster.webp") 
+        };
+      } else {
+        console.warn(`Video file not found in movie folder: ${entry.name}`);
+      }
+      output.push(cardDetails);
+    } else {
+      console.warn(`No valid JSON details found in movie folder: ${entry.name}`);
     }
   }
   output.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));

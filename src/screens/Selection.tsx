@@ -1,41 +1,15 @@
 import { useState } from "react";
-import type { ScreenProps } from "..";
+
+import * as Shared from "../../shared";
 import Poster from "../components/Poster";
+import { handlePlay } from ".";
 
-type Props = ScreenProps["Selection"];
+type Props = Shared.ScreenProps["Selection"];
 
-function formatHHMMSS(totalSec: number): string {
-  const sec = Math.max(0, Math.floor(totalSec));
-  const h = Math.floor(sec / 3600);
-  const m = Math.floor((sec % 3600) / 60);
-  const s = sec % 60;
-  const pad = (n: number) => n.toString().padStart(2, "0");
-  return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
-}
-
-function pixelQualityToText(pq: number | string): string {
-  switch(pq) {
-    case 7680: return "8K";
-    case 3840: return "4K";
-    case 1440: return "2K";
-    case 1080: return "1080p";
-    case 720:  return "720p";
-    case 480:  return "480p";
-    default:   return "Unknown";
-  }
-}
 
 function Selection({ mediaCard, onBack }: Props) {
   const [showMeta, setShowMeta] = useState(false);
   
-  async function handlePlay() {
-    if (mediaCard.videoFilePath) { 
-      await (window as any).api?.play(mediaCard.videoFilePath);
-    } else { 
-      console.warn("No video file path available to play.") 
-    };
-  }
-
   return (
     <div className="sel-wrap">
       <header className="sel-header">
@@ -55,7 +29,7 @@ function Selection({ mediaCard, onBack }: Props) {
             <button className="btn ghost" disabled={!mediaCard?.sampleFilePath}>
               Trailer
             </button>
-            <button className="btn primary" onClick={handlePlay} disabled={!mediaCard?.videoFilePath}>
+            <button className="btn primary" onClick={() => handlePlay(mediaCard)} disabled={!mediaCard?.videoFilePath}>
               ▶ Play
             </button>
           </div>
@@ -66,8 +40,8 @@ function Selection({ mediaCard, onBack }: Props) {
             <button className="btn subtle" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
             {!showMeta ? null : (<div>
               {mediaCard.year && <span>{mediaCard.year}</span>}
-              {mediaCard.runtimeSeconds && <span >{formatHHMMSS(mediaCard.runtimeSeconds)}</span>}
-              {mediaCard.quality && <span>{pixelQualityToText(mediaCard.quality)}p</span>}
+              {mediaCard.runtimeSeconds && <span >{Shared.formatHHMMSS(mediaCard.runtimeSeconds)}</span>}
+              {mediaCard.quality && <span>{Shared.pixelQualityToText(mediaCard.quality)}p</span>}
             </div>)}
           </div>
         </div>
