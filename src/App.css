@@ -222,19 +222,22 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-width: 0;
 }
 .title-row {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  min-width: 0;
 }
 .title {
   font-weight: 600;
   font-size: 1.05rem;
   line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;     
+  overflow-wrap: anywhere;    
+  word-break: break-word;     
+
 }
 .meta {
   color: #666;
@@ -349,6 +352,9 @@
   opacity: .9; 
 }
 
+.series-index {
+  text-align: right;
+}
 
 /* ---------------------------------------------------------------------
    Screen 5 - Show
@@ -448,12 +454,14 @@
 .play-btn {
   width: 34px;
   height: 34px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 999px;
   border: 1px solid #d9d9d9;
   background: #f7f7f7;
   cursor: pointer;
+  font-size: 10px;
 }
 .play-btn:hover { background: #fff; border-color: #cfcfcf; }
 
@@ -463,6 +471,31 @@
   .seasons-left .show-poster { max-width: 220px; }
 }
 
+/* Flat episodes list (no season rows) */
+.episodes-flat {
+  /* remove the nested-thread look */
+  border-left: 0;
+  margin-left: 0;
+  padding-left: 0;
+
+  /* keep tidy spacing like the nested case */
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Ensure rows don’t stretch weirdly in flat mode */
+.episodes-flat .episode-row {
+  border: 1px solid #f0f0f0;     /* same subtle card border */
+  border-radius: 8px;
+  background: #fff;
+  padding: 8px 10px;             /* same padding as nested */
+}
+
+/* Optional: small header spacing if you show "Episodes" title above */
+.seasons-right .section-header + .episodes-flat {
+  margin-top: 10px;
+}
 
 /* ---------------------------------------------------------------------
    Screen 7 - Selection
@@ -539,6 +572,39 @@
   font-size: 0.85rem;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.12);
+}
+
+.sel-meta-row {
+  display: flex;
+  gap: 20px;              /* spacing between items */
+  justify-content: center;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.meta-item {
+  padding: 12px 12px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.status-Y {
+  background-color: #e6f7e6; 
+}
+
+.status-O {
+  background-color: #e6f0fa;  
+  border-color: #b3cdea;
+  color: #1d3f6b;
+}
+
+.status-U {
+  background-color: #fae6eb;   /* pale pink */
+  border-color: #eab3c2;
+  color: #6b1d2b;
 }
 
 

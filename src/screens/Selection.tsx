@@ -33,9 +33,7 @@ function Selection({ mediaCard, onBack }: Props) {
               ▶ Play
             </button>
           </div>
-          <div className="sel-desc">
-            Replace this with the description from the media card for the movie. It will have lots of text like this so it will be super duper long you know and it will be long like this so that there will be lots of text overall.
-          </div>
+          <div className="sel-desc">{mediaCard.overview ?? "No description available."}</div>
           <div className="sel-meta">
             <button className="btn subtle" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
             {!showMeta ? null : (<div>

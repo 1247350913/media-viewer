@@ -32,3 +32,12 @@ export function pixelQualityToText(pq: number | string): string {
     default:   return "Unknown";
   }
 }
+
+export function completionStatusToText(cs: Shared.CompletionStatus | undefined): string {
+  switch(cs) {
+    case "Y": return "Y";
+    case "O": return "Ongoing";
+    case "U": return "Unknown";
+    default:  return "Unknown";
+  }
+}

@@ -5,34 +5,77 @@ export type ScreenName =
   | "SeriesList"
   | "Seasons"
   | "Show"
+  | "Franchise";
 
 export type MediaKind = 'all' | 'movie' | 'show';
-
 export type Quality = 7680 | 3840 | 1440 | 1080 | 720 | 480 | 'Unknown';
+export type Rating = 'F' | 'D' | 'C' | 'B' | 'A' | 'S' | 'SS'
+export type Genre = 
+  | 'Action' 
+  | 'Adventure' 
+  | 'Animation' 
+  | 'Biography' 
+  | 'Comedy' 
+  | 'Crime' 
+  | 'Drama' 
+  | 'Family' 
+  | 'Fantasy' 
+  | 'Film-Noir' 
+  | 'History' 
+  | 'Horror' 
+  | 'Music' 
+  | 'Musical' 
+  | 'Mystery' 
+  | 'News' 
+  | 'Reality-TV' 
+  | 'Romance' 
+  | 'Sci-Fi' 
+  | 'Short' 
+  | 'Sport' 
+  | 'Talk-Show' 
+  | 'Thriller' 
+  | 'War' 
+  | 'Western';
+export type Tag = 'TC' | 'DC' | 'EC' | 'SE' | 'UR/UC'
+export type CompletionStatus = "Y" | "O" | "U"
 
 export type MediaCard = {
   title: string;
+  year?: number;
+  overview?: string;
+  genres?: Genre[];
+  tags?: string[];
+  adminRating?: Rating;
+
   kind: MediaKind;
 
   posterPath?: string;
   videoFilePath?: string;
   sampleFilePath?: string;
 
-  year?: number;
-  description?: string;
   quality?: Quality;
   runtimeSeconds?: number;
   audios?: string[];
   subs?: string[];
   videoCodec?: string;
 
+  userRating?: Rating;
+
   isSeries?: boolean;
   dirPath?: string;
-  
+  isFranchise?: boolean;
+  franchiseNumber?: number;
+
   seasonNumber?: number;
   episodeNumber?: number;
   episodeOverallNumber?: number;
+  numberOfEpisodesObtained?: number;
+  totalNumberOfEpisodes?: number;
+  noSeasons?: boolean;
+  completionStatus?: CompletionStatus;
 };
+
+export type SeasonTuple = [number, [MediaCard, MediaCard[]]] | null; // [seasonNum, [seasonCard, [episodeCards..]]]
 
 export type ScreenProps = {
   Launch: {
@@ -40,7 +83,7 @@ export type ScreenProps = {
   };
   Browse: {
     contentPath: string;
-    onOpenCard: (card: MediaCard) => void;
+    onOpenCard: (mediaCard: MediaCard) => void;
   };
   Selection: {
     mediaCard: MediaCard;
@@ -48,6 +91,7 @@ export type ScreenProps = {
   };
   Seasons: {
     mediaCard: MediaCard;
+    seasons: SeasonTuple;
     onBack: () => void;
   };
   SeriesList: {
@@ -56,7 +100,12 @@ export type ScreenProps = {
   };
   Show: {
     mediaCard: MediaCard;
-    onGo: () => void;
+    onGo: (seasons: SeasonTuple) => void;
+    onBack: () => void;
+  };
+  Franchise: {
+    mediaCard: MediaCard;
+    onGo: (mediaCard: MediaCard) => void;
     onBack: () => void;
   };
 };

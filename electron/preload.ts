@@ -4,6 +4,7 @@ import { type MediaCard } from "../shared/types";
 contextBridge.exposeInMainWorld('api', {
   selectVault: () => ipcRenderer.invoke('vault:select'),
   listLevel1All: (contentPath: string) => ipcRenderer.invoke('content:list-level1-all', contentPath),
+  listFranchise: (mediaCard: MediaCard) => ipcRenderer.invoke('content:list-franchise', mediaCard),
   listSeries: (mediaCard: MediaCard) => ipcRenderer.invoke('content:list-series', mediaCard),
   listSeasonsAndEpisodes: (mediaCard: MediaCard) => ipcRenderer.invoke('content:list-seasons-and-episodes', mediaCard),
   readPoster: (absPath: string) => ipcRenderer.invoke("poster:read", absPath),

@@ -2,33 +2,24 @@ import { useEffect, useState } from "react";
 
 import * as Shared from "../../shared";
 import Poster from "../components/Poster";
-import { handlePlay } from ".";
 
-type Props = Shared.ScreenProps["SeriesList"];
+type Props = Shared.ScreenProps["Franchise"];
 type MediaCard = Shared.MediaCard;
 
 
-function SeriesList({ mediaCard, onBack }: Props) {
+function Franchise({ mediaCard, onGo, onBack }: Props) {
   const [cards, setCards] = useState<MediaCard[] | null>(null);
   const [metaOpen, setMetaOpen] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    let alive = true;
     (async () => {
       try {
-        const list: MediaCard[] = (await (window as any).api?.listSeries(mediaCard)) ?? [];
-        if (!alive) return;
-        const sorted = list.slice().sort((a, b) => {
-          const y = (a.year ?? 0) - (b.year ?? 0);
-          return y !== 0 ? y : a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
-        });
-        setCards(sorted);
+        const cards: MediaCard[] = (await (window as any).api?.listFranchise(mediaCard)) ?? [];
+        setCards(cards);
       } catch (e) {
-        console.error("[SeriesList] listSeriesMovies failed:", e);
-        if (alive) setCards([]);
+        console.error("[Franchise] listFranchise failed:", e);
       }
     })();
-    return () => { alive = false; };
   }, [mediaCard]);
 
   function toggleMeta(cardTitle: string) {
@@ -42,12 +33,11 @@ function SeriesList({ mediaCard, onBack }: Props) {
         <div />
         <div className="profile" title="Profile">🙂</div>
       </header>
-      {/* <h1 className="series-title">{mediaCard.title}</h1> */}
       {cards === null ? (
       <div className="loading">Loading…</div>
       ) : (
       <div className="series-list">
-        {cards.map((card, idx) => (
+        {cards.map((card) => (
           <article key={card.title} className="series-row">
             <div className="series-poster">
               {card.posterPath ? (
@@ -59,12 +49,7 @@ function SeriesList({ mediaCard, onBack }: Props) {
             <div className="series-body">
               <h2 className="series-item-title">{card.title}</h2>
               <div className="series-actions">
-                <button className="btn ghost" disabled={!card?.sampleFilePath}>
-                  Trailer
-                </button>
-                <button className="btn primary" onClick={() => handlePlay(card)} disabled={!card?.videoFilePath}>
-                  ▶ Play
-                </button>
+                <button className="btn primary" onClick={() => onGo(card)}>Go</button>
               </div>
               <p className="series-desc">{card.overview}</p>
               <div className="series-meta">
@@ -79,7 +64,6 @@ function SeriesList({ mediaCard, onBack }: Props) {
                   </div>
                 )}
               </div>
-              {metaOpen[card.title] && (<div className="series-index">{idx+1}</div>)}
             </div>
           </article>
         ))}
@@ -89,4 +73,4 @@ function SeriesList({ mediaCard, onBack }: Props) {
   );
 }
 
-export default SeriesList;
+export default Franchise;

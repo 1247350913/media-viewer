@@ -83,6 +83,16 @@ ipcMain.handle('content:list-level1-all', async (_evt, contentPath: string) => {
   return flat;
 });
 
+/** list franchise */
+ipcMain.handle("content:list-franchise", async (_evt, mediaCard: MediaCard) => {
+  if (!mediaCard || !mediaCard.isFranchise) {
+    console.warn("[content:list-franchise] Invalid mediaCard argument:", mediaCard);
+    return [];
+  }
+  const franchiseCards = await listFranchise(mediaCard);
+  return franchiseCards;
+});
+
 /** list series */
 ipcMain.handle("content:list-series", async (_evt, mediaCard: MediaCard) => {
   if (!mediaCard || !mediaCard.isSeries) {
@@ -99,8 +109,8 @@ ipcMain.handle("content:list-seasons-and-episodes", async (_evt, mediaCard: Medi
     console.warn("[content:list-seasons-and-episodes] Invalid mediaCard argument:", mediaCard);
     return [];
   }
-  const seasonsAndEpisodes = await listSeasonsAndEpisodes(mediaCard);
-  return seasonsAndEpisodes;
+  const rval = await listSeasonsAndEpisodes(mediaCard);
+  return rval;
 });
 
 /** Poster Handler */
@@ -261,7 +271,7 @@ async function getvideoDetails(dirPath: string,  exts: string[] = [".mkv", ".mp4
     }
 }
 
-/** list-level1 */
+/** list level1 */
 async function listLevel1(mediaKindPath: string) {
   const mediaKind = inferKindFromDir(mediaKindPath);
   const output: Array<MediaCard> = [];
@@ -292,7 +302,7 @@ async function listLevel1(mediaKindPath: string) {
         if (mediaKind==="movie") {
           cardDetails = { ...cardDetails, isSeries: true };
         } else {
-          console.warn(`Video file not found in movie folder: ${entry.name}`);
+          console.warn(`Video file not found in folder: ${entry.name}`);
         }
       }
       output.push(cardDetails);
@@ -304,7 +314,7 @@ async function listLevel1(mediaKindPath: string) {
   return output;
 }
 
-/** list-series */
+/** list series */
 async function listSeries(mediaCard: MediaCard) {
   const seriesDirPath = mediaCard.dirPath;
   if (!seriesDirPath) {
@@ -340,7 +350,7 @@ async function listSeries(mediaCard: MediaCard) {
   return output;
 }
 
-/** list-series */
+/** list seasons and episodes */
 async function listSeasonsAndEpisodes(mediaCard: MediaCard) {
   const showDirPath = mediaCard.dirPath;
   if (!showDirPath) {
@@ -349,6 +359,7 @@ async function listSeasonsAndEpisodes(mediaCard: MediaCard) {
   }
   const output: Array<[number,[MediaCard, MediaCard[]]]> = [];
   const seasonEntries = fs.readdirSync(showDirPath, { withFileTypes: true })
+  let numberOfEpisodesObtained = 0;
 
   for (const sEntry of seasonEntries) {
     if (!sEntry.isDirectory()) continue;
@@ -365,23 +376,60 @@ async function listSeasonsAndEpisodes(mediaCard: MediaCard) {
  
     const episodeEntries = fs.readdirSync(seasonDirPath, { withFileTypes: true })
     const episodeCards: MediaCard[] = [];
+
     for (const eEntry of episodeEntries) {
       const ext = path.extname(eEntry.name).toLowerCase();
       if (ext !== ".mkv" && ext !== ".mp4") { continue; }
 
-      const [episodeNumberStr, title] = eEntry.name.split("_");
-      const episodeNumber = Number(episodeNumberStr);
-      let videoFilePath: string | undefined = path.join(seasonDirPath, eEntry.name);
+      const [episodeOverallNumberStr, title] = eEntry.name.split("_");
+      const episodeOverallNumber = Number(episodeOverallNumberStr);
+      let videoFilePath = path.join(seasonDirPath, eEntry.name);
       let episodeCard: MediaCard = {
         title,
         kind: 'show',
-        episodeNumber,
-        videoFilePath
+        videoFilePath,
+        episodeOverallNumber,
       }
       episodeCards.push(episodeCard);
+      numberOfEpisodesObtained++;
+    }
+    episodeCards.sort((a, b) => (a.episodeOverallNumber ?? 0) - (b.episodeOverallNumber ?? 0));
+    for (const [idx, epCard] of episodeCards.entries()) {
+      epCard.episodeNumber = idx + 1;
     }
     output.push([seasonNumber, [seasonCard, episodeCards]]);
   }
+  return { numberOfEpisodesObtained, seasons: output};
+}
 
+/** list franchise */
+async function listFranchise(mediaCard: MediaCard) {
+  const franchiseDirPath = mediaCard.dirPath;
+  if (!franchiseDirPath) {
+    console.warn("[listFranchise] mediaCard missing dirPath:", mediaCard);
+    return [];
+  }
+  const output: Array<MediaCard> = [];
+  const entries = fs.readdirSync(franchiseDirPath, { withFileTypes: true })
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const dirPath = path.join(franchiseDirPath, entry.name);
+    const dirDetails = await getJsonDetails(dirPath);
+    if (!dirDetails) {
+      console.warn(`No valid JSON details found in movie folder: ${entry.name}`);
+      continue;
+    }
+    const franchiseNumber = Number(entry.name.split("_")[0]);
+    let cardDetails = <MediaCard>{
+      ...dirDetails,
+      kind: mediaCard.kind,
+      posterPath: path.join(dirPath, "poster.webp"), 
+      dirPath,
+      franchiseNumber
+    };
+    output.push(cardDetails);
+  }
+  output.sort((a, b) => { return a.franchiseNumber! - b.franchiseNumber!;})
   return output;
 }
