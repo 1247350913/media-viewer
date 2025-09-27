@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ScreenName } from "..";
+import { type ScreenName } from "../../shared";
 
 function Poster({ path, title, screenName }: { path?: string; title: string; screenName: ScreenName; }) {
   const [src, setSrc] = useState<string | null>(null);
@@ -21,6 +21,11 @@ function Poster({ path, title, screenName }: { path?: string; title: string; scr
       </div>
     )
     case "Selection": return (
+      <div className="sel-poster">
+        {src ? (<img src={src} alt={`${title} poster`} className="sel-poster-img" />) : (<div className="sel-poster-fallback" aria-hidden />)}
+      </div>
+    )
+    case "Seasons": return (
       <div className="sel-poster">
         {src ? (<img src={src} alt={`${title} poster`} className="sel-poster-img" />) : (<div className="sel-poster-fallback" aria-hidden />)}
       </div>

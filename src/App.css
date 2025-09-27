@@ -357,6 +357,112 @@
 /* ---------------------------------------------------------------------
    Screen 6 - Seasons
   ---------------------------------------------------------------------- */
+.seasons-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.seasons-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr; /* ~25% | 75% */
+  gap: 20px;
+  align-items: start; /* keep left column at top, not sticky */
+}
+
+/* Left column */
+.seasons-left .show-title {
+  margin: 0 0 12px;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.seasons-left .show-poster {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 2 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #eee;
+}
+
+/* Right column header */
+.section-header {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* Seasons list */
+.season-block + .season-block { margin-top: 10px; }
+
+.season-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.season-row:hover { background: #fff; border-color: #dcdcdc; }
+
+.season-num { font-weight: 600; }
+.season-title { opacity: 0.8; }
+.spacer { flex: 1; }
+.episode-count { font-variant-numeric: tabular-nums; opacity: 0.8; }
+
+.chev { transition: transform 0.15s ease; }
+.chev.open { transform: rotate(180deg); }
+
+/* Episodes under a season */
+.episodes {
+  border-left: 2px solid #f0f0f0;
+  margin-left: 10px;
+  padding-left: 12px;
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+/* Episode row: Ep# | Play | Title | Overall# */
+.episode-row {
+  display: grid;
+  grid-template-columns: 60px 44px 1fr 120px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid #f3f3f3;
+  border-radius: 8px;
+  background: #fff;
+}
+.ep-num, .overall { font-variant-numeric: tabular-nums; opacity: .8; }
+
+.play-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid #d9d9d9;
+  background: #f7f7f7;
+  cursor: pointer;
+}
+.play-btn:hover { background: #fff; border-color: #cfcfcf; }
+
+/* Responsive: collapse to one column on smaller widths */
+@media (max-width: 900px) {
+  .seasons-grid { grid-template-columns: 1fr; }
+  .seasons-left .show-poster { max-width: 220px; }
+}
+
 
 /* ---------------------------------------------------------------------
    Screen 7 - Selection

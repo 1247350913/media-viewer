@@ -13,9 +13,11 @@ export type Quality = 7680 | 3840 | 1440 | 1080 | 720 | 480 | 'Unknown';
 export type MediaCard = {
   title: string;
   kind: MediaKind;
+
   posterPath?: string;
   videoFilePath?: string;
   sampleFilePath?: string;
+
   year?: number;
   description?: string;
   quality?: Quality;
@@ -23,8 +25,13 @@ export type MediaCard = {
   audios?: string[];
   subs?: string[];
   videoCodec?: string;
+
   isSeries?: boolean;
   dirPath?: string;
+  
+  seasonNumber?: number;
+  episodeNumber?: number;
+  episodeOverallNumber?: number;
 };
 
 export type ScreenProps = {
@@ -49,6 +56,7 @@ export type ScreenProps = {
   };
   Show: {
     mediaCard: MediaCard;
+    onGo: () => void;
     onBack: () => void;
   };
 };

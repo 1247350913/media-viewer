@@ -39,7 +39,7 @@ function App() {
     case "SeriesList":
       return (<SeriesList mediaCard={selectedCard} onBack={() => setScreenName("Browse")}/>);
     case "Show":
-      return (<Show  mediaCard={selectedCard} onBack={() => setScreenName("Browse")}/>);
+      return (<Show  mediaCard={selectedCard} onGo={() => setScreenName("Seasons")} onBack={() => setScreenName("Browse")}/>);
   }
 }
 

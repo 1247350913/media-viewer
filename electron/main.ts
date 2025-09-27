@@ -93,9 +93,18 @@ ipcMain.handle("content:list-series", async (_evt, mediaCard: MediaCard) => {
   return seriesCards;
 });
 
+/** list seasons and episodes */
+ipcMain.handle("content:list-seasons-and-episodes", async (_evt, mediaCard: MediaCard) => {
+  if (!mediaCard || mediaCard.kind !== "show" || !mediaCard.dirPath) {
+    console.warn("[content:list-seasons-and-episodes] Invalid mediaCard argument:", mediaCard);
+    return [];
+  }
+  const seasonsAndEpisodes = await listSeasonsAndEpisodes(mediaCard);
+  return seasonsAndEpisodes;
+});
+
 /** Poster Handler */
 const posterCache = new Map<string, string>();
-
 ipcMain.handle("poster:read", async (_evt, filePath: string) => {
   if (posterCache.has(filePath)) {
     return posterCache.get(filePath);
@@ -277,10 +286,11 @@ async function listLevel1(mediaKindPath: string) {
         cardDetails = { 
           kind: mediaKind, 
           ...dirDetails, 
-          posterPath: path.join(dirPath, "poster.webp"), 
+          posterPath: path.join(dirPath, "poster.webp"),
+          dirPath
         }
         if (mediaKind==="movie") {
-          cardDetails = { ...cardDetails, isSeries: true, dirPath };
+          cardDetails = { ...cardDetails, isSeries: true };
         } else {
           console.warn(`Video file not found in movie folder: ${entry.name}`);
         }
@@ -327,5 +337,51 @@ async function listSeries(mediaCard: MediaCard) {
     }
   }
   output.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
+  return output;
+}
+
+/** list-series */
+async function listSeasonsAndEpisodes(mediaCard: MediaCard) {
+  const showDirPath = mediaCard.dirPath;
+  if (!showDirPath) {
+    console.warn("[listSeasonsAndEpisodes] mediaCard missing dirPath:", mediaCard);
+    return [];
+  }
+  const output: Array<[number,[MediaCard, MediaCard[]]]> = [];
+  const seasonEntries = fs.readdirSync(showDirPath, { withFileTypes: true })
+
+  for (const sEntry of seasonEntries) {
+    if (!sEntry.isDirectory()) continue;
+    const seasonDirPath = path.join(showDirPath, sEntry.name);
+    const [seasonNumberStr, title] = sEntry.name.split("_");
+    const seasonNumber = Number(seasonNumberStr);
+    let seasonCard: MediaCard = {
+      title,
+      kind: 'show',
+      seasonNumber
+    }
+    let seasonJsonDetails = await getJsonDetails(seasonDirPath);
+    console.log("seasonJsonDetails:", seasonJsonDetails);
+ 
+    const episodeEntries = fs.readdirSync(seasonDirPath, { withFileTypes: true })
+    const episodeCards: MediaCard[] = [];
+    for (const eEntry of episodeEntries) {
+      const ext = path.extname(eEntry.name).toLowerCase();
+      if (ext !== ".mkv" && ext !== ".mp4") { continue; }
+
+      const [episodeNumberStr, title] = eEntry.name.split("_");
+      const episodeNumber = Number(episodeNumberStr);
+      let videoFilePath: string | undefined = path.join(seasonDirPath, eEntry.name);
+      let episodeCard: MediaCard = {
+        title,
+        kind: 'show',
+        episodeNumber,
+        videoFilePath
+      }
+      episodeCards.push(episodeCard);
+    }
+    output.push([seasonNumber, [seasonCard, episodeCards]]);
+  }
+
   return output;
 }
