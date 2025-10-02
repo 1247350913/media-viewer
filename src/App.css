@@ -1,6 +1,5 @@
 /* App container */
 #root {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 0;
   font-family: system-ui, sans-serif;
@@ -31,7 +30,6 @@
   display: flex;
   flex-direction: column;
   padding: 16px 20px;
-  max-width: 1400px; 
   margin: 0 auto;
 }
 
@@ -146,32 +144,28 @@
 /* Cards grid */
 .cards {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-}
-@media (min-width: 1200px) {
-  .cards {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, 280px);
+  justify-content: center;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
-/* Movie card */
 .movie-card {
+  width: 100%;
+  box-sizing: border-box;
+
   display: grid;
   grid-template-columns: 90px 1fr;
-  gap: 12px;
+  column-gap: 12px;
+
   padding: 10px;
   border: 1px solid #e9e9e9;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 1px 2px rgba(0,0,0,.04);
 }
-@media (prefers-color-scheme: light) {
-  .movie-card {
-    background: #fff;
-    border-color: #e9e9e9;
-  }
-}
+
 .movie-card.is-clickable {
   cursor: pointer;
   border-radius: 10px;
@@ -419,6 +413,13 @@
   transition: background 0.15s, border-color 0.15s;
 }
 .season-row:hover { background: #fff; border-color: #dcdcdc; }
+
+.season-row.has-missing {
+  border-color: #f6c94c;   
+}
+.season-row.has-missing:hover {
+  border-color: #e6b800;
+}
 
 .season-num { font-weight: 600; }
 .season-title { opacity: 0.8; }

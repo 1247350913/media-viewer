@@ -3,58 +3,61 @@ import "./App.css";
 import * as Shared from "../shared";
 import { Launch, Browse, Selection, Seasons, SeriesList, Show, Franchise} from "./screens";
 
-type ScreenName = Shared.ScreenName;
 type MediaCard = Shared.MediaCard;
+type HistoryEntry = Shared.HistoryEntry;
+type SeasonTuple = Shared.SeasonTuple
+
 
 function App() {
-  const [screenName, setScreenName] = useState<ScreenName>("Launch");
+  const [historyStack, setHistoryStack] = useState<HistoryEntry[]>([{screenName: "Launch", mediaCard: null}]);
   const [contentPath, setContentPath] = useState<string>("");
-  const [selectedCard, setSelectedCard] = useState<MediaCard>({title: "", kind: "all"});
-  const [seasons, setSeasons] = useState<Shared.SeasonTuple>(null);
+  const [seasons, setSeasons] = useState<SeasonTuple>(null);
+
+  const go = (entry: HistoryEntry) => setHistoryStack((s) => [...s, entry]);
+  const back = () => setHistoryStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
+  const current = historyStack[historyStack.length - 1];
 
   const handleLoaded = (folderPath: string) => {
     setContentPath(folderPath);
-    setScreenName("Browse");
+     go({ screenName: "Browse", mediaCard: null });
   };
 
-  const handleOpenCard = (card: MediaCard) => {
-    setSelectedCard(card);
-    if (card.isFranchise) {
-      setScreenName("Franchise");
-    } else if (card.kind === "show") {
-      setScreenName("Show");
-    } else if (card.kind === "movie" && card.isSeries) {
-      setScreenName("SeriesList");
+  const handleOpenCard = (mediaCard: MediaCard) => {
+    if (mediaCard.isFranchise) {
+      go({ screenName: "Franchise", mediaCard });
+    } else if (mediaCard.kind === "show") {
+      go({ screenName: "Show", mediaCard });
+    } else if (mediaCard.kind === "movie" && mediaCard.isSeries) {
+      go({ screenName: "SeriesList", mediaCard });
     } else {
-      setScreenName("Selection");
+      go({ screenName: "Selection", mediaCard });
     }
   }
 
   const handleFranchiseGoClick = (mediaCard: MediaCard) => {
-    setSelectedCard(mediaCard);
-    setScreenName("Seasons");
+    go({ screenName: "Show", mediaCard });
   }
 
   const handleShowGoClick = (seasons: Shared.SeasonTuple) => {
     setSeasons(seasons);
-    setScreenName("Seasons");
+    go({ screenName: "Seasons", mediaCard: current.mediaCard! });
   }
 
-  switch (screenName) {
+  switch (current.screenName) {
     case "Launch": 
       return (<Launch onLoaded={handleLoaded}/>);
     case "Browse":
       return (<Browse contentPath={contentPath} onOpenCard={handleOpenCard}/>);
     case "Franchise":
-      return (<Franchise mediaCard={selectedCard} onGo={handleFranchiseGoClick} onBack={() => setScreenName("Browse")}/>);
+      return (<Franchise mediaCard={current.mediaCard!} onGo={handleFranchiseGoClick} onBack={back}/>);
     case "Show":
-      return (<Show mediaCard={selectedCard} onGo={handleShowGoClick} onBack={() => setScreenName("Browse")}/>);
+      return (<Show mediaCard={current.mediaCard} onGo={handleShowGoClick} onBack={back}/>);
     case "Seasons":
-      return (<Seasons mediaCard={selectedCard} seasons={seasons} onBack={() => setScreenName("Show")}/>);
+      return (<Seasons mediaCard={current.mediaCard} seasons={seasons} onBack={back}/>);
     case "SeriesList":
-      return (<SeriesList mediaCard={selectedCard} onBack={() => setScreenName("Browse")}/>);
+      return (<SeriesList mediaCard={current.mediaCard} onBack={back}/>);
     case "Selection":
-      return (<Selection mediaCard={selectedCard} onBack={() => setScreenName("Browse")}/>);
+      return (<Selection mediaCard={current.mediaCard} onBack={back}/>);
   }
 }
 

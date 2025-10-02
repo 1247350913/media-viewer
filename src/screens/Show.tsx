@@ -12,6 +12,7 @@ function Show({ mediaCard, onGo, onBack }: Props) {
 
   useEffect(() => {
     (async () => {
+      if (!mediaCard) { return }
       try {
         const rval = (await (window as any).api?.listSeasonsAndEpisodes(mediaCard)) ?? [];
         mediaCard.numberOfEpisodesObtained = rval.numberOfEpisodesObtained;
@@ -24,7 +25,8 @@ function Show({ mediaCard, onGo, onBack }: Props) {
   }, [mediaCard]);
 
   const determineCompletionStatusClassName = () => {
-    switch(mediaCard.isComplete) {
+    if (!mediaCard) {return }
+    switch(mediaCard.completionStatus) {
       case "Y": return "meta-item status-Y";
       case "O": return "meta-item status-O";
       case "U": return "meta-item status-U";
@@ -32,7 +34,9 @@ function Show({ mediaCard, onGo, onBack }: Props) {
     }
   }
   
-  return (
+  return (!mediaCard ? 
+    (<div> No Media Card. Code Error. Refer to Admin.</div>):
+    (
     <div className="sel-wrap">
       <header className="sel-header">
         <button className="btn subtle" onClick={onBack} aria-label="Back">
@@ -70,6 +74,7 @@ function Show({ mediaCard, onGo, onBack }: Props) {
         </div>
       </div>
     </div>
+    )
   );
 }
 

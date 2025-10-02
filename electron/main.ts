@@ -366,13 +366,13 @@ async function listSeasonsAndEpisodes(mediaCard: MediaCard) {
     const seasonDirPath = path.join(showDirPath, sEntry.name);
     const [seasonNumberStr, title] = sEntry.name.split("_");
     const seasonNumber = Number(seasonNumberStr);
-    let seasonCard: MediaCard = {
+    let seasonJsonDetails = await getJsonDetails(seasonDirPath);
+    let seasonCard = {
       title,
       kind: 'show',
-      seasonNumber
+      seasonNumber,
+      ...seasonJsonDetails
     }
-    let seasonJsonDetails = await getJsonDetails(seasonDirPath);
-    console.log("seasonJsonDetails:", seasonJsonDetails);
  
     const episodeEntries = fs.readdirSync(seasonDirPath, { withFileTypes: true })
     const episodeCards: MediaCard[] = [];
@@ -399,6 +399,7 @@ async function listSeasonsAndEpisodes(mediaCard: MediaCard) {
     }
     output.push([seasonNumber, [seasonCard, episodeCards]]);
   }
+  output.sort((a, b) => a[0] - b[0]);
   return { numberOfEpisodesObtained, seasons: output};
 }
 

@@ -26,7 +26,9 @@ function Franchise({ mediaCard, onGo, onBack }: Props) {
     setMetaOpen((s) => ({ ...s, [cardTitle]: !s[cardTitle] }));
   }
 
-  return (
+  return (!mediaCard ? 
+    (<div> No Media Card. Code Error. Refer to Admin.</div>):
+    (
     <div className="series-wrap">
       <header className="series-header">
         <button className="btn subtle" onClick={onBack} aria-label="Back">← Back</button>
@@ -70,6 +72,7 @@ function Franchise({ mediaCard, onGo, onBack }: Props) {
       </div>
       )}
     </div>
+    )
   );
 }
 

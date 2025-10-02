@@ -11,6 +11,7 @@ function Seasons({ mediaCard, onBack }: Props) {
 
   useEffect(() => {
     (async () => {
+      if (!mediaCard) { return }
       try {
         const rval = (await (window as any).api?.listSeasonsAndEpisodes(mediaCard)) ?? [];
         mediaCard.numberOfEpisodesObtained = rval.numberOfEpisodesObtained;
@@ -30,7 +31,9 @@ function Seasons({ mediaCard, onBack }: Props) {
     });
   };
 
-  return (
+  return (!mediaCard ? 
+    (<div> No Media Card. Code Error. Refer to Admin.</div>):
+    (
     <div className="seasons-wrap">
       <div className="nav">
         <button className="back" onClick={onBack}>&larr;</button>
@@ -77,14 +80,21 @@ function Seasons({ mediaCard, onBack }: Props) {
                 return (
                   <div className="season-block" key={seasonTuple[0]}>
                     <button
-                      className="season-row"
+                      className={`season-row ${
+                        seasonTuple[1][0]?.totalNumberOfEpisodes &&
+                        seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length
+                          ? "has-missing"
+                          : ""
+                      }`}
                       onClick={() => toggle(seasonTuple[0])}
                       aria-expanded={isOpen}
                       aria-controls={`season-${seasonTuple[0]}-episodes`}
                     >
                       <span className="season-title">{seasonTuple[1][0].title}</span>
                       <span className="spacer" />
-                      <span className="episode-count">{seasonTuple[1][1].length} Ep</span>
+                      {seasonTuple[1][0]?.totalNumberOfEpisodes && (seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length) ? 
+                      (<span className="episode-count">{seasonTuple[1][1].length} / {seasonTuple[1][0].totalNumberOfEpisodes} Ep</span>) :
+                      (<span className="episode-count">{seasonTuple[1][1].length} Ep</span>)}
                       <span className={`chev ${isOpen ? "open" : ""}`} aria-hidden>
                         ▾
                       </span>
@@ -123,6 +133,7 @@ function Seasons({ mediaCard, onBack }: Props) {
         </main>
       </div>
     </div>
+    )
   );
 }
 

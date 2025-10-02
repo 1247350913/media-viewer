@@ -77,6 +77,11 @@ export type MediaCard = {
 
 export type SeasonTuple = [number, [MediaCard, MediaCard[]]] | null; // [seasonNum, [seasonCard, [episodeCards..]]]
 
+export type HistoryEntry = {
+  screenName: ScreenName;
+  mediaCard: MediaCard | null;
+};
+
 export type ScreenProps = {
   Launch: {
     onLoaded: (contentPath: string) => void;
@@ -86,20 +91,20 @@ export type ScreenProps = {
     onOpenCard: (mediaCard: MediaCard) => void;
   };
   Selection: {
-    mediaCard: MediaCard;
+    mediaCard: MediaCard | null;
     onBack: () => void;
   };
   Seasons: {
-    mediaCard: MediaCard;
+    mediaCard: MediaCard | null;
     seasons: SeasonTuple;
     onBack: () => void;
   };
   SeriesList: {
-    mediaCard: MediaCard;
+    mediaCard: MediaCard | null;
     onBack: () => void;
   };
   Show: {
-    mediaCard: MediaCard;
+    mediaCard: MediaCard | null;
     onGo: (seasons: SeasonTuple) => void;
     onBack: () => void;
   };

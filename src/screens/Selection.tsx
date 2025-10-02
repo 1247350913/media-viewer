@@ -10,7 +10,9 @@ type Props = Shared.ScreenProps["Selection"];
 function Selection({ mediaCard, onBack }: Props) {
   const [showMeta, setShowMeta] = useState(false);
   
-  return (
+  return (!mediaCard ? 
+    (<div> No Media Card. Code Error. Refer to Admin.</div>):
+    (
     <div className="sel-wrap">
       <header className="sel-header">
         <button className="btn subtle" onClick={onBack} aria-label="Back">
@@ -45,6 +47,7 @@ function Selection({ mediaCard, onBack }: Props) {
         </div>
       </div>
     </div>
+    )
   );
 }
 
