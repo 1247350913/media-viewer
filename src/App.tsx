@@ -38,6 +38,10 @@ function App() {
     go({ screenName: "Show", mediaCard });
   }
 
+  const handleSeriesListGoClick = (mediaCard: MediaCard) => {
+    go({ screenName: "Selection", mediaCard });
+  }
+
   const handleShowGoClick = (seasons: Shared.SeasonTuple) => {
     setSeasons(seasons);
     go({ screenName: "Seasons", mediaCard: current.mediaCard! });
@@ -47,7 +51,7 @@ function App() {
     case "Launch": 
       return (<Launch onLoaded={handleLoaded}/>);
     case "Browse":
-      return (<Browse contentPath={contentPath} onOpenCard={handleOpenCard}/>);
+      return (<Browse contentPath={contentPath} onOpenCard={handleOpenCard} onBack={back}/>);
     case "Franchise":
       return (<Franchise mediaCard={current.mediaCard!} onGo={handleFranchiseGoClick} onBack={back}/>);
     case "Show":
@@ -55,7 +59,7 @@ function App() {
     case "Seasons":
       return (<Seasons mediaCard={current.mediaCard} seasons={seasons} onBack={back}/>);
     case "SeriesList":
-      return (<SeriesList mediaCard={current.mediaCard} onBack={back}/>);
+      return (<SeriesList mediaCard={current.mediaCard} onGo={handleSeriesListGoClick} onBack={back}/>);
     case "Selection":
       return (<Selection mediaCard={current.mediaCard} onBack={back}/>);
   }

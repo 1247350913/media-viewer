@@ -89,6 +89,7 @@ export type ScreenProps = {
   Browse: {
     contentPath: string;
     onOpenCard: (mediaCard: MediaCard) => void;
+    onBack: () => void;
   };
   Selection: {
     mediaCard: MediaCard | null;
@@ -101,6 +102,7 @@ export type ScreenProps = {
   };
   SeriesList: {
     mediaCard: MediaCard | null;
+    onGo: (mediaCard: MediaCard) => void;
     onBack: () => void;
   };
   Show: {

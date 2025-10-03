@@ -5,7 +5,7 @@ import Poster from "../components/Poster";
 
 type Props = ScreenProps["Browse"];
 
-function Browse({ contentPath, onOpenCard }: Props) {
+function Browse({ contentPath, onOpenCard, onBack }: Props) {
   const [cards, setCards] = useState<MediaCard[] | null>(null);
   const [q, setQ] = useState("");
   const [kindFilters, setKindFilters] = useState<MediaKind[]>(["all"]);
@@ -64,29 +64,30 @@ function Browse({ contentPath, onOpenCard }: Props) {
   }, [cards, q, kindFilters]);
 
   return (
-    <div className="browse-wrap">
-      
-      {/* Top nav */}
-      <div className="nav">
-        {/* <button className="back" onClick={onBack}>&larr;</button> */}
-        <div></div>
-        <div className="nav-center">
-          <input
-            className="search"
-            placeholder="Search titles…"
+    <div className="screen-wrap browse-wrap">
+
+      {/* Standard Header */}
+      <div className="header-bar-wrap browse-bar-wrap">
+        <button className="back-button" onClick={onBack}>←</button>
+        <div className="search-bar-wrap">
+          <input 
+            className="searcher" 
+            placeholder="Search titles…" 
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
         </div>
-        <div className="profile" title="Profile">🙂</div>
+        <div className="profile-wrap" title="Profile">
+          <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
+        </div>
       </div>
 
       {/* Filters row */}
-      <div className="filters">
-        <div className="kind-filter">
-          <button className="chip" aria-expanded={showKindsDropdown} onClick={() => setShowKindsDropdown((v) => !v)}>Type</button>
+      <div className="subheader-buttons-bar-wrap">
+        <div className="subheader-button-wrap">
+          <button className="subheader-button" aria-expanded={showKindsDropdown} onClick={() => setShowKindsDropdown((v) => !v)}>Type</button>
           {showKindsDropdown && (
-            <div className="kind-menu" role="menu">
+            <div className="subheader-button-menu" role="menu">
               {(["all", "movie", "show", "documentary"] as MediaKind[]).map(k => {
                 const active = kindFilters.includes(k);
                 return (
@@ -94,8 +95,8 @@ function Browse({ contentPath, onOpenCard }: Props) {
                     key={k}
                     role="menuitemcheckbox"
                     aria-checked={active}
-                    className={`kind-item${active ? " is-active" : ""}`}
-                    onClick={() => toggleKind(k)}   // <-- uses the helper
+                    className={`dropdown-entry${active ? " is-active" : ""}`}
+                    onClick={() => toggleKind(k)}
                   >
                     {mediaKindsToLabels[k]}
                   </button>
@@ -104,10 +105,9 @@ function Browse({ contentPath, onOpenCard }: Props) {
             </div>
           )}
         </div>
-
-        <button className="chip" disabled>Genre</button>
-        <button className="chip" disabled>Year</button>
-        <button className="chip" disabled>Rating</button>
+        <button className="subheader-button" disabled>Genre</button>
+        <button className="subheader-button" disabled>Year</button>
+        <button className="subheader-button" disabled>Rating</button>
       </div>
 
       {/* Cards */}

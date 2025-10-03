@@ -1,3 +1,9 @@
+/* =====================================================================
+   SHARED FORMATTING
+  ====================================================================== */
+
+/* ----------- Overall ----------- */
+
 /* App container */
 #root {
   margin: 0 auto;
@@ -5,53 +11,23 @@
   font-family: system-ui, sans-serif;
 }
 
-
-/* ---------------------------------------------------------------------
-   Screen 1 - Launch
-  ---------------------------------------------------------------------- */
-.launch-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  text-align: center;
-  gap: 1rem;
+.screen-wrap {
+  height: 100vh;
 }
 
+/* ----------- Header Bar ----------- */
 
-/* ---------------------------------------------------------------------
-   Screen 2 - Browse
-  ---------------------------------------------------------------------- */
-
-/* Browse layout wrapper */
-.browse-wrap {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 16px 20px;
-  margin: 0 auto;
-}
-
-/* Nav Bar */
-.nav {
-  position: sticky;
-  top: 0;
-  background: #fff;
-  z-index: 50;
+/* Standard Header Bar Wrap*/
+.header-bar-wrap {
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 12px;
   align-items: center;
-}
-
-.nav-center { 
-  display: flex; 
-  justify-content: center; 
+  background: #fff;
 }
 
 /* Back Button */
-.back {
+.back-button {
   justify-self: start;
   padding: 6px 10px;
   border-radius: 8px;
@@ -61,27 +37,8 @@
   cursor: pointer;
 }
 
-/* Search Bar */
-.search {
-  width: 100%;
-  max-width: 720px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  outline: none;
-  background: #fff;
-  color: #111;
-}
-@media (prefers-color-scheme: light) {
-  .search {
-    background: #fff;
-    color: #111;
-    border-color: #ddd;
-  }
-}
-
 /* Profile */
-.profile {
+.profile-wrap {
   place-items: center;
   justify-self: end;
   display: grid;
@@ -92,9 +49,17 @@
   background: #fff;
   color: #111;
 }
+.profile-icon {
+  width: 32px; 
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
 
-/* Filter row */
-.filters {
+/* ----------- Subheader Buttons Bar ----------- */
+
+/* Buttons Bar Wrap */
+.subheader-buttons-bar-wrap {
   display: flex;
   justify-content: center;
   padding-bottom: 8px;
@@ -102,19 +67,19 @@
   gap: 8px;
   margin: 8px 0 30px;
 }
-.chip {
+
+/* Button */
+.subheader-button-wrap {
+  position: relative;
+}
+.subheader-button {
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px dashed #ccc;
   background: #f5f5f5;
   color: #777;
 }
-
-/* Type Filter Button */
-.kind-filter {
-  position: relative;
-}
-.kind-menu {
+.subheader-button-menu {
   position: absolute;
   top: calc(100% + 8px);
   left: 50%;
@@ -129,7 +94,9 @@
   gap: 4px;
   z-index: 20;
 }
-.kind-item {
+
+/* Dropdown Entry */
+.dropdown-entry {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid transparent;
@@ -138,10 +105,76 @@
   text-align: left;
   cursor: pointer;
 }
-.kind-item:hover { background: #fff; border-color: #dcdcdc; }
-.kind-item.is-active { background: #eef2ff; border-color: #c7d2fe; }
+.dropdown-entry:hover { 
+  background: #fff; 
+  border-color: #dcdcdc; 
+}
+.dropdown-entry.is-active { 
+  background: #eef2ff; 
+  border-color: #c7d2fe; 
+}
 
-/* Cards grid */
+
+/* =====================================================================
+   SCREEN 1 - Launch
+  ====================================================================== */
+.launch-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  gap: 1rem;
+}
+
+
+/* =====================================================================
+   SCREEN 2 - Browse
+  ====================================================================== */
+
+/* ----------- Wrap ----------- */
+.browse-wrap {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  margin: 0 auto;
+}
+
+/* ----------- Header Bar ----------- */
+
+/* Search Bar */
+.browse-bar-wrap {
+  position: sticky;
+  z-index: 50;
+}
+.search-bar-wrap { 
+  display: flex; 
+  justify-content: center; 
+}
+.searcher {
+  width: 100%;
+  max-width: 720px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  outline: none;
+  background: #fff;
+  color: #111;
+}
+@media (prefers-color-scheme: light) {
+  .searcher {
+    background: #fff;
+    color: #111;
+    border-color: #ddd;
+  }
+}
+
+/* ----------- Subheader Buttons Bar ----------- */
+
+
+
+/* ----------- Cards Grid ----------- */
 .cards {
   display: grid;
   gap: 16px;
@@ -150,7 +183,6 @@
   overflow-x: auto;
   padding-bottom: 10px;
 }
-
 .movie-card {
   width: 100%;
   box-sizing: border-box;
@@ -165,32 +197,28 @@
   background: #fff;
   box-shadow: 0 1px 2px rgba(0,0,0,.04);
 }
-
 .movie-card.is-clickable {
   cursor: pointer;
   border-radius: 10px;
   transition: transform 120ms ease, box-shadow 120ms ease, outline-color 120ms ease;
   outline: 1px solid transparent;
 }
-
 .movie-card.is-clickable:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(0,0,0,0.18);
   outline-color: rgba(100,108,255,0.35); /* subtle focus color */
 }
-
 .movie-card.is-clickable:active {
   transform: translateY(0); /* quick tap feedback */
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
-
 .movie-card.is-clickable:focus-visible {
   outline: 2px solid #646cff; /* accessible keyboard focus */
   box-shadow: 0 0 0 4px rgba(100,108,255,0.15);
 }
 
 /* Poster */
-.poster {
+.browse-poster-wrap {
   width: 90px;
   height: 130px;
   border-radius: 8px;
@@ -200,12 +228,12 @@
   align-items: center;
   justify-content: center;
 }
-.poster-img {
+.browse-poster-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.poster-fallback {
+.browse-poster-fallback {
   width: 100%;
   height: 100%;
   background: linear-gradient(180deg, #eee, #ddd);
@@ -251,112 +279,108 @@
 }
 
 
-/* ---------------------------------------------------------------------
+/* =====================================================================
    Screen 3 - Franchise List
-  ---------------------------------------------------------------------- */
+  ====================================================================== */
 
 
-/* ---------------------------------------------------------------------
+/* =====================================================================
    Screen 4 - Series List
-  ---------------------------------------------------------------------- */
-/* ===== Series List ===== */
-.series-wrap { 
+  ====================================================================== */
+.serieslist-wrap { 
   padding: 2rem; 
   max-width: 1100px; 
   margin: 0 auto; 
 }
-.series-header {
+
+/* Header */
+.serieslist-header {
   display: grid;
   grid-template-columns: 120px 1fr 120px;
   align-items: center;
   margin-bottom: 8px;
 }
-.series-title {
+.serieslist-title {
   text-align: center;
   margin: 0 0 18px;
   font-size: 1.6rem;
   opacity: .95;
 }
 
-/* List column */
-.series-list {
+/* Toggles */
+.serieslist-toggles {
+  text-align: center;
+}
+
+/* List column Grid */
+.serieslist-table {
   display: grid;
-  gap: 16px;
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
-}
 
-/* One row (poster left, body right) */
-.series-row {
+}
+/* One row */
+.serieslist-row {
   display: grid;
-  grid-template-columns: 240px 1fr;   /* 240px poster ~ 60% of Selection's 360px */
-  gap: 24px;
-  padding: 16px;
+  grid-template-columns: 1fr 5fr 7fr;
+  padding: 20px;
   border-radius: 14px;
-  outline: 1px solid rgba(255,255,255,0.08);
-  transition: outline-color 120ms ease, box-shadow 120ms ease;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
 }
-.series-row:hover {
-  outline-color: rgba(100,108,255,0.35); /* faint highlight */
+.serieslist-row:hover {
+  border-color: rgba(100, 108, 255, 0.6);
+  /* box-shadow: 0 0 6px rgba(100, 108, 255, 0.25);  */
 }
 
-/* Scale down the Selection-style poster inside rows */
-.series-poster .sel-poster { 
-  min-height: 260px;  /* 60% of ~520px */
+/* Index */
+.serieslist-index {
+  display: flex;
+  align-items: center;    
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* Poster */
+.serieslist-poster-wrap {
+  display: flex;       
+  align-items: center;
+  justify-content: center;
 } 
-.series-poster .sel-poster img { 
-  object-fit: contain; 
+.serieslist-poster-img {
+  width: 120px;
+  height: auto;        
 }
 
 /* Right side */
-.series-body { 
+.serieslist-body { 
   display: grid; 
   align-content: start; 
   gap: 10px; 
 }
-.series-item-title { 
+.serieslist-row-title { 
   margin: 0; 
   font-size: 1.35rem; 
   line-height: 1.25; 
   text-align: center;
 }
-.series-actions { 
-  display: flex; 
-  gap: 10px; 
-  flex-wrap: wrap; 
-  justify-content: center;
-}
-.series-desc {
-  margin: 6px 0 8px; 
-  line-height: 1.6; 
-  opacity: .95; 
-}
 
 /* Meta toggle */
-.series-meta { 
+.serieslist-meta { 
   display: flex; 
   flex-direction: column; 
   align-items: center; 
   gap: 8px; 
 }
-.series-meta-row { 
-  display: flex; 
-  gap: 10px; 
-  align-items: center; 
-  opacity: .9; 
-}
 
-.series-index {
-  text-align: right;
-}
-
-/* ---------------------------------------------------------------------
+/* =====================================================================
    Screen 5 - Show
-  ---------------------------------------------------------------------- */
+  ====================================================================== */
 
-/* ---------------------------------------------------------------------
+/* =====================================================================
    Screen 6 - Seasons
-  ---------------------------------------------------------------------- */
+  ====================================================================== */
 .seasons-wrap {
   min-height: 100vh;
   display: flex;
@@ -498,9 +522,9 @@
   margin-top: 10px;
 }
 
-/* ---------------------------------------------------------------------
+/* =====================================================================
    Screen 7 - Selection
-  ---------------------------------------------------------------------- */
+  ====================================================================== */
 
 /* Layout */
 .sel-wrap { 
@@ -521,17 +545,17 @@
 }
 
 /* Poster */
-.sel-poster {
+.selection-poster-wrap {
   width: 100%;
   align-self: start;
 }
-.sel-poster-img {
+.selection-poster-img {
   display: block;
   width: 100%;
   height: auto;
   object-fit: contain;
 }
-.sel-poster-fallback {
+.selection-poster-fallback {
   width: 100%;
   background: linear-gradient(180deg, #eee, #ddd);
 }

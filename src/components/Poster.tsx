@@ -16,20 +16,26 @@ function Poster({ path, title, screenName }: { path?: string; title: string; scr
 
   switch (screenName) {
     case "Browse": return (
-      <div className="poster">
-        {src ? (<img src={src} alt={`${title} poster`} className="poster-img" />) : (<div className="poster-fallback" aria-hidden />)}
+      <div className="browse-poster-wrap">
+        {src ? (<img src={src} alt={`${title} poster`} className="browse-poster-img" />) : (<div className="browse-poster-fallback" aria-hidden />)}
       </div>
     )
     case "Selection": return (
-      <div className="sel-poster">
-        {src ? (<img src={src} alt={`${title} poster`} className="sel-poster-img" />) : (<div className="sel-poster-fallback" aria-hidden />)}
+      <div className="selection-poster-wrap">
+        {src ? (<img src={src} alt={`${title} poster`} className="selection-poster-img" />) : (<div className="selection-poster-fallback" aria-hidden />)}
       </div>
     )
     case "Seasons": return (
-      <div className="sel-poster">
-        {src ? (<img src={src} alt={`${title} poster`} className="sel-poster-img" />) : (<div className="sel-poster-fallback" aria-hidden />)}
+      <div className="seasons-poster-wrap">
+        {src ? (<img src={src} alt={`${title} poster`} className="seasons-poster-img" />) : (<div className="seasons-poster-fallback" aria-hidden />)}
       </div>
     )
+    case "SeriesList": return (
+      <div className="serieslist-poster-wrap">
+        {src ? (<img src={src} alt={`${title} poster`} className="serieslist-poster-img" />) : (<div className="serieslist-poster-fallback" aria-hidden />)}
+      </div>
+    )
+        
   }
 }
 

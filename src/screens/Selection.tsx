@@ -16,7 +16,7 @@ function Selection({ mediaCard, onBack }: Props) {
     <div className="sel-wrap">
       <header className="sel-header">
         <button className="btn subtle" onClick={onBack} aria-label="Back">
-          ← Back
+          ←
         </button>
       </header>
       <div className="sel-grid">

@@ -2,88 +2,90 @@ import { useEffect, useState } from "react";
 
 import * as Shared from "../../shared";
 import Poster from "../components/Poster";
-import { handlePlay } from ".";
 
 type Props = Shared.ScreenProps["SeriesList"];
 type MediaCard = Shared.MediaCard;
 
-
-function SeriesList({ mediaCard, onBack }: Props) {
+function SeriesList({ mediaCard, onGo, onBack }: Props) {
   const [cards, setCards] = useState<MediaCard[] | null>(null);
-  const [metaOpen, setMetaOpen] = useState<Record<string, boolean>>({});
+  const [metaOpen, setMetaOpen] = useState(false);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const list: MediaCard[] = (await (window as any).api?.listSeries(mediaCard)) ?? [];
+        const list: MediaCard[] =
+          (await (window as any).api?.listSeries(mediaCard)) ?? [];
         if (!alive) return;
-        const sorted = list.slice().sort((a, b) => {
-          const y = (a.year ?? 0) - (b.year ?? 0);
-          return y !== 0 ? y : a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
-        });
+        const sorted = list
+          .slice()
+          .sort((a, b) => {
+            const y = (a.year ?? 0) - (b.year ?? 0);
+            return y !== 0
+              ? y
+              : a.title.localeCompare(b.title, undefined, {
+                  sensitivity: "base",
+                });
+          });
         setCards(sorted);
       } catch (e) {
         console.error("[SeriesList] listSeriesMovies failed:", e);
         if (alive) setCards([]);
       }
     })();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, [mediaCard]);
 
-  function toggleMeta(cardTitle: string) {
-    setMetaOpen((s) => ({ ...s, [cardTitle]: !s[cardTitle] }));
-  }
-
-  return (
-    <div className="series-wrap">
-      <header className="series-header">
-        <button className="btn subtle" onClick={onBack} aria-label="Back">← Back</button>
-        <div />
-        <div className="profile" title="Profile">🙂</div>
-      </header>
-      {/* <h1 className="series-title">{mediaCard.title}</h1> */}
+  return !mediaCard ? (
+    <div>No Media Card. Code Error. Refer to Admin.</div>
+  ) : (
+    <div className="serieslist-wrap">
+      {/* Standard Header */}
+      <div className="serieslist-header">
+        <button className="btn subtle" onClick={onBack} aria-label="Back">
+          ←
+        </button>
+        <h1 className="serieslist-title">{mediaCard.title}</h1>
+        <div className="profile" title="Profile">
+          🙂
+        </div>
+      </div>
+      {/* Top-level toggles */}
+      <div className="serieslist-toggles">
+        <button className="btn">order</button>
+        <button className="btn" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
+      </div>
+      {/* List */}
       {cards === null ? (
-      <div className="loading">Loading…</div>
+        <div className="loading">Loading…</div>
       ) : (
-      <div className="series-list">
-        {cards.map((card, idx) => (
-          <article key={card.title} className="series-row">
-            <div className="series-poster">
-              {card.posterPath ? (
-                <Poster path={card.posterPath} title={card.title} screenName="Selection" />
-              ) : (
-                <div className="poster-fallback" aria-hidden />
-              )}
-            </div>
-            <div className="series-body">
-              <h2 className="series-item-title">{card.title}</h2>
-              <div className="series-actions">
-                <button className="btn ghost" disabled={!card?.sampleFilePath}>
-                  Trailer
-                </button>
-                <button className="btn primary" onClick={() => handlePlay(card)} disabled={!card?.videoFilePath}>
-                  ▶ Play
-                </button>
-              </div>
-              <p className="series-desc">{card.overview}</p>
-              <div className="series-meta">
-                <button className="btn subtle" onClick={() => toggleMeta(card.title)}>
-                  {metaOpen[card.title] ? "Close" : "Meta"}
-                </button>
-                {metaOpen[card.title] && (
-                  <div className="series-meta-row">
-                    {card.year && <span>{card.year}</span>}
-                    {card.runtimeSeconds && <span>{Shared.formatHHMMSS(card.runtimeSeconds)}</span>}
-                    {card.quality && <span>{Shared.pixelQualityToText(card.quality)}</span>}
-                  </div>
+        <div className="serieslist-table">
+          {cards.map((card, idx) => (
+            <article key={card.title} className="serieslist-row">
+              {/* Index */}
+              <div className="serieslist-index">{idx + 1}</div>
+              {/* Poster */}
+              {card.posterPath ? 
+              (<Poster path={card.posterPath} title={card.title}screenName="SeriesList"/>) : 
+              (<div className="serieslist-poster-fallback" aria-hidden />)
+              }
+              {/* Body */}
+              <div className="serieslist-body">
+                <h2 className="serieslist-row-title">{card.title}</h2>
+                <button className="btn primary" onClick={() => onGo(card)}>Go</button>
+                {metaOpen && (
+                <div className="serieslist-meta">
+                  {card.year && <span>{card.year}</span>}
+                  {card.runtimeSeconds && <span>{Shared.formatHHMMSS(card.runtimeSeconds)}</span>}
+                  {card.quality && <span>{Shared.pixelQualityToText(card.quality)}</span>}
+                </div>
                 )}
               </div>
-              {metaOpen[card.title] && (<div className="series-index">{idx+1}</div>)}
-            </div>
-          </article>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
       )}
     </div>
   );
