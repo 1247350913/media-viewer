@@ -532,10 +532,11 @@
   line-height: 1.2;
 }
 /* Poster */
-.seasons-poster {
+.seasons-poster-wrap {
   width: 100%;
-  max-width: 320px;
-  aspect-ratio: 2 / 3;
+}
+.seasons-poster-img {
+  width: 100%;
 }
 
 /* ----------- Right Side Shared----------- */
@@ -543,6 +544,7 @@
 /* Overall */
 .seasons-right-wrap {
   margin-top: 10px;
+  width: 100%;
 }
 
 /* */
@@ -554,7 +556,6 @@
   display: grid;
   gap: 6px;
 }
-
 
 /* Chevron */
 .chev {
@@ -584,31 +585,21 @@
   opacity: .8;
 }
 
-
-
 /* ----------- Flat Episodes ----------- */
 
 /* Ensure rows don’t stretch weirdly in flat mode */
 .episodes-flat .episode-row {
-  border: 1px solid #f0f0f0;     /* same subtle card border */
+  border: 1px solid #f0f0f0;
   border-radius: 8px;
   background: #fff;
-  padding: 8px 10px;             /* same padding as nested */
+  padding: 8px 10px;
 }
 
-/* Optional: small header spacing if you show "Episodes" title above */
-.seasons-right .section-header + .episodes-flat {
-  margin-top: 10px;
-}
-
-/* Flat episodes list (no season rows) */
 .episodes-flat {
-  /* remove the nested-thread look */
   border-left: 0;
   margin-left: 0;
   padding-left: 0;
 
-  /* keep tidy spacing like the nested case */
   display: grid;
   gap: 8px;
   margin-top: 8px;

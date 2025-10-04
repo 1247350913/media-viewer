@@ -81,7 +81,7 @@ function Seasons({ mediaCard, onBack }: Props) {
 
                   {/* Season Button Row*/}
                   <button
-                    className={`season-row-clickable ${
+                    className={`season-row ${
                       seasonTuple[1][0]?.totalNumberOfEpisodes &&
                       seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length
                         ? "has-missing"
