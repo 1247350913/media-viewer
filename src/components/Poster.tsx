@@ -30,6 +30,11 @@ function Poster({ path, title, screenName }: { path?: string; title: string; scr
         {src ? (<img src={src} alt={`${title} poster`} className="serieslist-poster-img" />) : (<div className="serieslist-poster-fallback" aria-hidden />)}
       </div>
     )
+    case "Show": return (
+      <div className="show-poster-wrap">
+        {src ? (<img src={src} alt={`${title} poster`} className="show-poster-img" />) : (<div className="show-poster-fallback" aria-hidden />)}
+      </div>
+    )
     case "Seasons": return (
       <div className="seasons-poster-wrap">
         {src ? (<img src={src} alt={`${title} poster`} className="seasons-poster-img" />) : (<div className="seasons-poster-fallback" aria-hidden />)}

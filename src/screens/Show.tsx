@@ -49,7 +49,7 @@ function Show({ mediaCard, onGo, onBack }: Props) {
 
       {/* Left Side */}
       <div className="show-main-screen">
-        <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Selection"}/>
+        <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Show"}/>
 
         {/* Right Side */}
         <div className="show-body">

@@ -40,16 +40,16 @@ function Franchise({ mediaCard, onGo, onBack }: Props) {
         <button className="subheader-button" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
       </div>
 
-      {/* Options List */}
+      {/* Cards List */}
       {cards === null ? (
       <div>Loading…</div>
       ) : (
       <div className="franchise-list">
         {cards.map((card) => (
-          <article key={card.title} className="franchise-row">
+          <div key={card.title} className="franchise-row">
 
             {/* Left Side */}
-            <Poster path={card.posterPath} title={card.title} screenName="Selection" />
+            <Poster path={card.posterPath} title={card.title} screenName="Franchise" />
 
             {/* Right Side */}
             <div className="franchise-row-body">
@@ -67,7 +67,7 @@ function Franchise({ mediaCard, onGo, onBack }: Props) {
                 )}
               </div>
             </div>
-          </article>
+          </div>
         ))}
       </div>
       )}
