@@ -33,49 +33,51 @@ function Show({ mediaCard, onGo, onBack }: Props) {
       default:  return "meta-item status-U";
     }
   }
-  
-  return (!mediaCard ? 
+
+  return (!mediaCard ?
     (<div> No Media Card. Code Error. Refer to Admin.</div>):
     (
-    <div className="sel-wrap">
-      <header className="sel-header">
-        <button className="btn subtle" onClick={onBack} aria-label="Back">
-          ← Back
-        </button>
-      </header>
-      <div className="sel-grid">
-        {mediaCard.posterPath ? (
-          <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Selection"}/>
-        ) : (
-          <div className="sel-poster-fallback" aria-hidden />
-        )}
-        <div className="sel-body">
-          <h1 className="sel-title">{mediaCard?.title ?? "Untitled"}</h1>
-          <div className="sel-actions">
-            <button className="btn ghost" disabled={!mediaCard?.sampleFilePath}>
+    <div className="screen-wrap show-wrap">
+
+      {/* Standard Header */}
+      <div className="header-bar-wrap">
+        <button className="back-button" onClick={onBack} aria-label="Back">←</button>
+        <div className="profile-wrap" title="Profile">
+          <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
+        </div>
+      </div>
+
+      {/* Left Side */}
+      <div className="show-main-screen">
+        <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Selection"}/>
+
+        {/* Right Side */}
+        <div className="show-body">
+          <div className="show-title">{mediaCard?.title ?? "Untitled"}</div>
+          <div className="show-actions">
+            <button className="trailer-button" disabled={!mediaCard?.sampleFilePath}>
               Trailer
             </button>
-            <button className="btn primary" onClick={() => onGo(seasons)}>
+            <button className="go-button" onClick={() => onGo(seasons)}>
               Go
             </button>
           </div>
-          <div className="sel-desc">
+          <div className="show-overview">
             <p>{mediaCard?.overview ?? "No description available."}</p>
           </div>
-          <div className="sel-meta">
-            <button className="btn subtle" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
-            {!showMeta ? null : (
-            <div className="sel-meta-row">
-              <span className="meta-item">{mediaCard.year}</span>
-              <span className={determineCompletionStatusClassName()}>{Shared.completionStatusToText(mediaCard.completionStatus)}</span>
-              <span className="meta-item">{mediaCard.numberOfEpisodesObtained}/{mediaCard.totalNumberOfEpisodes} episodes</span>
-            </div>)}
+          <button className="meta-button" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
+          {!showMeta ? null : (
+          <div className="meta-wrap">
+            <span className="meta-item">{mediaCard.year}</span>
+            <span className={determineCompletionStatusClassName()}>{Shared.completionStatusToText(mediaCard.completionStatus)}</span>
+            <span className="meta-item">{mediaCard.numberOfEpisodesObtained}/{mediaCard.totalNumberOfEpisodes} episodes</span>
           </div>
+          )}
         </div>
       </div>
     </div>
     )
-  );
+  )
 }
 
 export default Show;

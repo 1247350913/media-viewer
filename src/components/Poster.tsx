@@ -20,14 +20,9 @@ function Poster({ path, title, screenName }: { path?: string; title: string; scr
         {src ? (<img src={src} alt={`${title} poster`} className="browse-poster-img" />) : (<div className="browse-poster-fallback" aria-hidden />)}
       </div>
     )
-    case "Selection": return (
-      <div className="selection-poster-wrap">
-        {src ? (<img src={src} alt={`${title} poster`} className="selection-poster-img" />) : (<div className="selection-poster-fallback" aria-hidden />)}
-      </div>
-    )
-    case "Seasons": return (
-      <div className="seasons-poster-wrap">
-        {src ? (<img src={src} alt={`${title} poster`} className="seasons-poster-img" />) : (<div className="seasons-poster-fallback" aria-hidden />)}
+    case "Franchise": return (
+      <div className="franchise-poster-wrap">
+        {src ? (<img src={src} alt={`${title} poster`} className="franchise-poster-img" />) : (<div className="franchise-poster-fallback" aria-hidden />)}
       </div>
     )
     case "SeriesList": return (
@@ -35,7 +30,16 @@ function Poster({ path, title, screenName }: { path?: string; title: string; scr
         {src ? (<img src={src} alt={`${title} poster`} className="serieslist-poster-img" />) : (<div className="serieslist-poster-fallback" aria-hidden />)}
       </div>
     )
-        
+    case "Seasons": return (
+      <div className="seasons-poster-wrap">
+        {src ? (<img src={src} alt={`${title} poster`} className="seasons-poster-img" />) : (<div className="seasons-poster-fallback" aria-hidden />)}
+      </div>
+    )
+    case "Selection": return (
+      <div className="selection-poster-wrap">
+        {src ? (<img src={src} alt={`${title} poster`} className="selection-poster-img" />) : (<div className="selection-poster-fallback" aria-hidden />)}
+      </div>
+    )
   }
 }
 

@@ -349,6 +349,46 @@
    Screen 3 - Franchise List
   ====================================================================== */
 
+.franchise-wrap {
+
+}
+
+.franchise-list {
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.franchise-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+/* Poster */
+.franchise-poster-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.franchise-poster-img {
+  width: 60px;
+  height: auto;
+}
+
+/* Body */
+.franchise-row-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.franchise-row-title {
+
+}
+.franchise-row-actions {
+  justify-content: center;
+}
 
 /* =====================================================================
    Screen 4 - Series List
@@ -443,6 +483,16 @@
 /* =====================================================================
    Screen 5 - Show
   ====================================================================== */
+
+.show-main-screen {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.show-body {
+  justify-content: center;
+  text-align: center;
+}
 
 /* =====================================================================
    Screen 6 - Seasons

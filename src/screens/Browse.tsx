@@ -137,7 +137,7 @@ function Browse({ contentPath, onOpenCard, onBack }: Props) {
                   <div className="title" title={m.title}>{m.title}</div>
                 </div>
                 <div className="meta">
-                  {m.year ? <span>{m.year}</span> : null}
+                  {/* {m.year ? <span>{m.year}</span> : null} */}
                   {/* <span className="dot">•</span> */}
                   {/* <span>{(m.kind ?? "movies").toUpperCase()}</span> */}
                 </div>
