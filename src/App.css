@@ -12,8 +12,7 @@
 }
 
 .screen-wrap {
-  height: 100vh;
-  padding: 16px 20px;
+  padding: 2% 2%;
 }
 
 /* ----------- Header Bar ----------- */
@@ -22,38 +21,53 @@
 .header-bar-wrap {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 12px;
+  gap: 5%;
   align-items: center;
   background: #fff;
-  padding-bottom: 20px;
+  padding-bottom: 5%;
 }
 
 /* Back Button */
 .back-button {
-  justify-self: start;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #fff;
-  color: #111;
   cursor: pointer;
+  border: transparent;
+  background-color: #fff;
+  color: #111;
+
+  aspect-ratio: 1 / 1;        /* perfect circle */
+  width: 60%;                 /* of the parent size */
+  border-radius: 50%;         /* makes it circular */
+  font-size: 1.75vw;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.back-button:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 /* Profile */
-.profile-wrap {
-  place-items: center;
-  justify-self: end;
-  display: grid;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid #ddd;
-  background: #fff;
-  color: #111;
+.profile-button {
+  cursor: pointer;
+  border: transparent;
+  background-color: #fff;
+
+  aspect-ratio: 1 / 1;      /* keep circle */
+  width: 60%;               /* of parent slot */
+  border-radius: 50%;       /* circle shape */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;         /* ensures image stays clipped */
+}
+.profile-button:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 .profile-icon {
-  width: 32px;
-  height: 32px;
+  width: 2vw;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -352,10 +366,6 @@
    Screen 3 - Franchise List
   ====================================================================== */
 
-.franchise-wrap {
-
-}
-
 .franchise-list {
   display: flex;
   flex-direction: column;
@@ -493,30 +503,46 @@
    Screen 5 - Show
   ====================================================================== */
 
+.show-wrap {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;        /* allow children to shrink */
+}
 .show-main-screen {
+  flex: 1;              /* take remaining space below header */
+  min-height: 0;        /* IMPORTANT for grids to not overflow */
+
   display: grid;
   grid-template-columns: 1fr 2fr;
-  height: 90%;
 }
 
-.show-body {
-  justify-content: center;
-  text-align: center;
-}
-
+/* Left Side */
 .show-poster-wrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 60vh;
+  padding-left: 5%;
+  min-height: 0;        /* allow child to scale within */
 }
 .show-poster-img {
-  height: 80%;
-  max-height: 400px;
+  height: 80%;          /* 80% of the left pane */
   width: auto;
   object-fit: contain;
   border-radius: 5%;
 }
+
+/* Right Side */
+.show-body {
+  min-height: 0;        /* let it shrink in grid track */
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* horizontal center */
+  text-align: center;
+  overflow: auto;       /* if the right side is long, scroll inside it */
+}
+
+
 
 /* =====================================================================
    Screen 6 - Seasons

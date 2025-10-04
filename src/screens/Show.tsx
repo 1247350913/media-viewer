@@ -6,7 +6,7 @@ import Poster from "../components/Poster";
 type Props = Shared.ScreenProps["Show"];
 
 
-function Show({ mediaCard, onGo, onBack }: Props) {
+function Show({ mediaCard, onGo, onBack, onProfileClick }: Props) {
   const [showMeta, setShowMeta] = useState(false);
   const [seasons, setSeasons] = useState<Shared.SeasonTuple>(null);
 
@@ -42,9 +42,10 @@ function Show({ mediaCard, onGo, onBack }: Props) {
       {/* Standard Header */}
       <div className="header-bar-wrap">
         <button className="back-button" onClick={onBack} aria-label="Back">←</button>
-        <div className="profile-wrap" title="Profile">
+        <div></div>
+        <button className="profile-button" title="Profile" onClick={onProfileClick}>
           <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
-        </div>
+        </button>
       </div>
 
       {/* Left Side */}
