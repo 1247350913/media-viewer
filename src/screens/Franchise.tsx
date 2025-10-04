@@ -26,42 +26,44 @@ function Franchise({ mediaCard, onGo, onBack }: Props) {
     setMetaOpen((s) => ({ ...s, [cardTitle]: !s[cardTitle] }));
   }
 
-  return (!mediaCard ? 
+  return (!mediaCard ?
     (<div> No Media Card. Code Error. Refer to Admin.</div>):
     (
-    <div className="series-wrap">
-      <header className="series-header">
-        <button className="btn subtle" onClick={onBack} aria-label="Back">← Back</button>
-        <div />
-        <div className="profile" title="Profile">🙂</div>
-      </header>
+    <div className="screen-wrap franchise-wrap">
+
+      {/* Standard Header */}
+      <div className="header-bar-wrap">
+        <button className="back-button" onClick={onBack} aria-label="Back">←</button>
+        <div className="profile-wrap" title="Profile">
+          <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
+        </div>
+      </div>
+
+      {/* Options List */}
       {cards === null ? (
-      <div className="loading">Loading…</div>
+      <div>Loading…</div>
       ) : (
-      <div className="series-list">
+      <div className="franchise-list">
         {cards.map((card) => (
-          <article key={card.title} className="series-row">
-            <div className="series-poster">
-              {card.posterPath ? (
-                <Poster path={card.posterPath} title={card.title} screenName="Selection" />
-              ) : (
-                <div className="poster-fallback" aria-hidden />
-              )}
-            </div>
-            <div className="series-body">
-              <h2 className="series-item-title">{card.title}</h2>
-              <div className="series-actions">
-                <button className="btn primary" onClick={() => onGo(card)}>Go</button>
+          <article key={card.title} className="franchise-row">
+
+            {/* Left Side */}
+            <Poster path={card.posterPath} title={card.title} screenName="Selection" />
+
+            {/* Right Side */}
+            <div className="franchise-row-body">
+              <h2 className="franchise-row-title">{card.title}</h2>
+              <div className="franchise-row-actions">
+                <button className="action-button go-button" onClick={() => onGo(card)}>Go</button>
               </div>
-              <p className="series-desc">{card.overview}</p>
-              <div className="series-meta">
+              <div className="meta-wrap">
                 <button className="btn subtle" onClick={() => toggleMeta(card.title)}>
                   {metaOpen[card.title] ? "Close" : "Meta"}
                 </button>
                 {metaOpen[card.title] && (
                   <div className="series-meta-row">
                     {card.year && <span>{card.year}</span>}
-                    {card.runtimeSeconds && <span>{Shared.formatHHMMSS(card.runtimeSeconds)}</span>}
+                    {card.runtimeSeconds && <span>{Shared.formatHMM(card.runtimeSeconds)}</span>}
                     {card.quality && <span>{Shared.pixelQualityToText(card.quality)}</span>}
                   </div>
                 )}

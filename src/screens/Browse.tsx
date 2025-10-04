@@ -70,9 +70,9 @@ function Browse({ contentPath, onOpenCard, onBack }: Props) {
       <div className="header-bar-wrap browse-bar-wrap">
         <button className="back-button" onClick={onBack}>←</button>
         <div className="search-bar-wrap">
-          <input 
-            className="searcher" 
-            placeholder="Search titles…" 
+          <input
+            className="searcher"
+            placeholder="Search titles…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -83,7 +83,7 @@ function Browse({ contentPath, onOpenCard, onBack }: Props) {
       </div>
 
       {/* Filters row */}
-      <div className="subheader-buttons-bar-wrap">
+      <div className="subheader-buttons-bar-wrap browse-filter-bar-wrap">
         <div className="subheader-button-wrap">
           <button className="subheader-button" aria-expanded={showKindsDropdown} onClick={() => setShowKindsDropdown((v) => !v)}>Type</button>
           {showKindsDropdown && (
@@ -111,13 +111,13 @@ function Browse({ contentPath, onOpenCard, onBack }: Props) {
       </div>
 
       {/* Cards */}
-      {cards === null ? ( <div className="loading">Loading…</div> ) : 
+      {cards === null ? ( <div className="loading">Loading…</div> ) :
       (
         <div className="cards">
           {filtered.map((m, i) => (
             <div
               key={`${m.title}-${m.year ?? ""}-${i}`}
-              className="movie-card is-clickable" 
+              className="movie-card is-clickable"
               role="button"
               tabIndex={0}
               onClick={() => onOpenCard(m)}

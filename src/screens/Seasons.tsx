@@ -31,106 +31,96 @@ function Seasons({ mediaCard, onBack }: Props) {
     });
   };
 
-  return (!mediaCard ? 
+  return (!mediaCard ?
     (<div> No Media Card. Code Error. Refer to Admin.</div>):
     (
-    <div className="seasons-wrap">
-      <div className="nav">
-        <button className="back" onClick={onBack}>&larr;</button>
-        <div className="nav-center" />
-        <div className="profile" title="Profile">🙂</div>
-      </div>
-      <div className="seasons-grid">
-        <aside className="seasons-left">
-          <h2 className="show-title">{mediaCard.title}</h2>
-          <div className="show-poster">
-            {mediaCard.posterPath ? (
-              <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName="Seasons" />
-            ) : (
-              <div className="poster-fallback" aria-hidden />
-            )}
-          </div>
-        </aside>
+    <div className="screen-wrap seasons-wrap">
 
-        <main className="seasons-right">
+      {/* Standard Header */}
+      <div className="header-bar-wrap">
+        <button className="back-button" onClick={onBack}>&larr;</button>
+        <div className="profile-wrap" title="Profile">
+          <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
+        </div>
+      </div>
+
+      {/* Seasons Screen */}
+      <div className="seasons-main-screen-wrap">
+
+        {/* Left Side */}
+        <div className="seasons-left-wrap">
+          <div className="seasons-title">{mediaCard.title}</div>
+          <div className="seasons-poster-wrap">
+            <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName="Seasons" />
+          </div>
+        </div>
+
+        {/* Right Side - FLAT*/}
+        <div className="seasons-right-wrap">
           {!seasons ? (
-            <div className="empty">Loading...</div>
-          ) : mediaCard.noSeasons ? (
-            <div className="episodes episodes-flat">
-              {seasons.length > 0 &&
-                seasons[0][1][1].map(epCard => (
-                  <div className="episode-row" key={epCard.episodeOverallNumber}>
-                    <span className="ep-num">E{epCard.episodeNumber}</span>
-                    <button
-                      className="play-btn"
-                      title="Play"
-                      onClick={() => handlePlay(epCard)}
-                    >
-                      ▶
-                    </button>
-                    <span className="ep-title">{epCard.title}</span>
-                    <span className="overall">#{epCard.episodeOverallNumber}</span>
-                  </div>
-                ))}
+          <div className="empty">Loading...</div>) :
+          mediaCard.noSeasons ? (
+          <div className="seasons-episodes-wrap">
+            {seasons.length > 0 && seasons[0][1][1].map(epCard => (
+            <div className="seasons-episode-row" key={epCard.episodeOverallNumber}>
+              <span className="seasons-episode-number">E{epCard.episodeNumber}</span>
+              <button className="play-button" title="Play" onClick={() => handlePlay(epCard)}>▶</button>
+              <span className="seasons-episode-title">{epCard.title}</span>
+              <span className="seasons-episode-overall-number">#{epCard.episodeOverallNumber}</span>
             </div>
+              ))}
+          </div>
           ) : (
-            <div className="season-list">
-              {seasons.map(seasonTuple => {
-                const isOpen = open.has(seasonTuple[0]);
-                return (
-                  <div className="season-block" key={seasonTuple[0]}>
-                    <button
-                      className={`season-row ${
-                        seasonTuple[1][0]?.totalNumberOfEpisodes &&
-                        seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length
-                          ? "has-missing"
-                          : ""
-                      }`}
-                      onClick={() => toggle(seasonTuple[0])}
-                      aria-expanded={isOpen}
-                      aria-controls={`season-${seasonTuple[0]}-episodes`}
-                    >
-                      <span className="season-title">{seasonTuple[1][0].title}</span>
-                      <span className="spacer" />
-                      {seasonTuple[1][0]?.totalNumberOfEpisodes && (seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length) ? 
-                      (<span className="episode-count">{seasonTuple[1][1].length} / {seasonTuple[1][0].totalNumberOfEpisodes} Ep</span>) :
-                      (<span className="episode-count">{seasonTuple[1][1].length} Ep</span>)}
-                      <span className={`chev ${isOpen ? "open" : ""}`} aria-hidden>
-                        ▾
-                      </span>
-                    </button>
-                    {isOpen && (
-                      <div
-                        id={`season-${seasonTuple[0]}-episodes`}
-                        className="episodes"
-                      >
-                        {seasonTuple[1][1].map(epCard => (
-                          <div
-                            className="episode-row"
-                            key={`${seasonTuple[0]}-${epCard.episodeNumber}`}
-                          >
-                            <span className="ep-num">E{epCard.episodeNumber}</span>
-                            <button
-                              className="play-btn"
-                              title="Play"
-                              onClick={() => handlePlay(epCard)}
-                            >
-                              ▶
-                            </button>
-                            <span className="ep-title">{epCard.title}</span>
-                            <span className="overall">
-                              #{epCard.episodeOverallNumber}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+          <div className="seasons-list">
+
+            {/* Right Side - Seasons*/}
+            {seasons.map(seasonTuple => {
+              const isOpen = open.has(seasonTuple[0]);
+              return (
+                <div className="season-row-wrap" key={seasonTuple[0]}>
+
+                  {/* Season Button Row*/}
+                  <button
+                    className={`season-row-clickable ${
+                      seasonTuple[1][0]?.totalNumberOfEpisodes &&
+                      seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length
+                        ? "has-missing"
+                        : ""
+                    }`}
+                    onClick={() => toggle(seasonTuple[0])}
+                    aria-expanded={isOpen}
+                    aria-controls={`season-${seasonTuple[0]}-episodes`}
+                  >
+                    <span className="season-title">{seasonTuple[1][0].title}</span>
+                    <span className="season-spacer" />
+
+                    {seasonTuple[1][0]?.totalNumberOfEpisodes && (seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length) ? (
+                    <span className="seasons-episode-count">{seasonTuple[1][1].length} / {seasonTuple[1][0].totalNumberOfEpisodes} Ep</span>) : (
+                    <span className="seasons-episode-count">{seasonTuple[1][1].length} Ep</span>
                     )}
+
+                    <span className={`chev ${isOpen ? "open" : ""}`} aria-hidden>▾</span>
+                  </button>
+
+                  {/* Opened */}
+                  {isOpen && (
+                  <div className="seasons-episodes-wrap" id={`season-${seasonTuple[0]}-episodes`}>
+                    {seasonTuple[1][1].map(epCard => (
+                    <div className="seasons-episode-row" key={`${seasonTuple[0]}-${epCard.episodeNumber}`}>
+                      <span className="seasons-episode-number">E{epCard.episodeNumber}</span>
+                      <button className="play-button" title="Play" onClick={() => handlePlay(epCard)}>▶</button>
+                      <span className="seasons-episode-title">{Shared.stripExtention(epCard.title)}</span>
+                      <span className="seasons-episode-overall-number">#{epCard.episodeOverallNumber}</span>
+                    </div>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
           )}
-        </main>
+        </div>
       </div>
     </div>
     )
