@@ -5,7 +5,7 @@ import Poster from "../components/Poster";
 
 type Props = ScreenProps["Browse"];
 
-function Browse({ contentPath, onOpenCard, onBack }: Props) {
+function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
   const [cards, setCards] = useState<MediaCard[] | null>(null);
   const [q, setQ] = useState("");
   const [kindFilters, setKindFilters] = useState<MediaKind[]>(["all"]);
@@ -77,9 +77,9 @@ function Browse({ contentPath, onOpenCard, onBack }: Props) {
             onChange={(e) => setQ(e.target.value)}
           />
         </div>
-        <div className="profile-wrap" title="Profile">
+        <button className="profile-button" title="Profile" onClick={onProfileClick}>
           <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
-        </div>
+        </button>
       </div>
 
       {/* Filters row */}

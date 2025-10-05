@@ -7,7 +7,7 @@ import { handlePlay } from ".";
 type Props = Shared.ScreenProps["Selection"];
 
 
-function Selection({ mediaCard, onBack }: Props) {
+function Selection({ mediaCard, onBack, onProfileClick }: Props) {
   const [showMeta, setShowMeta] = useState(false);
 
   return (!mediaCard ?
@@ -18,9 +18,10 @@ function Selection({ mediaCard, onBack }: Props) {
       {/* Standard Header */}
       <div className="header-bar-wrap">
         <button className="back-button" onClick={onBack} aria-label="Back">←</button>
-        <div className="profile-wrap" title="Profile">
+        <div></div>
+        <button className="profile-button" title="Profile" onClick={onProfileClick}>
           <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
-        </div>
+        </button>
       </div>
 
       {/* Selection Main Screen */}
@@ -43,10 +44,10 @@ function Selection({ mediaCard, onBack }: Props) {
           <div className="selection-overview">{mediaCard.overview ?? "No description available."}</div>
           <button className="selection-meta-button" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
           {!showMeta ? null : (
-          <div className="meta-wrap">
+          <div className="meta-row">
             {mediaCard.year && <span className="meta-item">{mediaCard.year}</span>}
             {mediaCard.runtimeSeconds && <span className="meta-item">{Shared.formatHMM(mediaCard.runtimeSeconds)}</span>}
-            {mediaCard.quality && <span className="meta-item">{Shared.pixelQualityToText(mediaCard.quality)}p</span>}
+            {mediaCard.quality && <span className="meta-item">{Shared.pixelQualityToText(mediaCard.quality)}</span>}
           </div>
           )}
         </div>

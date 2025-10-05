@@ -5,7 +5,7 @@ import { Launch, Browse, Selection, Seasons, SeriesList, Show, Franchise} from "
 
 type MediaCard = Shared.MediaCard;
 type HistoryEntry = Shared.HistoryEntry;
-type SeasonTuple = Shared.SeasonTuple
+type SeasonTuple = Shared.SeasonTuple;
 
 
 function App() {
@@ -16,6 +16,8 @@ function App() {
   const go = (entry: HistoryEntry) => setHistoryStack((s) => [...s, entry]);
   const back = () => setHistoryStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
   const current = historyStack[historyStack.length - 1];
+
+  const onProfileClick = () => { go({ screenName: "Profile", mediaCard: null})}
 
   const handleLoaded = (folderPath: string) => {
     setContentPath(folderPath);
@@ -48,20 +50,20 @@ function App() {
   }
 
   switch (current.screenName) {
-    case "Launch": 
+    case "Launch":
       return (<Launch onLoaded={handleLoaded}/>);
     case "Browse":
-      return (<Browse contentPath={contentPath} onOpenCard={handleOpenCard} onBack={back}/>);
+      return (<Browse contentPath={contentPath} onOpenCard={handleOpenCard} onBack={back} onProfileClick={onProfileClick}/>);
     case "Franchise":
-      return (<Franchise mediaCard={current.mediaCard!} onGo={handleFranchiseGoClick} onBack={back}/>);
+      return (<Franchise mediaCard={current.mediaCard!} onGo={handleFranchiseGoClick} onBack={back} onProfileClick={onProfileClick}/>);
     case "Show":
-      return (<Show mediaCard={current.mediaCard} onGo={handleShowGoClick} onBack={back}/>);
+      return (<Show mediaCard={current.mediaCard} onGo={handleShowGoClick} onBack={back} onProfileClick={onProfileClick}/>);
     case "Seasons":
-      return (<Seasons mediaCard={current.mediaCard} seasons={seasons} onBack={back}/>);
+      return (<Seasons mediaCard={current.mediaCard} seasons={seasons} onBack={back} onProfileClick={onProfileClick}/>);
     case "SeriesList":
-      return (<SeriesList mediaCard={current.mediaCard} onGo={handleSeriesListGoClick} onBack={back}/>);
+      return (<SeriesList mediaCard={current.mediaCard} onGo={handleSeriesListGoClick} onBack={back} onProfileClick={onProfileClick}/>);
     case "Selection":
-      return (<Selection mediaCard={current.mediaCard} onBack={back}/>);
+      return (<Selection mediaCard={current.mediaCard} onBack={back} onProfileClick={onProfileClick}/>);
   }
 }
 

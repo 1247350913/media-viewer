@@ -160,23 +160,22 @@
 
 /* ----------- Meta Shared ----------- */
 
-.meta-wrap {
+.meta-row {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  width: 100%;
+
   font-size: 0.9rem;
+  gap: 5%;
   opacity: 0.9;
-  margin-top: auto;
-  margin-bottom: 12px;
 }
 .meta-item {
   padding: 12px 12px;
   border: 1px solid #ddd;
   border-radius: 12px;
-  font-size: 0.85rem;
   line-height: 1.2;
 }
 .meta-status-Y {
@@ -740,11 +739,13 @@
 /* ----------- Body - Right Side ----------- */
 
 .selection-body {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   text-align: center;
   height: 100%;
 }
-/* Title */
+
 .selection-title {
   font-size: 2rem;
   line-height: 1.2;
@@ -775,5 +776,105 @@
 
 /* Meta */
 .selection-meta-button {
+  margin-top: auto;
+  margin-bottom: 5%;
+}
 
+/* ===================================================
+   Profile Screen
+   =================================================== */
+.profile-wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #fafafa;
+}
+
+/* Header */
+.profile-title {
+  font-size: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Main Section */
+.profile-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  padding-top: 3rem;
+  gap: 2rem;
+  overflow-y: auto;
+}
+
+/* Profile Card */
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 2rem 3rem;
+  min-width: 320px;
+  text-align: center;
+}
+
+.profile-avatar-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 2px solid #ddd;
+}
+
+.profile-name {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.profile-role {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.profile-email {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* Action Buttons */
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.profile-action-btn {
+  border: none;
+  background: #646cff;
+  color: #fff;
+  padding: 0.6em 1.4em;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.profile-action-btn:hover {
+  background: #535bf2;
+}
+
+.profile-action-btn.danger {
+  background: #e85d5d;
+}
+
+.profile-action-btn.danger:hover {
+  background: #d44545;
 }
