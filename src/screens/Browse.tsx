@@ -68,7 +68,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
 
       {/* Standard Header */}
       <div className="header-bar-wrap browse-bar-wrap">
-        <button className="back-button" onClick={onBack}>←</button>
+        <button className="header-button back-button" onClick={onBack}>←</button>
         <div className="search-bar-wrap">
           <input
             className="searcher"
@@ -77,7 +77,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
             onChange={(e) => setQ(e.target.value)}
           />
         </div>
-        <button className="profile-button" title="Profile" onClick={onProfileClick}>
+        <button className="header-button profile-button" title="Profile" onClick={onProfileClick}>
           <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
         </button>
       </div>

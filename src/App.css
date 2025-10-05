@@ -20,73 +20,61 @@
 /* Standard Header Bar Wrap*/
 .header-bar-wrap {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: 5% auto 5%;
+  width: 100%;
+  height: auto;
+
   gap: 5%;
   align-items: center;
-  background: #fff;
-  padding-bottom: 5%;
+  padding-bottom: 1.5%;
 }
 
-/* Back Button */
-.back-button {
+/* ----------- Buttons ----------- */
+
+button {
   cursor: pointer;
-  border: transparent;
-  background-color: #fff;
-  color: #111;
+}
+
+/* Header Buttons */
+.header-button {
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   aspect-ratio: 1 / 1;        /* perfect circle */
-  width: 60%;                 /* of the parent size */
+  width: 100%;                 /* of the parent size */
   border-radius: 50%;         /* makes it circular */
-  font-size: 1.75vw;
+  padding: 20%;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
-.back-button:hover {
+.header-button:hover {
+  color: #111;
   background: rgba(0, 0, 0, 0.05);
 }
-
-/* Profile */
+.header-button:active {
+  transform: scale(0.95);
+}
+/* Back Button */
+.back-button {
+  color: #111;
+}
+/* Profile Button */
 .profile-button {
-  cursor: pointer;
-  border: transparent;
-  background-color: #fff;
-
-  aspect-ratio: 1 / 1;      /* keep circle */
-  width: 60%;               /* of parent slot */
-  border-radius: 50%;       /* circle shape */
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  overflow: hidden;         /* ensures image stays clipped */
-}
-.profile-button:hover {
-  background: rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 .profile-icon {
-  width: 2vw;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
 }
 
-/* ----------- Subheader Buttons Bar ----------- */
-
-/* Buttons Bar Wrap */
-.subheader-buttons-bar-wrap {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-}
-
-/* Button */
-.subheader-button-wrap {
-  position: relative;
-}
+/* Subheader Buttons */
 .subheader-button {
   padding: 6px 10px;
   border-radius: 999px;
@@ -110,7 +98,43 @@
   z-index: 20;
 }
 
-/* Dropdown Entry */
+/* Action Buttons */
+.action-button {
+
+}
+/* Go Button */
+.go-button {
+
+}
+/* Play Button */
+.play-button {
+  border: #d9d9d9;
+  background: #f7f7f7;
+}
+.play-button:hover {
+  background: #fff;
+  border-color: #cfcfcf;
+}
+/* Trailer Button */
+.play-button {
+  border: #d9d9d9;
+  background: #f7f7f7;
+}
+.play-button:hover {
+  background: #fff;
+  border-color: #cfcfcf;
+}
+
+/* Detail Buttons */
+.detail-button {
+
+}
+/* Meta Button */
+.meta-button {
+
+}
+
+/* A Button Dropdown Entry */
 .dropdown-entry {
   padding: 8px 10px;
   border-radius: 8px;
@@ -129,36 +153,30 @@
   border-color: #c7d2fe;
 }
 
-/* ----------- Action Buttons ----------- */
-
-/* Action Button */
-.action-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid;
-  cursor: pointer;
-}
-.action-button:disabled {
+/* A Button is Disabled */
+.button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Play */
-.play-button {
-  border: #d9d9d9;
-  background: #f7f7f7;
-}
-.play-button:hover {
-  background: #fff;
-  border-color: #cfcfcf;
-}
-/* Go */
-.go-button {
+/* ----------- Subheader Buttons Bar ----------- */
 
+/* Subheader Buttons Bar Wrap */
+.subheader-buttons-bar-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
 }
 
-/* ----------- Meta Shared ----------- */
+/* Subheader Button Wrap */
+.subheader-button-wrap {
+  position: relative;
+}
+
+
+/* ----------- Meta ----------- */
 
 .meta-row {
   display: flex;
@@ -221,8 +239,8 @@
 
 /* Search Bar */
 .browse-bar-wrap {
-  position: sticky;
-  z-index: 50;
+  /* position: sticky;
+  z-index: 50; */
 }
 .search-bar-wrap {
   display: flex;
