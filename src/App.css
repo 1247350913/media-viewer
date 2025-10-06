@@ -38,7 +38,7 @@
    SCREENS
    ========================================================= */
 
-.screen-wrap {
+.screen--wrap {
   padding: 20px
 }
 
@@ -69,7 +69,7 @@
 /* ===== SUBHEADER BAR ===== */
 
 /* Buttons Bar Wrap */
-.subheader-bar-wrap {
+.subheader-bar--wrap {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -88,7 +88,7 @@
 /* ===== META ROW ===== */
 
 /* Row Wrap */
-.meta__row-wrap {
+.meta-row--wrap {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -102,7 +102,7 @@
 }
 
 /* Single Item */
-.meta__item {
+.meta-row__item {
   padding: 12px 12px;
   border: 1px solid #ddd;
   border-radius: 12px;
@@ -183,8 +183,8 @@
   line-height: 1;
 }
 
-/* Floating Dropdown Menu */
-.btn__dropdown-menu {
+/* Floating Dropdown Menu From A Button */
+.dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);
   left: 50%;
@@ -201,7 +201,7 @@
   box-sizing: border-box;
 }
 /* Multiselect Dropdown Row */
-.btn__dropdown-entry {
+.dropdown-menu__entry {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
@@ -213,31 +213,33 @@
   color: #333;
   cursor: pointer;
 }
-.btn__dropdown-entry:hover {
+.dropdown-menu__entry:hover {
   background: #fff;
   border-color: #dcdcdc;
 }
-.btn__dropdown-entry.is-active {
+.dropdown-menu__entry.is-active {
   background: #eef2ff;
   border-color: #c7d2fe;
 }
-.btn__dropdown-check {
-  width: 16px;
-  height: 16px;
-  accent-color: #646cff;
-  cursor: pointer;
-}
 /* Clear Filters Option */
-.btn__dropdown-clear {
+.dropdown-menu__entry--clear {
   background: #fff;
   color: #555;
   border: 1px solid transparent;
   font-weight: 600;
 }
-.btn__dropdown-clear:hover {
+.dropdown-menu__entry--clear:hover {
   background: #f7f7f7;
   border-color: #e5e7eb;
 }
+/* Check Box Visual */
+.dropdown-menu__check {
+  width: 16px;
+  height: 16px;
+  accent-color: #646cff;
+  cursor: pointer;
+}
+
 
 /* ===== SIZE MODIFIERS ===== */
 
@@ -287,7 +289,7 @@
   border-color: var(--color-primary-hover);
 }
 
-/* Secondary (Neutral Action) */
+/* Secondary (Neutral Action, Filter) */
 .btn--secondary {
   background: var(--color-bg);
   border-color: var(--color-border-strong);
@@ -296,11 +298,20 @@
 .btn--secondary:hover {
   background: var(--color-bg-hover);
 }
-.btn--secondary--filter {
 
+/* Filter Variant */
+.btn--filter {
+  border-style: dashed;
+  border-color: var(--color-border-strong);
+  background: transparent;
+  color: var(--color-text);
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
-.btn--secondary--filter.is-active {
-
+.btn--filter.is-active {
+  border-style: solid;
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-text);
 }
 
 /* Ghost (Trailer) */
@@ -357,7 +368,7 @@
 
 /* ===== BASE ===== */
 
-.launch-screen {
+.launch--wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -374,7 +385,7 @@
 /////////////////////////////////////////////////////////////////// */
 
 
-.browse-wrap {
+.browse--wrap {
   display: flex;
   flex-direction: column;
 }
@@ -402,7 +413,7 @@
 
 /* ----------- Subheader Buttons Bar ----------- */
 
-.browse-filter-bar-wrap {
+.browse-filter-bar--wrap {
   border-bottom: 1px solid #efefef;
 }
 
@@ -451,7 +462,7 @@
 }
 
 /* Poster */
-.browse-poster-wrap {
+.browse__poster--wrap {
   width: 90px;
   height: 130px;
   border-radius: 8px;
@@ -461,12 +472,12 @@
   align-items: center;
   justify-content: center;
 }
-.browse-poster-img {
+.browse__poster--img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.browse-poster-fallback {
+.browse__poster--fallback {
   width: 100%;
   height: 100%;
   background: linear-gradient(180deg, #eee, #ddd);
@@ -509,9 +520,8 @@
 }
 .meta .dot { opacity: .5; }
 
-.empty {
-  opacity: .6;
-  padding: 20px;
+.browse__cards--empty {
+  justify-self: center;
 }
 
 
@@ -863,52 +873,52 @@
   //
 /////////////////////////////////////////////////////////////////// */
 
-/* ----------- Overall ----------- */
+/* =========================================================
+   STYLES
+   ========================================================= */
 
-.selection-wrap {
-  min-height: 100vh;
-}
-.selection-main-screen-wrap {
-  height: 100%;
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 32px;
-  align-items: start;
-  padding: 0 30px;
+/* ===== Overall ===== */
 
-}
-@media (max-width: 900px) {
-  .selection-main-screen-wrap {
-    grid-template-columns: 1fr;
-  }
+.selection-main-screen--wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;       /* Parent: stretch children to same height as tallest child */
 }
 
-/* ----------- Left Side ----------- */
+/* ===== Left Side ===== */
 
 /* Poster */
-.selection-poster-wrap {
-  width: 100%;
-  align-self: start;
+.selection__poster--wrap {
+  width: 30%;                  /* of the parent */
+
+  display: flex;               /* center image within the column */
+  align-items: center;
+  justify-content: center;
+  min-width: 0;                /* prevent overflow */
 }
-.selection-poster-img {
+.selection__poster--img {
   display: block;
   width: 100%;
   height: auto;
+  max-height: 100%;            /* respect the column height */
   object-fit: contain;
 }
-.selection-poster-fallback {
+.selection__poster--fallback {
   width: 100%;
   background: linear-gradient(180deg, #eee, #ddd);
 }
 
-/* ----------- Body - Right Side ----------- */
+/* ===== Body: Right Side ===== */
 
-.selection-body {
+.selection__body {
+  width: 70%;
+  min-width: 0;
+  flex: 70%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  height: 100%;
+
 }
 
 .selection-title {
@@ -944,6 +954,7 @@
   margin-top: auto;
   margin-bottom: 5%;
 }
+
 
 /* ///////////////////////////////////////////////////////////////////
   //

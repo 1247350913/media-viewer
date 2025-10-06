@@ -104,15 +104,15 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
   }, [cards, q, kindFilters]);
 
   return (
-    <div className="screen-wrap browse-wrap">
+    <div className="screen--wrap browse--wrap">
       {/* Standard Header */}
       <HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick} q={q} onChange={e => setQ(e.target.value)}/>
 
       {/* Standard Subheader */}
-      <div className="subheader-bar-wrap browse-filter-bar-wrap">
-        <div className="subheader-button-wrap" ref={kindsWrapRef}>
+      <div className="subheader-bar--wrap browse-filter-bar--wrap">
+        <div className="subheader-bar__btn-wrap" ref={kindsWrapRef}>
           <button
-            className={`subheader-button${kindsActive ? " active" : ""}`}
+            className={`btn btn--secondary btn--filter${kindsActive ? " is-active" : ""}`}
             aria-expanded={showKindsDropdown}
             aria-haspopup="menu"
             onClick={() => setShowKindsDropdown((v) => !v)}
@@ -121,11 +121,11 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
           </button>
 
           {showKindsDropdown && (
-            <div className="subheader-button-menu" role="menu" aria-label="Type filters">
+            <div className="dropdown-menu" role="menu" aria-label="Type filters">
               {/* Clear Filters action*/}
               <button
                 type="button"
-                className="dropdown-entry dropdown-clear"
+                className="dropdown-menu__entry--clear"
                 role="menuitem"
                 onClick={clearKinds}
               >
@@ -143,7 +143,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
                 return (
                   <label
                     key={k}
-                    className={`dropdown-entry${active ? " is-active" : ""}`}
+                    className={`dropdown-menu__entry${active ? " is-active" : ""}`}
                     role="menuitemcheckbox"
                     aria-checked={active}
                     // clicking label toggles checkbox, but keep clicks inside
@@ -151,7 +151,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
                   >
                     <input
                       type="checkbox"
-                      className="dropdown-check"
+                      className="dropdown-menu__check"
                       checked={active}
                       onChange={() => toggleKind(k)}
                     />
@@ -163,13 +163,13 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
           )}
         </div>
 
-        <button className="subheader-button" disabled>
+        <button className="btn btn--secondary btn--filter" disabled>
           Genre
         </button>
-        <button className="subheader-button" disabled>
+        <button className="btn btn--secondary btn--filter" disabled>
           Year
         </button>
-        <button className="subheader-button" disabled>
+        <button className="btn btn--secondary btn--filter" disabled>
           Rating
         </button>
       </div>
@@ -199,15 +199,15 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
         ))}
 
         {isLoading && (
-          <div className="empty">Loading... 🙂</div>
+          <div className="browse__cards--empty">Loading... 🙂</div>
         )}
 
         {cards.length > 0 && filtered.length === 0 && (
-          <div className="empty">No matches.</div>
+          <div className="browse__cards--empty">No matches.</div>
         )}
 
         {cards.length === 0 && !isLoading && (
-          <div className="empty">No items found.</div>
+          <div className="browse__cards--empty">No items found.</div>
         )}
       </div>
     </div>
