@@ -24,8 +24,8 @@ function Launch({ onLoaded }: LaunchProps) {
 
   return (
     <div className="launch-screen">
-      <h1>Vault Viewer</h1>
-      <button onClick={handleLoad}>Load Vault</button>
+      <div>Vault Viewer</div>
+      <button className="btn btn--launch" onClick={handleLoad}>Load Vault</button>
       <p style={{opacity:.7,marginTop:8}}>{status !== "Loaded" ? status : null}</p>
     </div>
   );

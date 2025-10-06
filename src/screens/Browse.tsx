@@ -109,7 +109,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
       <HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick} q={q} onChange={e => setQ(e.target.value)}/>
 
       {/* Standard Subheader */}
-      <div className="subheader-buttons-bar-wrap browse-filter-bar-wrap">
+      <div className="subheader-bar-wrap browse-filter-bar-wrap">
         <div className="subheader-button-wrap" ref={kindsWrapRef}>
           <button
             className={`subheader-button${kindsActive ? " active" : ""}`}

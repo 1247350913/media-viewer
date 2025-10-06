@@ -1,8 +1,13 @@
-/* =====================================================================
-   SHARED FORMATTING
-  ====================================================================== */
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  SHARED FORMATTING  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
 
-/* ----------- Overall ----------- */
+
+/* =========================================================
+   OVERALL
+   ========================================================= */
 
 /* App container */
 #root {
@@ -10,15 +15,41 @@
   padding: 0;
   font-family: system-ui, sans-serif;
 }
+:root {
+  --btn-radius: 10px;
+  --btn-pad-y: 0.6rem;
+  --btn-pad-x: 1rem;
+  --btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+
+  --color-text: #111;
+  --color-muted: #666;
+  --color-border: #dcdcdc;
+  --color-border-strong: #c7c7c7;
+  --color-bg: #f7f7f7;
+  --color-bg-hover: #fff;
+
+  --color-primary: #646cff;
+  --color-primary-hover: #535bf2;
+  --color-primary-light: #eef2ff;
+}
+
+
+/* =========================================================
+   SCREENS
+   ========================================================= */
 
 .screen-wrap {
   padding: 20px
 }
 
-/* ----------- Header Bar ----------- */
 
-/* Standard Header Bar Wrap*/
-.header-bar-wrap {
+/* =========================================================
+   COMPONENTS
+   ========================================================= */
+
+/* ===== HEADER BAR ===== */
+
+.header-bar--wrap {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -27,14 +58,18 @@
   height: 40px;
 }
 
-.header-middle {
+.header-bar__middle {
   width: 100%;         /* the rest of the center section */
 }
 
-/* ----------- Subheader Buttons Bar ----------- */
+.header-bar__profile-icon {
+  height: 40px;
+}
 
-/* Subheader Buttons Bar Wrap */
-.subheader-buttons-bar-wrap {
+/* ===== SUBHEADER BAR ===== */
+
+/* Buttons Bar Wrap */
+.subheader-bar-wrap {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -43,12 +78,113 @@
   padding-top: 10px;
   padding-bottom: 10px;
 }
-/* Subheader Button Wrap */
-.subheader-button-wrap {
+
+/* Button Wrap */
+.subheader-bar__btn-wrap {
   position: relative;
 }
-/* Floating Menu */
-.subheader-button-menu {
+
+
+/* ===== META ROW ===== */
+
+/* Row Wrap */
+.meta__row-wrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  font-size: 0.9rem;
+  gap: 5%;
+  opacity: 0.9;
+}
+
+/* Single Item */
+.meta__item {
+  padding: 12px 12px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  line-height: 1.2;
+}
+
+/* Completion Status for Series / Episodes */
+.meta__completionstatus-Y {
+  background-color: #e6f7e6;
+}
+.meta__completionstatus-O {
+  background-color: #e6f0fa;
+  border-color: #b3cdea;
+  color: #1d3f6b;
+}
+.meta__completionstatus-U {
+  background-color: #fae6eb;
+  border-color: #eab3c2;
+  color: #6b1d2b;
+}
+
+
+/* =========================================================
+   BUTTON SYSTEM (BEM STANDARD)
+   ========================================================= */
+
+/* ===== BASE ===== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+
+  padding: var(--btn-pad-y) var(--btn-pad-x);
+  border: 1px solid var(--color-border);
+  border-radius: var(--btn-radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.06s ease;
+  box-shadow: var(--btn-shadow);
+}
+.btn:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-strong);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== ELEMENTS ===== */
+
+.btn__icon {
+  width: 1.1em;
+  height: 1.1em;
+  display: inline-block;
+}
+.btn__label {
+  line-height: 1;
+}
+
+/* Floating Dropdown Menu */
+.btn__dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);
   left: 50%;
@@ -64,133 +200,8 @@
   z-index: 20;
   box-sizing: border-box;
 }
-
-/* ----------- Meta ----------- */
-
-.meta-row {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-
-  font-size: 0.9rem;
-  gap: 5%;
-  opacity: 0.9;
-}
-.meta-item {
-  padding: 12px 12px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  line-height: 1.2;
-}
-.meta-status-Y {
-  background-color: #e6f7e6;
-}
-.meta-status-O {
-  background-color: #e6f0fa;
-  border-color: #b3cdea;
-  color: #1d3f6b;
-}
-.meta-status-U {
-  background-color: #fae6eb;
-  border-color: #eab3c2;
-  color: #6b1d2b;
-}
-
-/* ----------- Buttons ----------- */
-
-button {
-  cursor: pointer;
-}
-
-/* Header Buttons */
-.header-button {
-  border: none;
-  background: transparent;
-
-  aspect-ratio: 1 / 1;        /* perfect circle */
-  width: 40px;                /* side buttons */
-  height: 40px;               /* side buttons */
-  border-radius: 50%;         /* makes it circular */
-
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-.header-button:hover {
-  color: #111;
-  background: rgba(0, 0, 0, 0.05);
-}
-.header-button:active {
-  transform: scale(0.95);
-}
-/* Back Button */
-.back-button {
-  color: #111;
-}
-/* Profile Button */
-.profile-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.profile-icon {
-  height: 80%;
-  width: 80%;
-  object-fit: cover;
-}
-
-/* Subheader Buttons */
-.subheader-button {
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px dashed #ccc;
-  color: #777;
-  background: transparent;
-}
-.subheader-button.active {
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-}
-
-/* Action Buttons */
-.action-button {
-
-}
-/* Go Button */
-.go-button {
-
-}
-/* Play Button */
-.play-button {
-  border: #d9d9d9;
-  background: #f7f7f7;
-}
-.play-button:hover {
-  background: #fff;
-  border-color: #cfcfcf;
-}
-/* Trailer Button */
-.play-button {
-  border: #d9d9d9;
-  background: #f7f7f7;
-}
-.play-button:hover {
-  background: #fff;
-  border-color: #cfcfcf;
-}
-
-/* Detail Buttons */
-.detail-button {
-
-}
-/* Meta Button */
-.meta-button {
-
-}
-
 /* Multiselect Dropdown Row */
-.dropdown-entry {
+.btn__dropdown-entry {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
@@ -202,42 +213,150 @@ button {
   color: #333;
   cursor: pointer;
 }
-.dropdown-entry:hover {
+.btn__dropdown-entry:hover {
   background: #fff;
   border-color: #dcdcdc;
 }
-.dropdown-entry.is-active {
+.btn__dropdown-entry.is-active {
   background: #eef2ff;
   border-color: #c7d2fe;
 }
-.dropdown-check {
+.btn__dropdown-check {
   width: 16px;
   height: 16px;
   accent-color: #646cff;
   cursor: pointer;
 }
 /* Clear Filters Option */
-.dropdown-clear {
+.btn__dropdown-clear {
   background: #fff;
   color: #555;
   border: 1px solid transparent;
   font-weight: 600;
 }
-.dropdown-clear:hover {
+.btn__dropdown-clear:hover {
   background: #f7f7f7;
   border-color: #e5e7eb;
 }
 
-/* A Button is Disabled */
-.button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* ===== SIZE MODIFIERS ===== */
+
+.btn--sm {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+}
+.btn--lg {
+  padding: 0.8rem 1.25rem;
+  font-size: 1.05rem;
+}
+
+/* ===== SHAPE MODIFIERS ===== */
+
+.btn--circle {
+  aspect-ratio: 1 / 1;
+  width: 40px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+/* ===== VARIANT MODIFIERS ===== */
+
+/* Header Buttons (Back, Profile) */
+.btn--bare {
+  background: transparent;
+  border: transparent;
+  box-shadow: none;
+  color: #111;
+}
+.btn--bare:hover {
+  background: rgba(0,0,0,0.05);  /* subtle hover feedback */
+}
+.btn--bare:active {
+  background: rgba(0,0,0,0.08);
+  transform: scale(0.98);
+}
+
+/* Primary (Launch / Go / Play) */
+.btn--primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+.btn--primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+/* Secondary (Neutral Action) */
+.btn--secondary {
+  background: var(--color-bg);
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+.btn--secondary:hover {
+  background: var(--color-bg-hover);
+}
+.btn--secondary--filter {
+
+}
+.btn--secondary--filter.is-active {
+
+}
+
+/* Ghost (Trailer) */
+.btn--ghost {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.btn--ghost:hover {
+  background: #e3e8ff;
+}
+
+/* Meta / Detail Buttons */
+.btn--meta {
+  background: #fafafa;
+  border-color: var(--color-border);
+  color: var(--color-muted);
+}
+.btn--meta:hover {
+  background: #fff;
+  color: var(--color-text);
+}
+.btn--meta.is-active {
+  background: var(--color-primary-light);
+  border-color: #c7d2fe;
+  color: #333;
+}
+
+/* Launch Hero (Special) */
+.btn--launch {
+  border-color: transparent;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.9rem 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 6px 16px rgba(100, 108, 255, 0.28);
+}
+.btn--launch:hover {
+  background: var(--color-primary-hover);
 }
 
 
-/* =====================================================================
-   SCREEN 1 - Launch
-  ====================================================================== */
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  SCREEN 1- LAUNCH  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
+
+/* =========================================================
+   BUTTON SYSTEM (BEM STANDARD)
+   ========================================================= */
+
+/* ===== BASE ===== */
+
 .launch-screen {
   display: flex;
   flex-direction: column;
@@ -248,12 +367,13 @@ button {
   gap: 1rem;
 }
 
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  SCREEN 2- BROWSE  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
 
-/* =====================================================================
-   SCREEN 2 - Browse
-  ====================================================================== */
 
-/* ----------- Wrap ----------- */
 .browse-wrap {
   display: flex;
   flex-direction: column;
@@ -261,20 +381,14 @@ button {
 
 /* ----------- Header Bar ----------- */
 
-/* Search Bar */
-.browse-bar-wrap {
-  /* position: sticky;
-  z-index: 50; */
-}
-
-.search-bar-wrap {
+.search-bar--wrap {
   height: 40px;
 
   display: flex;
   justify-content: left;
   align-items: center;
 }
-.searcher {
+.search-bar__searcher {
   width: 80%;       /* shrink the right side */
   height: 15px;
   margin-left: 20px;
@@ -401,9 +515,11 @@ button {
 }
 
 
-/* =====================================================================
-   Screen 3 - Franchise List
-  ====================================================================== */
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  SCREEN 3- FRANCHISE LIST  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
 
 .franchise-list {
   display: flex;
@@ -448,9 +564,12 @@ button {
   padding-top: 20px;
 }
 
-/* =====================================================================
-   Screen 4 - Series List
-  ====================================================================== */
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  SCREEN 4- SERIES LIST  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
+
 .serieslist-wrap {
   padding: 2rem;
   max-width: 1100px;
@@ -538,9 +657,11 @@ button {
 /* Meta */
 
 
-/* =====================================================================
-   Screen 5 - Show
-  ====================================================================== */
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  SCREEN 5- SHOW  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
 
 .show-wrap {
   height: 100vh;
@@ -583,9 +704,11 @@ button {
 
 
 
-/* =====================================================================
-   Screen 6 - Seasons
-  ====================================================================== */
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  SCREEN 6- SEASONS, EPISODES  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
 
 /* ----------- Main Screen ----------- */
 .seasons-wrap {
@@ -734,9 +857,11 @@ button {
 }
 
 
-/* =====================================================================
-   Screen 7 - Selection
-  ====================================================================== */
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  SCREEN 7- SELECTION  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
 
 /* ----------- Overall ----------- */
 
@@ -820,9 +945,12 @@ button {
   margin-bottom: 5%;
 }
 
-/* ===================================================
-   Profile Screen
-   =================================================== */
+/* ///////////////////////////////////////////////////////////////////
+  //
+  //  PROFILE SCREEN  ---------------------
+  //
+/////////////////////////////////////////////////////////////////// */
+
 .profile-wrap {
   display: flex;
   flex-direction: column;
