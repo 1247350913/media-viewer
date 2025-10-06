@@ -8,7 +8,7 @@ export type ScreenName =
   | "Franchise"
   | "Profile";
 
-export type MediaKind = 'all' | 'movie' | 'show';
+export type MediaKind = 'all' | 'movie' | 'show' | 'documentary'
 export type Quality = 7680 | 3840 | 1440 | 1080 | 720 | 480 | 'Unknown';
 export type Rating = 'F' | 'D' | 'C' | 'B' | 'A' | 'S' | 'SS'
 export type Genre =

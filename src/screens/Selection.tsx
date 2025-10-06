@@ -2,8 +2,10 @@ import { useState } from "react";
 
 import * as Shared from "../../shared";
 import Poster from "../components/Poster";
+import HeaderBar from "../components/HeaderBar";
 import { handlePlay } from ".";
 
+const screenName = "Selection"
 type Props = Shared.ScreenProps["Selection"];
 
 
@@ -16,13 +18,7 @@ function Selection({ mediaCard, onBack, onProfileClick }: Props) {
     <div className="screen-wrap selection-wrap">
 
       {/* Standard Header */}
-      <div className="header-bar-wrap">
-        <button className="header-button back-button" onClick={onBack} aria-label="Back">←</button>
-        <div></div>
-        <button className="header-button profile-button" title="Profile" onClick={onProfileClick}>
-          <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
-        </button>
-      </div>
+      <HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick}/>
 
       {/* Selection Main Screen */}
       <div className="selection-main-screen-wrap">
