@@ -1,19 +1,16 @@
 import { useState } from "react";
-import "./App.css";
-import * as Shared from "../shared";
-import { Launch, Browse, Selection, Seasons, SeriesList, Show, Franchise} from "./screens";
 
-type MediaCard = Shared.MediaCard;
-type HistoryEntry = Shared.HistoryEntry;
-type SeasonTuple = Shared.SeasonTuple;
+import * as Shared from "../shared";
+import * as Screens from "./screens";
+import "./App.css";
 
 
 function App() {
-  const [historyStack, setHistoryStack] = useState<HistoryEntry[]>([{screenName: "Launch", mediaCard: null}]);
+  const [historyStack, setHistoryStack] = useState<Shared.NavHistoryEntry[]>([{screenName: "Launch", mediaCard: null}]);
   const [contentPath, setContentPath] = useState<string>("");
-  const [seasons, setSeasons] = useState<SeasonTuple>(null);
+  const [seasons, setSeasons] = useState<Shared.SeasonTuple>(null);
 
-  const go = (entry: HistoryEntry) => setHistoryStack((s) => [...s, entry]);
+  const go = (entry: Shared.NavHistoryEntry) => setHistoryStack((s) => [...s, entry]);
   const back = () => setHistoryStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
   const current = historyStack[historyStack.length - 1];
 
@@ -24,7 +21,7 @@ function App() {
      go({ screenName: "Browse", mediaCard: null });
   };
 
-  const handleOpenCard = (mediaCard: MediaCard) => {
+  const handleOpenCard = (mediaCard: Shared.MediaCard) => {
     if (mediaCard.isFranchise) {
       go({ screenName: "Franchise", mediaCard });
     } else if (mediaCard.kind === "show") {
@@ -36,11 +33,11 @@ function App() {
     }
   }
 
-  const handleFranchiseGoClick = (mediaCard: MediaCard) => {
+  const handleFranchiseGoClick = (mediaCard: Shared.MediaCard) => {
     go({ screenName: "Show", mediaCard });
   }
 
-  const handleSeriesListGoClick = (mediaCard: MediaCard) => {
+  const handleSeriesListGoClick = (mediaCard: Shared.MediaCard) => {
     go({ screenName: "Selection", mediaCard });
   }
 
@@ -51,19 +48,21 @@ function App() {
 
   switch (current.screenName) {
     case "Launch":
-      return (<Launch onLoaded={handleLoaded}/>);
+      return (<Screens.Launch onLoaded={handleLoaded}/>);
     case "Browse":
-      return (<Browse contentPath={contentPath} onOpenCard={handleOpenCard} onBack={back} onProfileClick={onProfileClick}/>);
+      return (<Screens.Browse contentPath={contentPath} onOpenCard={handleOpenCard} onBack={back} onProfileClick={onProfileClick}/>);
     case "Franchise":
-      return (<Franchise mediaCard={current.mediaCard!} onGo={handleFranchiseGoClick} onBack={back} onProfileClick={onProfileClick}/>);
+      return (<Screens.Franchise mediaCard={current.mediaCard!} onGo={handleFranchiseGoClick} onBack={back} onProfileClick={onProfileClick}/>);
     case "Show":
-      return (<Show mediaCard={current.mediaCard} onGo={handleShowGoClick} onBack={back} onProfileClick={onProfileClick}/>);
+      return (<Screens.Show mediaCard={current.mediaCard} onGo={handleShowGoClick} onBack={back} onProfileClick={onProfileClick}/>);
     case "Seasons":
-      return (<Seasons mediaCard={current.mediaCard} seasons={seasons} onBack={back} onProfileClick={onProfileClick}/>);
+      return (<Screens.Seasons mediaCard={current.mediaCard} seasons={seasons} onBack={back} onProfileClick={onProfileClick}/>);
     case "SeriesList":
-      return (<SeriesList mediaCard={current.mediaCard} onGo={handleSeriesListGoClick} onBack={back} onProfileClick={onProfileClick}/>);
+      return (<Screens.SeriesList mediaCard={current.mediaCard} onGo={handleSeriesListGoClick} onBack={back} onProfileClick={onProfileClick}/>);
     case "Selection":
-      return (<Selection mediaCard={current.mediaCard} onBack={back} onProfileClick={onProfileClick}/>);
+      return (<Screens.Selection mediaCard={current.mediaCard} onBack={back} onProfileClick={onProfileClick}/>);
+    case "Profile":
+      return (<Screens.Profile onBack={back} />);
   }
 }
 

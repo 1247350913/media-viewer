@@ -111,7 +111,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
       <div className="subheader-bar--wrap browse-filter-bar--wrap">
         <div className="subheader-bar__btn-wrap" ref={kindsWrapRef}>
           <button
-            className={`btn btn--secondary btn--filter${kindsActive ? " is-active" : ""}`}
+            className={`btn btn--secondary btn--md btn--oval btn--filter${kindsActive ? " is-active" : ""}`}
             aria-expanded={showKindsDropdown}
             aria-haspopup="menu"
             onClick={() => setShowKindsDropdown((v) => !v)}
@@ -162,13 +162,13 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
           )}
         </div>
 
-        <button className="btn btn--secondary btn--filter" disabled>
+        <button className="btn btn--secondary btn--md btn--oval btn--filter" disabled>
           Genre
         </button>
-        <button className="btn btn--secondary btn--filter" disabled>
+        <button className="btn btn--secondary btn--md btn--oval btn--filter" disabled>
           Year
         </button>
-        <button className="btn btn--secondary btn--filter" disabled>
+        <button className="btn btn--secondary btn--md btn--oval btn--filter" disabled>
           Rating
         </button>
       </div>

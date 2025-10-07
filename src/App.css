@@ -212,11 +212,15 @@ a:hover {
 
 .btn--sm {
   padding: 0.45rem 0.75rem;
-  font-size: 0.9rem;
+  font-size: 0.5rem;
+}
+.btn--md {                      
+  padding: 0.4rem 1rem;       
+  font-size: .8rem;
 }
 .btn--lg {
   padding: 0.8rem 1.25rem;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 /* ============== SHAPE MODIFIERS ============== */
@@ -226,6 +230,11 @@ a:hover {
   width: 40px;
   padding: 0;
   border-radius: 50%;
+}
+.btn--oval {                   
+  border-radius: 9999px;        /* fully rounded corners */
+  padding-left: 1.25em;         /* stretch the width */
+  padding-right: 1.25em;
 }
 
 /* ============== VARIANT MODIFIERS ============== */
@@ -240,6 +249,7 @@ a:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: 2px;
 }
 .btn--bare:hover {
   background: rgba(0,0,0,0.05);  /* subtle hover feedback */
@@ -328,15 +338,6 @@ a:hover {
 
 
 /* =========================================================
-   SCREENS SHARED
-   ========================================================= */
-
-.screen--wrap {
-  padding: 20px
-}
-
-
-/* =========================================================
    COMPONENTS SHARED
    ========================================================= */
 
@@ -356,7 +357,7 @@ a:hover {
 }
 
 .header-bar__profile-icon {
-  height: 40px;
+  height: 60%
 }
 
 /* ============== SUBHEADER BAR ============== */
@@ -414,6 +415,15 @@ a:hover {
   background-color: #fae6eb;
   border-color: #eab3c2;
   color: #6b1d2b;
+}
+
+
+/* =========================================================
+   SCREENS SHARED
+   ========================================================= */
+
+.screen--wrap {
+  padding: 20px
 }
 
 

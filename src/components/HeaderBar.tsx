@@ -5,7 +5,9 @@ type Props = Shared.ComponentProps["HeaderBar"];
 function HeaderBar({ screenName, onBack, onProfileClick, q, onChange }: Props) {
   return (
       <div className="header-bar--wrap">
-        <button className="btn btn--circle btn--bare" onClick={onBack} aria-label="Back">←</button>
+        <button className="btn btn--circle btn--bare" onClick={onBack} aria-label="Back">
+          ←
+        </button>
         {screenName === "Browse" ? (
         <div className="header-bar__middle searchbar--wrap">
           <input

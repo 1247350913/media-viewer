@@ -86,7 +86,7 @@ export type CompletionStatus = "Y" | "O" | "U"
 
   /* ============== Shared / Global ============== */
 
-export type NavigationHistoryEntry = {
+export type NavHistoryEntry = {
   screenName: ScreenName;
   mediaCard: MediaCard | null;
 };
@@ -94,11 +94,11 @@ export type NavigationHistoryEntry = {
 export type ScreenName =
   | "Launch"
   | "Browse"
-  | "Selection"
-  | "SeriesList"
-  | "Seasons"
-  | "Show"
   | "Franchise"
+  | "SeriesList"
+  | "Show"
+  | "Seasons"
+  | "Selection"
   | "Profile";
 
 

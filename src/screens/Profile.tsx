@@ -1,26 +1,15 @@
-import type { ScreenProps } from "../../shared";
+import * as Shared from "../../shared";
+import * as Components from "../components";
 
-type Props = ScreenProps["Profile"];
+type Props = Shared.ScreenProps["Profile"];
 
 
 function Profile({ onBack }: Props) {
   return (
-    <div className="screen-wrap profile-wrap">
+    <div className="screen--wrap profile--wrap">
 
       {/* Header Bar */}
-      <div className="header-bar-wrap">
-        <button className="back-button" onClick={onBack} aria-label="Back">
-          ←
-        </button>
-        <h2 className="profile-title">Profile</h2>
-        <button className="profile-button" title="Profile">
-          <img
-            src="/default-profile-icon.png"
-            alt="Profile"
-            className="profile-icon"
-          />
-        </button>
-      </div>
+      <Components.HeaderBar screenName="Profile" onBack={onBack} onProfileClick={()=> {}}/>
 
       {/* Main Section */}
       <div className="profile-main">
