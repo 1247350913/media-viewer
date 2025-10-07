@@ -1,9 +1,8 @@
 import { useState } from "react";
 
 import * as Shared from "../../shared";
-import Poster from "../components/Poster";
-import HeaderBar from "../components/HeaderBar";
-import { handlePlay } from ".";
+import * as Components from "../components"
+import * as lib from "../lib";
 
 const screenName = "Selection"
 type Props = Shared.ScreenProps["Selection"];
@@ -17,26 +16,19 @@ function Selection({ mediaCard, onBack, onProfileClick }: Props) {
     (
     <div className="screen--wrap selection--wrap">
       {/* Standard Header */}
-      <HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick}/>
+      <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick}/>
 
       {/* Selection Main Screen */}
       <div className="selection-main-screen--wrap">
 
         {/* Poster */}
-        <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Selection"}/>
+        <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Selection"}/>
 
         {/* Body */}
         <div className="selection__body">
-          <div className="selection__title">{mediaCard?.title ?? "Untitled"}</div>
-          <div className="selection__actions">
-            <button className="btn btn--ghost" disabled={!mediaCard?.sampleFilePath}>
-              Trailer
-            </button>
-            <button className="btn btn--primary" onClick={() => handlePlay(mediaCard)} disabled={!mediaCard?.videoFilePath}>
-              ▶ Play
-            </button>
-          </div>
-          <div className="selection__overview">{mediaCard.overview ?? "No description available."}</div>
+          <h1 className="selection__title">{mediaCard?.title ?? "Untitled"}</h1>
+          <Components.ActionButtonsRow screenName={screenName} mediaCard={mediaCard} handleTrailer={lib.handleTrailer} handlePlay={lib.handlePlay}/>
+          <p className="selection__overview">{mediaCard.overview ?? "No description available."}</p>
           <button className="btn btn--sm btn--meta" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
           {!showMeta ? null : (
           <div className="meta-row--wrap">
@@ -46,7 +38,8 @@ function Selection({ mediaCard, onBack, onProfileClick }: Props) {
           </div>
           )}
         </div>
-      </div>
+
+      </div>  
     </div>
     )
   );

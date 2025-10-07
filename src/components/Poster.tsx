@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { type ScreenName } from "../../shared";
+import * as Shared from "../../shared";
 
-function Poster({ path, title, screenName }: { path?: string; title: string; screenName: ScreenName; }) {
+type Props = Shared.ComponentProps["Poster"];
+
+function Poster({ path, title, screenName }: Props ) {
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {

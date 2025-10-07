@@ -1,44 +1,8 @@
-export type ScreenName =
-  | "Launch"
-  | "Browse"
-  | "Selection"
-  | "SeriesList"
-  | "Seasons"
-  | "Show"
-  | "Franchise"
-  | "Profile";
+/* =========================================================
+   SHARED (electron + src)
+   ========================================================= */
 
-export type MediaKind = 'all' | 'movie' | 'show' | 'documentary'
-export type Quality = 7680 | 3840 | 1440 | 1080 | 720 | 480 | 'Unknown';
-export type Rating = 'F' | 'D' | 'C' | 'B' | 'A' | 'S' | 'SS'
-export type Genre =
-  | 'Action'
-  | 'Adventure'
-  | 'Animation'
-  | 'Biography'
-  | 'Comedy'
-  | 'Crime'
-  | 'Drama'
-  | 'Family'
-  | 'Fantasy'
-  | 'Film-Noir'
-  | 'History'
-  | 'Horror'
-  | 'Music'
-  | 'Musical'
-  | 'Mystery'
-  | 'News'
-  | 'Reality-TV'
-  | 'Romance'
-  | 'Sci-Fi'
-  | 'Short'
-  | 'Sport'
-  | 'Talk-Show'
-  | 'Thriller'
-  | 'War'
-  | 'Western';
-export type Tag = 'TC' | 'DC' | 'EC' | 'SE' | 'UR/UC'
-export type CompletionStatus = "Y" | "O" | "U"
+/* ============== Card ============== */
 
 export type MediaCard = {
   title: string;
@@ -76,12 +40,100 @@ export type MediaCard = {
   completionStatus?: CompletionStatus;
 };
 
-export type SeasonTuple = [number, [MediaCard, MediaCard[]]] | null; // [seasonNum, [seasonCard, [episodeCards..]]]
+/* ============== Card Properties ============== */
 
-export type HistoryEntry = {
+export type MediaKind = 'all' | 'movie' | 'show' | 'documentary'
+
+export type Quality = 7680 | 3840 | 1440 | 1080 | 720 | 480 | 'Unknown';
+
+export type Rating = 'F' | 'D' | 'C' | 'B' | 'A' | 'S' | 'SS'
+
+export type Genre =
+  | 'Action'
+  | 'Adventure'
+  | 'Animation'
+  | 'Biography'
+  | 'Comedy'
+  | 'Crime'
+  | 'Drama'
+  | 'Family'
+  | 'Fantasy'
+  | 'Film-Noir'
+  | 'History'
+  | 'Horror'
+  | 'Music'
+  | 'Musical'
+  | 'Mystery'
+  | 'News'
+  | 'Reality-TV'
+  | 'Romance'
+  | 'Sci-Fi'
+  | 'Short'
+  | 'Sport'
+  | 'Talk-Show'
+  | 'Thriller'
+  | 'War'
+  | 'Western';
+
+export type Tag = 'TC' | 'DC' | 'EC' | 'SE' | 'UR/UC'
+
+export type CompletionStatus = "Y" | "O" | "U"
+
+
+/* =========================================================
+   Used in src ONLY
+   ========================================================= */
+
+  /* ============== Shared / Global ============== */
+
+export type NavigationHistoryEntry = {
   screenName: ScreenName;
   mediaCard: MediaCard | null;
 };
+
+export type ScreenName =
+  | "Launch"
+  | "Browse"
+  | "Selection"
+  | "SeriesList"
+  | "Seasons"
+  | "Show"
+  | "Franchise"
+  | "Profile";
+
+
+  /* ============== Components ============== */
+
+  /* ============== Screens ============== */
+
+// [seasonNum, [seasonCard, [episodeCards..]]]
+export type SeasonTuple = [number, [MediaCard, MediaCard[]]] | null; 
+
+  /* ============== Props ============== */
+
+export type ComponentProps = {
+  Poster: {
+    path?: string; 
+    title: string; 
+    screenName: ScreenName;
+  };
+  HeaderBar: {
+    screenName: ScreenName, 
+    onBack: () => void, 
+    onProfileClick: () => void, 
+    q?: string, 
+    onChange?: (e: any) => void 
+  };
+  ActionButtonRow: {
+    screenName: ScreenName, 
+    mediaCard: MediaCard, 
+    handleTrailer: (mediaCard: MediaCard) => void,
+    handlePlay: (mediaCard: MediaCard) => void
+  };
+  MetaChipsRow: {
+
+  };
+}
 
 export type ScreenProps = {
   Launch: {

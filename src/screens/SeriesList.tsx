@@ -42,7 +42,6 @@ function SeriesList({ mediaCard, onGo, onBack }: Props) {
     <div>No Media Card. Code Error. Refer to Admin.</div>
   ) : (
     <div className="screen-wrap serieslist-wrap">
-
       {/* Standard Header */}
       <div className="header-bar-wrap">
         <button className="back-button" onClick={onBack} aria-label="Back">←</button>
@@ -51,16 +50,14 @@ function SeriesList({ mediaCard, onGo, onBack }: Props) {
           <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
         </div>
       </div>
-
       {/* Top-level toggles */}
       <div className="subheader-buttons-bar-wrap">
         <button className="subheader-button">Order</button>
         <button className="subheader-button" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
       </div>
-
       {/* List */}
       {cards === null ? (
-        <div className="loading">Loading…</div>
+        <div>Loading…</div>
       ) : (
         <div className="serieslist-table">
           {cards.map((card, idx) => (
@@ -68,19 +65,19 @@ function SeriesList({ mediaCard, onGo, onBack }: Props) {
               {/* Index */}
               <div className="serieslist-index">{idx + 1}</div>
               {/* Poster */}
-              {card.posterPath ?
-              (<Poster path={card.posterPath} title={card.title}screenName="SeriesList"/>) :
+              {card.posterPath ? 
+              (<Poster path={card.posterPath} title={card.title}screenName="SeriesList"/>) : 
               (<div className="serieslist-poster-fallback" aria-hidden />)
               }
               {/* Body */}
               <div className="serieslist-body">
-                <div className="serieslist-row-title">{card.title}</div>
-                <button className="action-button go-button serieslist-go-button" onClick={() => onGo(card)}>Go</button>
+                <h2 className="serieslist-row-title">{card.title}</h2>
+                <button className="go-button" onClick={() => onGo(card)}>Go</button>
                 {metaOpen && (
-                <div className="meta-wrap">
-                  {card.year && <span className="meta-item">{card.year}</span>}
-                  {card.runtimeSeconds && <span className="meta-item">{Shared.formatHMM(card.runtimeSeconds)}</span>}
-                  {card.quality && <span className="meta-item">{Shared.pixelQualityToText(card.quality)}</span>}
+                <div className="serieslist-meta">
+                  {card.year && <span>{card.year}</span>}
+                  {card.runtimeSeconds && <span>{Shared.formatHMM(card.runtimeSeconds)}</span>}
+                  {card.quality && <span>{Shared.pixelQualityToText(card.quality)}</span>}
                 </div>
                 )}
               </div>

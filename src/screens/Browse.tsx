@@ -1,24 +1,23 @@
 import { useEffect, useMemo, useState, useRef } from "react";
-import type { ScreenProps, MediaCard, MediaKind, ScreenName } from "../../shared";
-import Poster from "../components/Poster";
-import HeaderBar from "../components/HeaderBar";
 
+import * as Shared from "../../shared";
+import * as Components from "../components";
 
-const screenName: ScreenName = "Browse"
-type Props = ScreenProps["Browse"];
+const screenName: Shared.ScreenName = "Browse"
+type Props = Shared.ScreenProps["Browse"];
 
 function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
   // --- Data state ---
   const [isLoading, setIsLoading] = useState(true);
-  const [cards, setCards] = useState<MediaCard[]>([]);
+  const [cards, setCards] = useState<Shared.MediaCard[]>([]);
   const [q, setQ] = useState("");
 
   //kind multiselect
-  const [kindFilters, setKindFilters] = useState<MediaKind[]>([]);
+  const [kindFilters, setKindFilters] = useState<Shared.MediaKind[]>([]);
   const [showKindsDropdown, setShowKindsDropdown] = useState(false);
   const kindsWrapRef = useRef<HTMLDivElement | null>(null);  //click away to close menu
 
-  const KIND_OPTIONS: MediaKind[] = ["movie", "show", "documentary"];
+  const KIND_OPTIONS: Shared.MediaKind[] = ["movie", "show", "documentary"];
 
   // --- Load level-1 across all kinds ---
   useEffect(() => {
@@ -26,7 +25,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
     (async () => {
       try {
         setIsLoading(true);
-        const list: MediaCard[] =
+        const list: Shared.MediaCard[] =
           (await (window as any).api?.listLevel1All(contentPath)) ?? [];
         setIsLoading(false);
         if (!alive) return;
@@ -73,7 +72,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
   const kindsActive = kindFilters.length > 0;
 
   // Toggle a single kind in multiselect; do NOT close the menu
-  function toggleKind(k: MediaKind) {
+  function toggleKind(k: Shared.MediaKind) {
     setKindFilters((prev) =>
       prev.includes(k) ? prev.filter((x) => x !== k) : [...prev, k]
     );
@@ -106,7 +105,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
   return (
     <div className="screen--wrap browse--wrap">
       {/* Standard Header */}
-      <HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick} q={q} onChange={e => setQ(e.target.value)}/>
+      <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick} q={q} onChange={e => setQ(e.target.value)}/>
 
       {/* Standard Subheader */}
       <div className="subheader-bar--wrap browse-filter-bar--wrap">
@@ -181,7 +180,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
             {/* Poster */}
             <div className="poster">
               {m.posterPath ? (
-                <Poster path={m.posterPath} title={m.title} screenName="Browse"/>
+                <Components.Poster path={m.posterPath} title={m.title} screenName="Browse"/>
               ) : (
                 <div className="poster-fallback" aria-hidden />
               )}

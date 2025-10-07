@@ -14,7 +14,6 @@ type MediaCard = Shared.MediaCard;
 // ============================ Setup ============================
 
 const execFileP = promisify(execFile);
-
 let win: BrowserWindow | null = null;
 
 if (!app.isPackaged) {
@@ -33,7 +32,6 @@ async function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-
   const devUrl = process.env.ELECTRON_START_URL; // e.g. http://localhost:5173
   if (devUrl) {
     await win.loadURL(devUrl);
@@ -44,9 +42,23 @@ async function createWindow() {
 }
 
 /** App lifecycle */
-app.whenReady().then(createWindow);
-app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
-app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    // Focus the existing window instead of creating a new one
+    const win = BrowserWindow.getAllWindows()[0];
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
+  });
+
+  app.whenReady().then(createWindow);
+  app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+  app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
+}
 
 
 // ============================ Handlers ============================
@@ -156,6 +168,7 @@ ipcMain.handle("video:play", async (_evt, videoFilePath: string) => {
 
 // ============================ Server Helpers ============================
 
+// Infer the card kind by the directory
 function inferKindFromDir(dirPath: string):MediaKind {
   const base = path.basename(dirPath).toLowerCase();
   if (base === "movies") return "movie";
@@ -163,10 +176,12 @@ function inferKindFromDir(dirPath: string):MediaKind {
   return "all";
 }
 
+// Dedeplicate an array
 function dedupe<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
 }
 
+// Get the language from tags
 function langFromTags(tags: any): string | undefined {
   if (!tags) return undefined;
   const lang = tags.language || tags.LANGUAGE || tags.lang;
@@ -174,6 +189,7 @@ function langFromTags(tags: any): string | undefined {
   return undefined;
 }
 
+// Probe a video file for metadata
 async function probeVideo(videoFilePath: string) {
   const ffprobeArgs = [
     "-v",
@@ -237,7 +253,7 @@ async function probeVideo(videoFilePath: string) {
   };
 }
 
-/** Return the JSON details from a movie folder */
+// Return the JSON details from a movie folder */
 async function getJsonDetails(dirPath: string) {
   const files = fs.readdirSync(dirPath);
   const jsonFile = files.find(file => file.toLowerCase().endsWith(".json") && !file.startsWith("."));
@@ -252,7 +268,7 @@ async function getJsonDetails(dirPath: string) {
   }
 }
 
-/** Return the mkv details from a "supposed" movie folder */
+// Return the mkv details from a "supposed" movie folder */
 async function getvideoDetails(dirPath: string,  exts: string[] = [".mkv", ".mp4"]) {
   try {
     const stat = await fsp.stat(dirPath).catch(() => null);
@@ -270,6 +286,8 @@ async function getvideoDetails(dirPath: string,  exts: string[] = [".mkv", ".mp4
       return null;
     }
 }
+
+// ============================ Get and Return Data Functions ============================
 
 /** list level1 */
 async function listLevel1(mediaKindPath: string) {

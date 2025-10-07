@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import Poster from "../components/Poster";
+
 import * as Shared from "../../shared";
-import { handlePlay } from ".";
+import * as Components from "../components";
+import * as lib from "../lib";
 
 type Props = Shared.ScreenProps["Seasons"];
 
@@ -51,7 +52,7 @@ function Seasons({ mediaCard, onBack }: Props) {
         <div className="seasons-left-wrap">
           <div className="seasons-title">{mediaCard.title}</div>
           <div className="seasons-poster-wrap">
-            <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName="Seasons" />
+            <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName="Seasons" />
           </div>
         </div>
 
@@ -64,7 +65,7 @@ function Seasons({ mediaCard, onBack }: Props) {
             {seasons.length > 0 && seasons[0][1][1].map(epCard => (
             <div className="seasons-episode-row" key={epCard.episodeOverallNumber}>
               <span className="seasons-episode-number">E{epCard.episodeNumber}</span>
-              <button className="play-button" title="Play" onClick={() => handlePlay(epCard)}>▶</button>
+              <button className="play-button" title="Play" onClick={() => lib.handlePlay(epCard)}>▶</button>
               <span className="seasons-episode-title">{epCard.title}</span>
               <span className="seasons-episode-overall-number">#{epCard.episodeOverallNumber}</span>
             </div>
@@ -108,7 +109,7 @@ function Seasons({ mediaCard, onBack }: Props) {
                     {seasonTuple[1][1].map(epCard => (
                     <div className="seasons-episode-row" key={`${seasonTuple[0]}-${epCard.episodeNumber}`}>
                       <span className="seasons-episode-number">E{epCard.episodeNumber}</span>
-                      <button className="play-button" title="Play" onClick={() => handlePlay(epCard)}>▶</button>
+                      <button className="play-button" title="Play" onClick={() => lib.handlePlay(epCard)}>▶</button>
                       <span className="seasons-episode-title">{Shared.stripExtention(epCard.title)}</span>
                       <span className="seasons-episode-overall-number">#{epCard.episodeOverallNumber}</span>
                     </div>

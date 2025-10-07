@@ -1,6 +1,8 @@
-import * as Shared from '../../shared'
+import * as Shared from "../../shared";
 
-function HeaderBar({ screenName, onBack, onProfileClick, q, onChange }: { screenName: Shared.ScreenName, onBack: () => void, onProfileClick: () => void, q?: string, onChange?: (e: any) => void; }) {
+type Props = Shared.ComponentProps["HeaderBar"];
+
+function HeaderBar({ screenName, onBack, onProfileClick, q, onChange }: Props) {
   return (
       <div className="header-bar--wrap">
         <button className="btn btn--circle btn--bare" onClick={onBack} aria-label="Back">←</button>
