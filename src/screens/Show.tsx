@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 
 import * as Shared from "../../shared";
-import Poster from "../components/Poster";
+import * as Components from "../components";
 
-type Props = Shared.ScreenProps["Show"];
+const screenName: Shared.ScreenName = "Show"
+type Props = Shared.ScreenProps[typeof screenName];
 
 
 function Show({ mediaCard, onGo, onBack, onProfileClick }: Props) {
@@ -26,55 +27,41 @@ function Show({ mediaCard, onGo, onBack, onProfileClick }: Props) {
 
   const determineCompletionStatusClassName = () => {
     if (!mediaCard) {return }
-    switch(mediaCard.completionStatus) {
-      case "Y": return "meta-item status-Y";
-      case "O": return "meta-item status-O";
-      case "U": return "meta-item status-U";
-      default:  return "meta-item status-U";
-    }
+    return mediaCard.completionStatus?? "U"
   }
 
   return (!mediaCard ?
     (<div> No Media Card. Code Error. Refer to Admin.</div>):
     (
-    <div className="screen-wrap show-wrap">
-
+    <div className="screen--wrap show--wrap">
       {/* Standard Header */}
-      <div className="header-bar-wrap">
-        <button className="back-button" onClick={onBack} aria-label="Back">←</button>
-        <div></div>
-        <button className="profile-button" title="Profile" onClick={onProfileClick}>
-          <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
-        </button>
-      </div>
-
-      {/* Left Side */}
-      <div className="show-main-screen">
-        <Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Show"}/>
+      <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick}/>
+      
+      <div className="show__main-screen">
+        {/* Left Side */}
+        <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Show"}/>
 
         {/* Right Side */}
-        <div className="show-body">
-          <div className="show-title">{mediaCard?.title ?? "Untitled"}</div>
-          <div className="show-actions">
-            <button className="trailer-button" disabled={!mediaCard?.sampleFilePath}>
-              Trailer
-            </button>
-            <button className="go-button" onClick={() => onGo(seasons)}>
-              Go
-            </button>
-          </div>
-          <div className="show-overview">
+        <div className="show__body">
+          <div className="show__title">{mediaCard?.title ?? "Untitled"}</div>
+
+          <Components.ActionButtonsRow screenName={screenName} mediaCard={mediaCard} onGo={() => onGo(seasons)}/>
+          
+          <div className="show__overview">
             <p>{mediaCard?.overview ?? "No description available."}</p>
           </div>
-          <button className="meta-button" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
+
+          <button className="btn btn--sm btn--meta" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
+          
           {!showMeta ? null : (
-          <div className="meta-wrap">
-            <span className="meta-item">{mediaCard.year}</span>
-            <span className={determineCompletionStatusClassName()}>{Shared.completionStatusToText(mediaCard.completionStatus)}</span>
-            <span className="meta-item">{mediaCard.numberOfEpisodesObtained}/{mediaCard.totalNumberOfEpisodes} episodes</span>
+          <div className="meta-row--wrap">
+            <span className="meta-row__item">{mediaCard.year}</span>
+            <span  className={`meta-row__item--completion-status-${determineCompletionStatusClassName()}`}>{Shared.completionStatusToText(mediaCard.completionStatus)}</span>
+            <span className="meta-row--item">{mediaCard.numberOfEpisodesObtained}/{mediaCard.totalNumberOfEpisodes} episodes</span>
           </div>
           )}
         </div>
+
       </div>
     </div>
     )

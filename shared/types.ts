@@ -2,7 +2,7 @@
    SHARED (electron + src)
    ========================================================= */
 
-/* ============== Card ============== */
+  /* ============== Card ============== */
 
 export type MediaCard = {
   title: string;
@@ -40,7 +40,7 @@ export type MediaCard = {
   completionStatus?: CompletionStatus;
 };
 
-/* ============== Card Properties ============== */
+  /* ============== Card Properties ============== */
 
 export type MediaKind = 'all' | 'movie' | 'show' | 'documentary'
 
@@ -61,16 +61,11 @@ export type Genre =
   | 'Film-Noir'
   | 'History'
   | 'Horror'
-  | 'Music'
   | 'Musical'
   | 'Mystery'
-  | 'News'
   | 'Reality-TV'
   | 'Romance'
   | 'Sci-Fi'
-  | 'Short'
-  | 'Sport'
-  | 'Talk-Show'
   | 'Thriller'
   | 'War'
   | 'Western';
@@ -113,22 +108,23 @@ export type SeasonTuple = [number, [MediaCard, MediaCard[]]] | null;
 
 export type ComponentProps = {
   Poster: {
-    path?: string; 
-    title: string; 
-    screenName: ScreenName;
+    path?: string
+    title: string
+    screenName: ScreenName
   };
   HeaderBar: {
-    screenName: ScreenName, 
-    onBack: () => void, 
-    onProfileClick: () => void, 
-    q?: string, 
-    onChange?: (e: any) => void 
+    screenName: ScreenName
+    onBack: () => void
+    onProfileClick: () => void
+    q?: string
+    onChange?: (e: any) => void
+    mediaCard?: MediaCard
+    count?: number
   };
   ActionButtonRow: {
-    screenName: ScreenName, 
-    mediaCard: MediaCard, 
-    handleTrailer: (mediaCard: MediaCard) => void,
-    handlePlay: (mediaCard: MediaCard) => void
+    screenName: ScreenName
+    mediaCard: MediaCard
+    onGo?: () => void
   };
   MetaChipsRow: {
 
@@ -137,44 +133,44 @@ export type ComponentProps = {
 
 export type ScreenProps = {
   Launch: {
-    onLoaded: (contentPath: string) => void;
+    onLoaded: (contentPath: string) => void
   };
   Browse: {
-    contentPath: string;
-    onOpenCard: (mediaCard: MediaCard) => void;
-    onBack: () => void;
-    onProfileClick: () => void;
+    contentPath: string
+    onOpenCard: (mediaCard: MediaCard) => void
+    onBack: () => void
+    onProfileClick: () => void
   };
   Selection: {
-    mediaCard: MediaCard | null;
-    onBack: () => void;
-    onProfileClick: () => void;
+    mediaCard: MediaCard | null
+    onBack: () => void
+    onProfileClick: () => void
   };
   Seasons: {
-    mediaCard: MediaCard | null;
-    seasons: SeasonTuple;
-    onBack: () => void;
-    onProfileClick: () => void;
+    mediaCard: MediaCard | null
+    seasons: SeasonTuple
+    onBack: () => void
+    onProfileClick: () => void
   };
   SeriesList: {
-    mediaCard: MediaCard | null;
-    onGo: (mediaCard: MediaCard) => void;
-    onBack: () => void;
-    onProfileClick: () => void;
+    mediaCard: MediaCard | null
+    onGo: (mediaCard: MediaCard) => void
+    onBack: () => void
+    onProfileClick: () => void
   };
   Show: {
-    mediaCard: MediaCard | null;
-    onGo: (seasons: SeasonTuple) => void;
-    onBack: () => void;
-    onProfileClick: () => void;
+    mediaCard: MediaCard | null
+    onGo: (seasons: SeasonTuple) => void
+    onBack: () => void
+    onProfileClick: () => void
   };
   Franchise: {
-    mediaCard: MediaCard;
-    onGo: (mediaCard: MediaCard) => void;
-    onBack: () => void;
-    onProfileClick: () => void;
+    mediaCard: MediaCard
+    onGo: (mediaCard: MediaCard) => void
+    onBack: () => void
+    onProfileClick: () => void
   };
   Profile: {
-    onBack: () => void;
+    onBack: () => void
   }
 };

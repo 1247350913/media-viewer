@@ -4,9 +4,10 @@ import * as Shared from "../../shared";
 import * as Components from "../components";
 import * as lib from "../lib";
 
-type Props = Shared.ScreenProps["Seasons"];
+const screenName: Shared.ScreenName = "Seasons"
+type Props = Shared.ScreenProps[typeof screenName];
 
-function Seasons({ mediaCard, onBack }: Props) {
+function Seasons({ mediaCard, onBack, onProfileClick}: Props) {
   const [seasons, setSeasons] = useState<Array<[number, [Shared.MediaCard, Shared.MediaCard[]]]> | null>(null);  //[seasonNum, [seasonCard, [episodeCards..]]]
   const [open, setOpen] = useState<Set<number>>(new Set());
 
@@ -35,39 +36,32 @@ function Seasons({ mediaCard, onBack }: Props) {
   return (!mediaCard ?
     (<div> No Media Card. Code Error. Refer to Admin.</div>):
     (
-    <div className="screen-wrap seasons-wrap">
+    <div className="screen--wrap seasons--wrap">
 
       {/* Standard Header */}
-      <div className="header-bar-wrap">
-        <button className="back-button" onClick={onBack}>&larr;</button>
-        <div className="profile-wrap" title="Profile">
-          <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
-        </div>
-      </div>
+      <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick}/>
 
       {/* Seasons Screen */}
-      <div className="seasons-main-screen-wrap">
+      <div className="seasons__main-screen">
 
         {/* Left Side */}
-        <div className="seasons-left-wrap">
-          <div className="seasons-title">{mediaCard.title}</div>
-          <div className="seasons-poster-wrap">
-            <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName="Seasons" />
-          </div>
+        <div className="seasons__left">
+          <h1 className="seasons__title">{mediaCard.title}</h1>
+          <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName="Seasons" />
         </div>
 
-        {/* Right Side - FLAT*/}
-        <div className="seasons-right-wrap">
+        {/* Right Side */}
+        <div className="seasons__right">
           {!seasons ? (
-          <div className="empty">Loading...</div>) :
+          <div>Loading...</div>) :
           mediaCard.noSeasons ? (
-          <div className="seasons-episodes-wrap">
+          <div className="seasons__episodes--wrap">
             {seasons.length > 0 && seasons[0][1][1].map(epCard => (
-            <div className="seasons-episode-row" key={epCard.episodeOverallNumber}>
-              <span className="seasons-episode-number">E{epCard.episodeNumber}</span>
-              <button className="play-button" title="Play" onClick={() => lib.handlePlay(epCard)}>▶</button>
-              <span className="seasons-episode-title">{epCard.title}</span>
-              <span className="seasons-episode-overall-number">#{epCard.episodeOverallNumber}</span>
+            <div className="seasons__episode-row" key={epCard.episodeOverallNumber}>
+              <span className="seasons__episode-number">E{epCard.episodeNumber}</span>
+              <button className="btn btn--sm btn--circle btn--play-episode" title="Play" onClick={() => lib.handlePlay(epCard)}>▶</button>
+              <span className="seasons__episode-title">{epCard.title}</span>
+              <span className="seasons__overall-episode-number">#{epCard.episodeOverallNumber}</span>
             </div>
               ))}
           </div>
@@ -78,11 +72,11 @@ function Seasons({ mediaCard, onBack }: Props) {
             {seasons.map(seasonTuple => {
               const isOpen = open.has(seasonTuple[0]);
               return (
-                <div className="season-row-wrap" key={seasonTuple[0]}>
+                <div className="season-row--wrap" key={seasonTuple[0]}>
 
                   {/* Season Button Row*/}
                   <button
-                    className={`season-row ${
+                    className={`season-row-button ${
                       seasonTuple[1][0]?.totalNumberOfEpisodes &&
                       seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length
                         ? "has-missing"
@@ -92,26 +86,26 @@ function Seasons({ mediaCard, onBack }: Props) {
                     aria-expanded={isOpen}
                     aria-controls={`season-${seasonTuple[0]}-episodes`}
                   >
-                    <span className="season-title">{seasonTuple[1][0].title}</span>
-                    <span className="season-spacer" />
+                    <h2 className="season-row__title">{seasonTuple[1][0].title}</h2>
+                    <span className="season-row__spacer" />
 
                     {seasonTuple[1][0]?.totalNumberOfEpisodes && (seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length) ? (
-                    <span className="seasons-episode-count">{seasonTuple[1][1].length} / {seasonTuple[1][0].totalNumberOfEpisodes} Ep</span>) : (
-                    <span className="seasons-episode-count">{seasonTuple[1][1].length} Ep</span>
+                    <span className="season-row__episode-count">{seasonTuple[1][1].length} / {seasonTuple[1][0].totalNumberOfEpisodes} Ep</span>) : (
+                    <span className="season-row__episode-count">{seasonTuple[1][1].length} Ep</span>
                     )}
 
-                    <span className={`chev ${isOpen ? "open" : ""}`} aria-hidden>▾</span>
+                    <span className={`season-row__chev ${isOpen ? "open" : ""}`} aria-hidden>▾</span>
                   </button>
 
                   {/* Opened */}
                   {isOpen && (
-                  <div className="seasons-episodes-wrap" id={`season-${seasonTuple[0]}-episodes`}>
+                  <div className="season-episodes--wrap" id={`season-${seasonTuple[0]}-episodes`}>
                     {seasonTuple[1][1].map(epCard => (
-                    <div className="seasons-episode-row" key={`${seasonTuple[0]}-${epCard.episodeNumber}`}>
-                      <span className="seasons-episode-number">E{epCard.episodeNumber}</span>
-                      <button className="play-button" title="Play" onClick={() => lib.handlePlay(epCard)}>▶</button>
-                      <span className="seasons-episode-title">{Shared.stripExtention(epCard.title)}</span>
-                      <span className="seasons-episode-overall-number">#{epCard.episodeOverallNumber}</span>
+                    <div className="seasons__episode-row" key={`${seasonTuple[0]}-${epCard.episodeNumber}`}>
+                      <span className="seasons__episode-number">E{epCard.episodeNumber}</span>
+                      <button className="btn btn--sm btn--circle btn--play-episode" title="Play" onClick={() => lib.handlePlay(epCard)}>▶</button>
+                      <span className="seasons__episode-title">{Shared.stripExtention(epCard.title)}</span>
+                      <span className="seasons__overall-episode-number">#{epCard.episodeOverallNumber}</span>
                     </div>
                     ))}
                   </div>

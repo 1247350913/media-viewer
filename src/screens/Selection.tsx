@@ -4,8 +4,8 @@ import * as Shared from "../../shared";
 import * as Components from "../components"
 import * as lib from "../lib";
 
-const screenName = "Selection"
-type Props = Shared.ScreenProps["Selection"];
+const screenName: Shared.ScreenName = "Selection"
+type Props = Shared.ScreenProps[typeof screenName];
 
 
 function Selection({ mediaCard, onBack, onProfileClick }: Props) {
@@ -22,14 +22,17 @@ function Selection({ mediaCard, onBack, onProfileClick }: Props) {
       <div className="selection-main-screen--wrap">
 
         {/* Poster */}
-        <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Selection"}/>
+        <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={screenName}/>
 
         {/* Body */}
         <div className="selection__body">
           <h1 className="selection__title">{mediaCard?.title ?? "Untitled"}</h1>
           <Components.ActionButtonsRow screenName={screenName} mediaCard={mediaCard} handleTrailer={lib.handleTrailer} handlePlay={lib.handlePlay}/>
           <p className="selection__overview">{mediaCard.overview ?? "No description available."}</p>
-          <button className="btn btn--sm btn--meta" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
+          <button 
+            className={`btn btn--sm btn--meta selection__meta-button${showMeta ? " is-active" : ""}`}
+            onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}
+          </button>
           {!showMeta ? null : (
           <div className="meta-row--wrap">
             {mediaCard.year && <span className="meta-row__item">{mediaCard.year}</span>}

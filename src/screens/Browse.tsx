@@ -4,7 +4,7 @@ import * as Shared from "../../shared";
 import * as Components from "../components";
 
 const screenName: Shared.ScreenName = "Browse"
-type Props = Shared.ScreenProps["Browse"];
+type Props = Shared.ScreenProps[typeof screenName];
 
 function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
   // --- Data state ---
@@ -83,7 +83,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
     setKindFilters([]);
   }
 
-  // --- Search + kind filtering (now respects kindFilters) ---
+  // Search + kind filtering
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
 
@@ -95,19 +95,16 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
 
     if (!s) return kindFiltered;
 
-    return kindFiltered.filter(
-      (c) =>
-        c.title.toLowerCase().includes(s) ||
-        String(c.year ?? "").includes(s)
-    );
+    return kindFiltered.filter((c) => c.title.toLowerCase().includes(s));
+
   }, [cards, q, kindFilters]);
 
   return (
     <div className="screen--wrap browse--wrap">
-      {/* Standard Header */}
+      {/* ===== Standard Header Search Bar ===== */}
       <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick} q={q} onChange={e => setQ(e.target.value)}/>
 
-      {/* Standard Subheader */}
+      {/* ===== Standard Subheader Filters Bar ===== */}
       <div className="subheader-bar--wrap browse-filter-bar--wrap">
         <div className="subheader-bar__btn-wrap" ref={kindsWrapRef}>
           <button
@@ -154,7 +151,7 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
                       checked={active}
                       onChange={() => toggleKind(k)}
                     />
-                    <span className="dropdown-label">{label}</span>
+                    <span className="dropdown-menu__entry-label">{label}</span>
                   </label>
                 );
               })}
@@ -173,42 +170,34 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
         </button>
       </div>
 
-      {/* ===== Cards grid ===== */}
-      <div className="cards">
-        {filtered.map((m, i) => (
-          <div className="movie-card is-clickable" key={`${m.title}-${m.year ?? ""}-${i}`} onClick={() => onOpenCard(m)}>
-            {/* Poster */}
-            <div className="poster">
-              {m.posterPath ? (
-                <Components.Poster path={m.posterPath} title={m.title} screenName="Browse"/>
-              ) : (
-                <div className="poster-fallback" aria-hidden />
-              )}
-            </div>
+      {isLoading && (
+      <div className="browse__cards--empty">Loading... 🙂</div>
+      )}
+      {cards.length > 0 && filtered.length === 0 && (
+        <div className="browse__cards--empty">No matches.</div>
+      )}
+      {cards.length === 0 && !isLoading && (
+        <div className="browse__cards--empty">No items found.</div>
+      )}
 
-            {/* Body */}
-            <div className="card-body">
-              <div className="title-row">
-                <div className="title" title={m.title}>
-                  {m.title}
-                </div>
-              </div>
+      {/* ===== Cards Grid ===== */}
+      {cards.length > 0 && (
+      <div className="browse__cards-grid">
+        {filtered.map((m, i) => (
+        <div className="browse__grid-card is-clickable" key={`${m.title}-${m.year ?? ""}-${i}`} onClick={() => onOpenCard(m)}>
+          {/* Poster */}
+          <Components.Poster path={m.posterPath} title={m.title} screenName={screenName}/>
+          {/* Body */}
+          <div className="card-body">
+            <div className="title-row">
+              <h1 className="title" title={m.title}>{m.title}</h1>
             </div>
           </div>
+        </div>
         ))}
-
-        {isLoading && (
-          <div className="browse__cards--empty">Loading... 🙂</div>
-        )}
-
-        {cards.length > 0 && filtered.length === 0 && (
-          <div className="browse__cards--empty">No matches.</div>
-        )}
-
-        {cards.length === 0 && !isLoading && (
-          <div className="browse__cards--empty">No items found.</div>
-        )}
       </div>
+      )}
+
     </div>
   );
 }

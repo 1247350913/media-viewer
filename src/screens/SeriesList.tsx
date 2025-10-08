@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
 
 import * as Shared from "../../shared";
-import Poster from "../components/Poster";
+import * as Components from "../components";
 
-type Props = Shared.ScreenProps["SeriesList"];
-type MediaCard = Shared.MediaCard;
+const screenName: Shared.ScreenName = "SeriesList"
+type Props = Shared.ScreenProps[typeof screenName];
 
-function SeriesList({ mediaCard, onGo, onBack }: Props) {
-  const [cards, setCards] = useState<MediaCard[] | null>(null);
+
+function SeriesList({ mediaCard, onGo, onBack, onProfileClick }: Props) {
+  const [cards, setCards] = useState<Shared.MediaCard[] | null>(null);
   const [metaOpen, setMetaOpen] = useState(false);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const list: MediaCard[] =
+        const list: Shared.MediaCard[] =
           (await (window as any).api?.listSeries(mediaCard)) ?? [];
         if (!alive) return;
         const sorted = list
@@ -41,38 +42,37 @@ function SeriesList({ mediaCard, onGo, onBack }: Props) {
   return !mediaCard ? (
     <div>No Media Card. Code Error. Refer to Admin.</div>
   ) : (
-    <div className="screen-wrap serieslist-wrap">
+    <div className="screen--wrap serieslist--wrap">
       {/* Standard Header */}
-      <div className="header-bar-wrap">
-        <button className="back-button" onClick={onBack} aria-label="Back">←</button>
-        <div className="serieslist-title">{mediaCard.title}</div>
-        <div className="profile-wrap" title="Profile">
-          <img src="../../public/default-profile-icon.png" alt="Profile Image" className="profile-icon"/>
+      <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick} mediaCard={mediaCard} count={cards?.length}/>
+
+      {/* Standard Subheader */}
+      <div className="subheader-bar--wrap">
+        <div className="subheader-bar__btn-wrap">
+          <button className="btn btn--secondary btn--oval btn--md">Order</button>
+        </div>
+        <div className="subheader-bar__btn-wrap">
+          <button className="btn btn--secondary btn--oval btn--md" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
         </div>
       </div>
-      {/* Top-level toggles */}
-      <div className="subheader-buttons-bar-wrap">
-        <button className="subheader-button">Order</button>
-        <button className="subheader-button" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
-      </div>
+
       {/* List */}
       {cards === null ? (
         <div>Loading…</div>
       ) : (
-        <div className="serieslist-table">
+        <div className="serieslist__column">
           {cards.map((card, idx) => (
-            <article key={card.title} className="serieslist-row">
+            <article key={card.title} className="serieslist__row">
               {/* Index */}
-              <div className="serieslist-index">{idx + 1}</div>
+              <div className="serieslist__index">{idx + 1}</div>
+
               {/* Poster */}
-              {card.posterPath ? 
-              (<Poster path={card.posterPath} title={card.title}screenName="SeriesList"/>) : 
-              (<div className="serieslist-poster-fallback" aria-hidden />)
-              }
+              <Components.Poster path={card.posterPath} title={card.title} screenName={screenName}/> 
+         
               {/* Body */}
-              <div className="serieslist-body">
-                <h2 className="serieslist-row-title">{card.title}</h2>
-                <button className="go-button" onClick={() => onGo(card)}>Go</button>
+              <div className="serieslist__body">
+                <h2 className="serieslist-row__title">{card.title}</h2>
+                <button className="btn btn--md btn--oval" onClick={() => onGo(card)}>Go</button>
                 {metaOpen && (
                 <div className="serieslist-meta">
                   {card.year && <span>{card.year}</span>}
