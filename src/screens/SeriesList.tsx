@@ -49,10 +49,10 @@ function SeriesList({ mediaCard, onGo, onBack, onProfileClick }: Props) {
       {/* Standard Subheader */}
       <div className="subheader-bar--wrap">
         <div className="subheader-bar__btn-wrap">
-          <button className="btn btn--secondary btn--oval btn--md">Order</button>
+          <button className="btn btn--secondary btn--oval btn--md btn--filter">Order</button>
         </div>
         <div className="subheader-bar__btn-wrap">
-          <button className="btn btn--secondary btn--oval btn--md" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
+          <button className="btn btn--secondary btn--oval btn--md btn--filter" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
         </div>
       </div>
 
@@ -70,14 +70,14 @@ function SeriesList({ mediaCard, onGo, onBack, onProfileClick }: Props) {
               <Components.Poster path={card.posterPath} title={card.title} screenName={screenName}/> 
          
               {/* Body */}
-              <div className="serieslist__body">
+              <div className="serieslist-row__body">
                 <h2 className="serieslist-row__title">{card.title}</h2>
                 <button className="btn btn--md btn--oval" onClick={() => onGo(card)}>Go</button>
                 {metaOpen && (
-                <div className="serieslist-meta">
-                  {card.year && <span>{card.year}</span>}
-                  {card.runtimeSeconds && <span>{Shared.formatHMM(card.runtimeSeconds)}</span>}
-                  {card.quality && <span>{Shared.pixelQualityToText(card.quality)}</span>}
+                <div className="serieslist__meta-row--wrap">
+                  {card.year && <span className="meta-row__item">{card.year}</span>}
+                  {card.runtimeSeconds && <span className="meta-row__item">{Shared.formatHMM(card.runtimeSeconds)}</span>}
+                  {card.quality && <span className="meta-row__item">{Shared.pixelQualityToText(card.quality)}</span>}
                 </div>
                 )}
               </div>

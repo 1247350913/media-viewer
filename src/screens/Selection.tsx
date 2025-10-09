@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import * as Shared from "../../shared";
 import * as Components from "../components"
-import * as lib from "../lib";
 
 const screenName: Shared.ScreenName = "Selection"
 type Props = Shared.ScreenProps[typeof screenName];
@@ -27,10 +26,10 @@ function Selection({ mediaCard, onBack, onProfileClick }: Props) {
         {/* Body */}
         <div className="selection__body">
           <h1 className="selection__title">{mediaCard?.title ?? "Untitled"}</h1>
-          <Components.ActionButtonsRow screenName={screenName} mediaCard={mediaCard} handleTrailer={lib.handleTrailer} handlePlay={lib.handlePlay}/>
+          <Components.ActionButtonsRow screenName={screenName} mediaCard={mediaCard} />
           <p className="selection__overview">{mediaCard.overview ?? "No description available."}</p>
           <button 
-            className={`btn btn--sm btn--meta selection__meta-button${showMeta ? " is-active" : ""}`}
+            className={`btn btn--md btn--meta selection__meta-button${showMeta ? " is-active" : ""}`}
             onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}
           </button>
           {!showMeta ? null : (
