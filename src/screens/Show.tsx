@@ -8,7 +8,7 @@ type Props = Shared.ScreenProps[typeof screenName];
 
 
 function Show({ mediaCard, onGo, onBack, onProfileClick }: Props) {
-  const [showMeta, setShowMeta] = useState(false);
+  const [showMeta, setShowMeta] = useState(true);
   const [seasons, setSeasons] = useState<Shared.SeasonTuple>(null);
 
   useEffect(() => {
@@ -37,27 +37,28 @@ function Show({ mediaCard, onGo, onBack, onProfileClick }: Props) {
       {/* Standard Header */}
       <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick}/>
       
-      <div className="show__main-screen">
-        {/* Left Side */}
+      <div className="show__main-screen--wrap">
+        {/* Left Side - Poster */}
         <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={"Show"}/>
 
-        {/* Right Side */}
+        {/* Right Side - Body */}
         <div className="show__body">
-          <div className="show__title">{mediaCard?.title ?? "Untitled"}</div>
+          <h1 className="show__title">{mediaCard?.title ?? "Untitled"}</h1>
 
           <Components.ActionButtonsRow screenName={screenName} mediaCard={mediaCard} onGo={() => onGo(seasons)}/>
-          
-          <div className="show__overview">
-            <p>{mediaCard?.overview ?? "No description available."}</p>
-          </div>
+    
+          <p className="show__overview">{mediaCard?.overview ?? "No description available."}</p>
 
-          <button className="btn btn--sm btn--meta" onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}</button>
+          <button 
+            className={`btn btn--md btn--meta show__meta-button${showMeta ? " is-active" : ""}`}
+            onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}
+          </button>
           
           {!showMeta ? null : (
           <div className="meta-row--wrap">
             <span className="meta-row__item">{mediaCard.year}</span>
-            <span  className={`meta-row__item--completion-status-${determineCompletionStatusClassName()}`}>{Shared.completionStatusToText(mediaCard.completionStatus)}</span>
-            <span className="meta-row--item">{mediaCard.numberOfEpisodesObtained}/{mediaCard.totalNumberOfEpisodes} episodes</span>
+            <span  className={`meta-row__item meta-row__item--completion-status-${determineCompletionStatusClassName()}`}>{Shared.completionStatusToText(mediaCard.completionStatus)}</span>
+            <span className="meta-row__item">{mediaCard.numberOfEpisodesObtained}/{mediaCard.totalNumberOfEpisodes} Ep</span>
           </div>
           )}
         </div>

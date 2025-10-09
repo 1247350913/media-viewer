@@ -52,7 +52,7 @@ function SeriesList({ mediaCard, onGo, onBack, onProfileClick }: Props) {
           <button className="btn btn--secondary btn--oval btn--md btn--filter">Order</button>
         </div>
         <div className="subheader-bar__btn-wrap">
-          <button className="btn btn--secondary btn--oval btn--md btn--filter" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
+          <button className={`btn btn--secondary btn--oval btn--md btn--filter${metaOpen ? " is-active" : ""}`} onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
         </div>
       </div>
 

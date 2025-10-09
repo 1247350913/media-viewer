@@ -15,3 +15,7 @@ export async function handlePlay(mediaCard: Shared.MediaCard) {
       console.warn("No video file path available to play.") 
     };
 }
+
+export function cleanEpisodeTitle(title: string) {
+  return title.replace(/\.(mkv|mp4)$/i, '');
+}

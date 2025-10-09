@@ -40,7 +40,3 @@ export function completionStatusToText(cs: Shared.CompletionStatus | undefined):
     default:  return "Unknown";
   }
 }
-
-export function stripExtention(title: string): string {
-  return title.split(".")[0]
-}

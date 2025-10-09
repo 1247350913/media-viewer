@@ -20,18 +20,22 @@ function Selection({ mediaCard, onBack, onProfileClick }: Props) {
       {/* Selection Main Screen */}
       <div className="selection-main-screen--wrap">
 
-        {/* Poster */}
+        {/* Left Side - Poster */}
         <Components.Poster path={mediaCard.posterPath} title={mediaCard.title} screenName={screenName}/>
 
-        {/* Body */}
+        {/* Right Side - Body */}
         <div className="selection__body">
           <h1 className="selection__title">{mediaCard?.title ?? "Untitled"}</h1>
+          
           <Components.ActionButtonsRow screenName={screenName} mediaCard={mediaCard} />
+          
           <p className="selection__overview">{mediaCard.overview ?? "No description available."}</p>
+
           <button 
             className={`btn btn--md btn--meta selection__meta-button${showMeta ? " is-active" : ""}`}
             onClick={()=>setShowMeta(!showMeta)}>{showMeta ? "Close" : "Meta"}
           </button>
+          
           {!showMeta ? null : (
           <div className="meta-row--wrap">
             {mediaCard.year && <span className="meta-row__item">{mediaCard.year}</span>}
