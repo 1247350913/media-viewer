@@ -19,27 +19,27 @@ function Poster({ path, title, screenName }: Props ) {
   switch (screenName) {
     case "Browse": return (
       <div className="browse__poster--wrap">
-        {src ? (<img src={src} alt={`${title} poster`} className="browse__poster--img" />) : (<div className="browse-poster-fallback" aria-hidden />)}
+        {src ? (<img src={src} alt={`${title} poster`} className="browse__poster--img" />) : (<div className="browse__poster-fallback" aria-hidden />)}
       </div>
     )
     case "Franchise": return (
       <div className="franchise__poster--wrap">
-        {src ? (<img src={src} alt={`${title} poster`} className="franchise__poster--img" />) : (<div className="franchise-poster-fallback" aria-hidden />)}
+        {src ? (<img src={src} alt={`${title} poster`} className="franchise__poster--img" />) : (<div className="franchise__poster-fallback" aria-hidden />)}
       </div>
     )
     case "SeriesList": return (
       <div className="serieslist__poster--wrap">
-        {src ? (<img src={src} alt={`${title} poster`} className="serieslist__poster--img" />) : (<div className="serieslist-poster-fallback" aria-hidden />)}
+        {src ? (<img src={src} alt={`${title} poster`} className="serieslist__poster--img" />) : (<div className="serieslist__poster-fallback" aria-hidden />)}
       </div>
     )
     case "Show": return (
       <div className="show__poster--wrap">
-        {src ? (<img src={src} alt={`${title} poster`} className="show__poster--img" />) : (<div className="show-poster-fallback" aria-hidden />)}
+        {src ? (<img src={src} alt={`${title} poster`} className="show__poster--img" />) : (<div className="show__poster-fallback" aria-hidden />)}
       </div>
     )
     case "Seasons": return (
       <div className="seasons__poster--wrap">
-        {src ? (<img src={src} alt={`${title} poster`} className="seasons__poster--img" />) : (<div className="seasons-poster--fallback" aria-hidden />)}
+        {src ? (<img src={src} alt={`${title} poster`} className="seasons__poster--img" />) : (<div className="seasons__poster--fallback" aria-hidden />)}
       </div>
     )
     case "Selection": return (

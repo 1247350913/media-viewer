@@ -28,12 +28,15 @@ function Franchise({ mediaCard, onGo, onBack, onProfileClick }: Props) {
     <div className="screen--wrap franchise--wrap">
 
       {/* Standard Header */}
-      <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick}/>
+      <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick} mediaCard={mediaCard} count={cards?.length}/>
 
       {/* Top-level meta toggle */}
       <div className="subheader-bar--wrap">
-        <div className="subheader-bar__btn--wrap">
-          <button className="btn btn--meta" onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
+        <div className="subheader-bar__btn-wrap">
+          <button className="btn btn--secondary btn--oval btn--md btn--filter">Order</button>
+        </div>
+        <div className="subheader-bar__btn-wrap">
+          <button className={`btn btn--secondary btn--oval btn--md btn--filter${metaOpen ? " is-active" : ""}`} onClick={() => setMetaOpen((v) => !v)}>{metaOpen ? "Close" : "Meta"}</button>
         </div>
       </div>
 
@@ -41,28 +44,25 @@ function Franchise({ mediaCard, onGo, onBack, onProfileClick }: Props) {
       {cards === null ? (
       <div>Loading…</div>
       ) : (
-      <div className="franchise__list">
-        {cards.map((card) => (
+      <div className="franchise__column">
+        {cards.map((card, idx) => (
           <div key={card.title} className="franchise__row">
+            
+            {/* Index */}
+            <div className="franchise__index">{idx + 1}</div>
 
-            {/* Left Side */}
+            {/* Poster*/}
             <Components.Poster path={card.posterPath} title={card.title} screenName="Franchise" />
 
-            {/* Right Side */}
+            {/* Body */}
             <div className="franchise-row__body">
               <div className="franchise-row__title">{card.title}</div>
-              <div className="franchise-row__actions">
-                <button className="btn btn--go" onClick={() => onGo(card)}>Go</button>
+              <button className="btn btn--go" onClick={() => onGo(card)}>Go</button>
+              {metaOpen && (
+              <div className="franchise__meta-row--wrap">
+                {card.year && <span className="meta-row__item">{card.year}</span>}
               </div>
-              <div className="meta--wrap">
-                {metaOpen && (
-                  <div className="meta--wrap">
-                    {card.year && <span className="meta__item">{card.year}</span>}
-                    {card.runtimeSeconds && <span className="meta__item">{Shared.formatHMM(card.runtimeSeconds)}</span>}
-                    {card.quality && <span className="meta__item">{Shared.pixelQualityToText(card.quality)}</span>}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
         ))}
