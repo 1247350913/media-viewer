@@ -18,7 +18,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APP_KEY }}
       AWS_DEFAULT_REGION: us-west-000
-      AWS_ENDPOINT_URL_S3: https://s3.us-west-000.backblazeb2.com
+      AWS_ENDPOINT_URL_S3: https://s3.us-east-005.backblazeb2.com
       APP_NAME: "Media Viewer"
       S3_BUCKET: "4gmXev0u4Um"
 
@@ -43,7 +43,7 @@ jobs:
       - name: Build app
         run: pnpm build
 
-      - name: Package (macOS arm64)
+      - name: Package (macOS)
         run: pnpm electron-builder --mac --universal --publish never
 
       # Backblaze-friendly preflight (NO STS)
