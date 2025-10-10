@@ -17,6 +17,13 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: pnpm run release
 
+      # Test
+      - name: Verify B2 S3 creds
+        run: |
+          aws --version
+          aws s3 ls --endpoint-url https://s3.us-east-005.backblazeb2.com
+          aws s3 ls s3://media-viewer-updates/ --endpoint-url https://s3.us-east-005.backblazeb2.com
+
       # Upload to B2 (S3 API)
       - name: Upload artifacts to B2
         run: |
@@ -26,3 +33,6 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APP_KEY }}
+          AWS_DEFAULT_REGION: us-east-005
+          AWS_EC2_METADATA_DISABLED: "true"
+          AWS_S3_FORCE_PATH_STYLE: "true"
