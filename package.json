@@ -26,33 +26,27 @@
   "build": {
     "appId": "com.cjh.media_viewer",
     "productName": "Media Viewer",
-
     "files": [
       "dist/**/*"
     ],
-
     "directories": {
       "output": "release"
     },
-
     "publish": [
       {
         "provider": "generic",
         "url": "https://f005.backblazeb2.com/file/4gmXev0u4Um"
       }
     ],
-
     "win": {
       "target": "nsis",
       "artifactName": "MediaViewer-${version}-Setup.${ext}"
     },
-
     "mac": {
       "target": "dmg",
       "category": "public.app-category.utilities",
       "artifactName": "MediaViewer-${version}.${ext}"
     },
-
     "linux": {
       "target": ["AppImage"],
       "category": "Utility",
