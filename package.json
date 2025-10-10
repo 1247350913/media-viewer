@@ -1,23 +1,71 @@
 {
-  "name": "vault_viewer",
+  "name": "media_viewer",
+  "version": "1.0.0",
   "private": true,
-  "version": "0.0.0",
   "type": "commonjs",
   "main": "dist/electron/electron/main.js",
+
   "scripts": {
+
     "dev": "run-p -l dev:typecheck dev:vite dev:electron",
     "dev:typecheck": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
     "dev:vite": "vite --port 5173 --strictPort",
     "dev:electron": "wait-on tcp:5173 dist/electron/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 nodemon --watch dist/electron/electron --ext js,cjs,mjs --delay 1000ms --signal SIGINT --exec \"electron --inspect=9229 --remote-debugging-port=9223 dist/electron/electron/main.js\"",
+
+
     "build": "run-s build:renderer build:main",
     "build:renderer": "vite build",
     "build:main": "tsc -p tsconfig.electron.json",
-    "start": "electron dist/electron/electron/main.js"
+
+    "start": "electron dist/electron/electron/main.js",
+
+    "dist": "pnpm run build && electron-builder",
+    "release": "pnpm run build && electron-builder --publish never"
   },
+
+  "build": {
+    "appId": "com.cjh.media_viewer",
+    "productName": "Media Viewer",
+
+    "files": [
+      "dist/**/*"
+    ],
+
+    "directories": {
+      "output": "release"
+    },
+
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://f005.backblazeb2.com/file/4gmXev0u4Um"
+      }
+    ],
+
+    "win": {
+      "target": "nsis",
+      "artifactName": "MediaViewer-${version}-Setup.${ext}",
+      "publisherName": "CJH"
+    },
+
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.utilities",
+      "artifactName": "MediaViewer-${version}.${ext}"
+    },
+
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Utility",
+      "artifactName": "MediaViewer-${version}.${ext}"
+    }
+  },
+
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
+
   "devDependencies": {
     "@eslint/js": "^9.30.1",
     "@types/node": "^24.2.0",
@@ -27,6 +75,8 @@
     "concurrently": "^9.2.0",
     "cross-env": "^10.0.0",
     "electron": "^37.2.6",
+    "electron-builder": "^26.0.12",
+    "electron-updater": "^6.6.2",
     "eslint": "^9.30.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

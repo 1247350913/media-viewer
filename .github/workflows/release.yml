@@ -1,0 +1,28 @@
+name: Release
+on:
+  push:
+    tags: [ 'v*' ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: corepack enable
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm run release
+
+      # Upload to B2 (S3 API)
+      - name: Upload artifacts to B2
+        run: |
+          pipx install awscli
+          aws s3 cp release/ s3://media-viewer-updates/ --recursive --acl public-read \
+            --endpoint-url https://s3.us-west-002.backblazeb2.com
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APP_KEY }}
