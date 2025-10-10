@@ -44,7 +44,7 @@ jobs:
         run: pnpm build
 
       - name: Package (macOS arm64)
-        run: pnpm electron-builder --mac arm64 --publish never
+        run: pnpm electron-builder --mac --universal --publish never
 
       # Backblaze-friendly preflight (NO STS)
       - name: Preflight S3 auth (Backblaze)
