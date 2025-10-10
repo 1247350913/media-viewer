@@ -74,7 +74,7 @@ function Seasons({ mediaCard, onBack, onProfileClick}: Props) {
             <div className="seasons-list">
               {/* Seasons*/}
 
-              {seasons.map(seasonTuple => {
+              {seasons.map((seasonTuple, idx) => {
                 const isOpen = open.has(seasonTuple[0]);
                 return (
                   <div className="season-row--wrap" key={seasonTuple[0]}>
@@ -91,9 +91,10 @@ function Seasons({ mediaCard, onBack, onProfileClick}: Props) {
                       aria-expanded={isOpen}
                       aria-controls={`season-${seasonTuple[0]}-episodes`}
                     >
-                      <h2 className="season-row__title">{seasonTuple[1][0].title}</h2>
-                      <span className="season-row__spacer" />
+                      <div className="season-row__number">{idx+1}</div>
 
+                      <h2 className="season-row__title">{seasonTuple[1][0].title}</h2>
+                      
                       {seasonTuple[1][0]?.totalNumberOfEpisodes && (seasonTuple[1][0].totalNumberOfEpisodes > seasonTuple[1][1].length) ? (
                       <span className="season-row__episode-count">{seasonTuple[1][1].length} / {seasonTuple[1][0].totalNumberOfEpisodes} Ep</span>) : (
                       <span className="season-row__episode-count">{seasonTuple[1][1].length} Ep</span>
@@ -104,7 +105,7 @@ function Seasons({ mediaCard, onBack, onProfileClick}: Props) {
 
                     {/* Opened */}
                     {isOpen && (
-                    <div className="seasons_episode-list--wrap" id={`season-${seasonTuple[0]}-episodes`}>
+                    <div className="seasons__episodes-list--wrap" id={`season-${seasonTuple[0]}-episodes`}>
                       {seasonTuple[1][1].map(epCard => (
                       <div className="seasons__episode-row" key={`${seasonTuple[0]}-${epCard.episodeNumber}`}>
                         <span className="seasons__episode-number">E{epCard.episodeNumber}</span>

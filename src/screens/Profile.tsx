@@ -20,7 +20,7 @@ function Profile({ onBack }: Props) {
             className="profile-avatar-large"
           />
           <h3 className="profile-name">John Doe</h3>
-          <p className="profile-role">Vault Viewer User</p>
+          <p className="profile-role">User</p>
           <p className="profile-email">johndoe@email.com</p>
         </div>
 

@@ -57,7 +57,6 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #fff;
 }
 
 /* Headings */
@@ -1028,7 +1027,7 @@ a:hover {
 .seasons__main-screen {
   display: grid;
   grid-template-columns: 1fr 3fr;
-  gap: 20px;
+  gap: 40px;
   align-items: start;
 }
 
@@ -1079,13 +1078,13 @@ a:hover {
 } */
 
 
-/* ============== SEASONS COLUMN ============== */
+/* ============== SEASONS LIST ============== */
 
 /* Seasons List */
 .seasons-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 
 /* Season Row Wrap */
@@ -1102,6 +1101,7 @@ a:hover {
   align-items: center;
   width: 100%;
 
+  padding: 8px 10px 8px 0;
   border: 1px solid #ddd;
   border-radius: 10px;
   background: #fafafa;
@@ -1121,19 +1121,27 @@ a:hover {
 
 /* Season Row Details */
 .season-row__number {
-  font-weight: 600;
-}
-.season-row__title {
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-.season-row__spacer {
-  flex: 1 1 auto;
-}
-.season-row__episode-count {
-  font-variant-numeric: tabular-nums;
+  width: 3ch;
+  padding-left: 20px;
+  margin-right: 30px;
+  
   opacity: 0.8;
 }
+.season-row__title {
+  flex: 1 1 auto;
+  text-align: left;
+}
+.season-row__episode-count {
+  padding-right: 20px;
+  opacity: 0.8;
+}
+.season-row__chev {
+  transition: transform 0.15s ease;
+}
+.season-row__chev.open {
+  transform: rotate(180deg);
+}
+
 
 /* ============== LIST OF EPISODES ============== */
 
@@ -1145,14 +1153,6 @@ a:hover {
   margin-left: 50px;
 
   gap: 15px
-}
-
-/* Chevron */
-.season-row__chev {
-  transition: transform 0.15s ease;
-}
-.season-row__chev.open {
-  transform: rotate(180deg);
 }
 
 /* ============== ONE EPISDOE ROW ============== */
@@ -1182,16 +1182,10 @@ a:hover {
 .btn--play-episode {
   margin-right: 30px;
 }
-.seasons__overall-episode-number {
-  font-variant-numeric: tabular-nums;
-  opacity: .8;
-}
-
 .seasons__episode-title {
   flex: 1 1 auto;
   min-width: 0;
 }
-
 .seasons__overall-episode-number {
   flex: 0 0 auto;
   text-align: right;
