@@ -1,43 +1,71 @@
 name: Release
+
 on:
   push:
-    tags: [ 'v*' ]
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  build-and-upload:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
-      - run: corepack enable
-      - run: pnpm i --frozen-lockfile
-      - run: pnpm run release
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
-      # Pre-Flight
-      - name: Preflight AWS auth
+    env:
+      # Map repo secrets -> AWS env vars the CLI expects
+      AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APP_KEY }}
+      AWS_DEFAULT_REGION: us-west-000
+      AWS_ENDPOINT_URL_S3: https://s3.us-west-000.backblazeb2.com
+      APP_NAME: "Media Viewer"
+      S3_BUCKET: "4gmXev0u4Um"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        run: npm i -g pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      # Build + package the Electron app
+      - name: Build app
+        run: pnpm build
+
+      - name: Package (macOS arm64)
+        run: pnpm electron-builder --mac arm64 --publish never
+
+      # Backblaze-friendly preflight (NO STS)
+      - name: Preflight S3 auth (Backblaze)
         run: |
           set -e
           aws --version
-          aws sts get-caller-identity
-          aws s3 ls s3://media-viewer-updates
+          # list bucket (works on B2) – proves creds+endpoint are wired
+          aws s3 ls s3://$S3_BUCKET/
 
-      # Verify B2 Creds
-      - name: Verify B2 S3 creds
+      # Sync your release artifacts to B2
+      - name: Upload release artifacts to Backblaze S3
         run: |
-          aws --version
-          aws s3 ls --endpoint-url https://s3.us-east-005.backblazeb2.com
-          aws s3 ls s3://media-viewer-updates/ --endpoint-url https://s3.us-east-005.backblazeb2.com
+          set -e
+          # Example paths: adjust to your dist/release output
+          aws s3 cp "dist/latest-mac.yml" "s3://$S3_BUCKET/latest-mac.yml"
+          aws s3 cp "dist/MediaViewer-*.blockmap" "s3://$S3_BUCKET/" --recursive --exclude "*" --include "*.blockmap"
+          aws s3 cp "dist/MediaViewer-*.dmg" "s3://$S3_BUCKET/" --recursive --exclude "*" --include "*.dmg"
 
-      # Upload to B2 (S3 API)
-      - name: Upload artifacts
-        run: |
-          aws s3 cp release/ s3://media-viewer-updates/ --recursive --acl private
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APP_KEY }}
-          AWS_EC2_METADATA_DISABLED: "true"
-          AWS_S3_FORCE_PATH_STYLE: "true"
+      # (Optional) Upload CI artifacts for debugging
+      - name: Upload CI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
