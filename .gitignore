@@ -1,24 +1,105 @@
-# Logs
-logs
+# -----------------------------
+# Node / PNPM / Build artifacts
+# -----------------------------
+node_modules/
+.pnpm-store/
+.pnpm/
+dist/
+dist-ssr/
+release/
+out/
+build/
+.cache/
+.tmp/
+.temp/
+*.local
+
+# TypeScript build output
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# -----------------------------
+# Logs & diagnostics
+# -----------------------------
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+*.stackdump
 
-node_modules
-dist
-dist-ssr
-*.local
+# -----------------------------
+# Electron / Vite / Bundler caches
+# -----------------------------
+.cache/
+vite.config.ts.timestamp-*
+vite.config.js.timestamp-*
+electron-builder.yml
+electron-builder-debug.yml
+electron-builder.json
+electron-builder-out/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# -----------------------------
+# OS / Platform junk
+# -----------------------------
 .DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+$RECYCLE.BIN/
+
+# -----------------------------
+# IDEs / Editors
+# -----------------------------
+.vscode/
+!.vscode/extensions.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# -----------------------------
+# Env / Secrets
+# -----------------------------
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+*.p12
+
+# -----------------------------
+# GitHub Actions / CI caches
+# -----------------------------
+*.tgz
+*.zip
+*.7z
+*.dmg
+*.exe
+*.AppImage
+*.deb
+*.rpm
+
+# -----------------------------
+# Misc local dev stuff
+# -----------------------------
+*.iml
+*.bak
+*.tmp
+*.old
+*.orig
+*.lock
+*.log.*
+.vscode-test/
+coverage/
+coverage-final.json
+nyc_output/
+.cache-loader/
+__pycache__/
+*.pyc

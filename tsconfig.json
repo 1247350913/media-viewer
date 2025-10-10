@@ -1,11 +1,9 @@
 {
   "files": [],
   "references": [
+    { "path": "./tsconfig.shared.json" },
+    { "path": "./tsconfig.electron.json" },
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.electron.json" }
-  ],
-  "compilerOptions": {
-    "types": ["node"]
-  }
+    { "path": "./tsconfig.node.json" }
+  ]
 }

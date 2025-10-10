@@ -8,9 +8,9 @@ import * as path from "path";
 import * as fs from "fs";
 import * as fsp from "node:fs/promises";
 
-import type * as Shared from "../shared";
-import { heightToQuality } from "../shared/helpers";
-type MediaKind = Shared.MediaKind;
+import * as Shared from "../shared";
+
+
 type MediaCard = Shared.MediaCard;
 
 
@@ -213,7 +213,7 @@ ipcMain.handle("video:play", async (_evt, videoFilePath: string) => {
 // ============================ Server Helpers ============================
 
 // Infer the card kind by the directory
-function inferKindFromDir(dirPath: string):MediaKind {
+function inferKindFromDir(dirPath: string):Shared.MediaKind {
   const base = path.basename(dirPath).toLowerCase();
   if (base === "movies") return "movie";
   if (base === "shows")  return "show";
@@ -285,7 +285,7 @@ async function probeVideo(videoFilePath: string) {
       .filter(Boolean) as string[]
   );
 
-  const quality = heightToQuality(height);
+  const quality = Shared.heightToQuality(height);
 
   return {
     videoFilePath,

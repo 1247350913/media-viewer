@@ -5,80 +5,75 @@
   "type": "commonjs",
   "description": "Personal Media Viewer (Electron + React)",
   "author": "CJH",
-  "main": "dist/electron/electron/main.js",
-
-  "scripts": {
-    "dev": "run-p -l dev:typecheck dev:vite dev:electron",
-    "dev:typecheck": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
-    "dev:vite": "vite --port 5173 --strictPort",
-    "dev:electron": "wait-on tcp:5173 dist/electron/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 nodemon --watch dist/electron/electron --ext js,cjs,mjs --delay 1000ms --signal SIGINT --exec \"electron --inspect=9229 --remote-debugging-port=9223 dist/electron/electron/main.js\"",
-
-    "build": "run-s build:renderer build:main",
-    "build:renderer": "vite build",
-    "build:main": "tsc -p tsconfig.electron.json",
-
-    "start": "electron dist/electron/electron/main.js",
-
-    "dist": "pnpm run build && electron-builder",
-    "release": "pnpm run build && electron-builder --publish never"
-  },
-
+  "main": "dist/electron/main.js",
   "build": {
-    "appId": "com.cjh.media_viewer",
-    "productName": "Media Viewer",
     "files": [
-      "dist/**/*"
+      "dist/**",
+      "package.json",
+      "!**/*.map"
     ],
-    "directories": {
-      "output": "release"
-    },
-    "publish": [
-      {
-        "provider": "generic",
-        "url": "https://f005.backblazeb2.com/file/4gmXev0u4Um"
-      }
-    ],
-    "win": {
-      "target": "nsis",
-      "artifactName": "MediaViewer-${version}-Setup.${ext}"
-    },
     "mac": {
-      "target": "dmg",
-      "category": "public.app-category.utilities",
-      "artifactName": "MediaViewer-${version}.${ext}"
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "target": ["nsis", "zip"]
     },
     "linux": {
-      "target": ["AppImage"],
-      "category": "Utility",
-      "artifactName": "MediaViewer-${version}.${ext}"
+      "target": ["AppImage", "deb"]
     }
   },
+  "scripts": {
+    "clean": "rimraf dist && rimraf --glob \"shared/**/*.js\" \"shared/**/*.js.map\" \"electron/**/*.js\" \"electron/**/*.js.map\"",
+    "typecheck": "tsc -b --verbose",
 
-  "dependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "build": "pnpm clean && pnpm build:shared && pnpm build:electron && pnpm build:app",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build:shared": "tsc -p tsconfig.shared.json",
+    "build:app": "vite build",
+
+    "dev": "run-p -l dev:typecheck dev:vite dev:electron",
+    "dev:typecheck": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
+    "dev:electron": "wait-on tcp:5173 dist/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 nodemon --watch dist/electron --ext js,cjs,mjs --delay 1000ms --signal SIGINT --exec \"electron --inspect=9229 --remote-debugging-port=9223 dist/electron/main.js\"",
+    "dev:vite": "vite --port 5173 --strictPort",
+
+    "pack:mac:universal": "electron-builder --mac dmg zip --universal --publish never",
+    "pack:mac:x64": "electron-builder --mac dmg zip --x64 --publish never",
+    "pack:mac:arm64": "electron-builder --mac dmg zip --arm64 --publish never",
+    "pack:win": "electron-builder --win nsis zip --publish never",
+    "pack:linux": "electron-builder --linux AppImage deb --publish never"
   },
-
+  "dependencies": {
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "electron-updater": "6.6.2"
+  },
   "devDependencies": {
-    "@eslint/js": "^9.30.1",
-    "@types/node": "^24.2.0",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.6.0",
-    "concurrently": "^9.2.0",
-    "cross-env": "^10.0.0",
-    "electron": "^37.2.6",
-    "electron-builder": "^26.0.12",
-    "electron-updater": "^6.6.2",
-    "eslint": "^9.30.1",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
-    "nodemon": "^3.1.10",
-    "npm-run-all": "^4.1.5",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.35.1",
-    "vite": "^7.0.4",
-    "wait-on": "^8.0.4"
-  }
+    "@eslint/js": "9.32.0",
+    "@types/node": "24.2.0",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.7",
+    "@vitejs/plugin-react": "4.7.0",
+    "concurrently": "9.2.0",
+    "cross-env": "10.0.0",
+    "electron": "37.2.6",
+    "electron-builder": "26.0.12",
+    "eslint": "9.32.0",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-react-refresh": "0.4.20",
+    "globals": "16.3.0",
+    "nodemon": "3.1.10",
+    "npm-run-all": "4.1.5",
+    "rimraf": "6.0.0",
+    "shell-quote": "1.8.3",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.39.0",
+    "vite": "7.0.6",
+    "wait-on": "8.0.4"
+  },
+  "trustedDependencies": [
+    "electron",
+    "electron-winstaller",
+    "esbuild"
+  ]
 }

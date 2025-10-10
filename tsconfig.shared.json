@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": false,
+    "sourceMap": true,
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true,
+    "rootDir": "shared",
+    "outDir": "dist/shared",
+    "skipLibCheck": true
+  },
+  "include": ["shared/**/*"]
+}

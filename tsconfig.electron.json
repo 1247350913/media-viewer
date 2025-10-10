@@ -1,15 +1,21 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "dist/electron",
-    "target": "ES2020",
-    "module": "commonjs",
-    "types": ["node"],
+    "composite": false,
+    "declaration": false,
+    "sourceMap": true,
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "strict": true,
+    "rootDir": "electron",
+    "outDir": "dist/electron",
     "skipLibCheck": true,
-    "sourceMap": true
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["shared/*"]
+    }
   },
-  "include": ["electron/**/*", "shared/**/*.ts"],
-  "exclude": ["src/**/*", "**/*.tsx"]
+  "include": ["electron/**/*"],
+  "references": [{ "path": "./tsconfig.shared.json" }]
 }
