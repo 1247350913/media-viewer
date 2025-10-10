@@ -64,7 +64,7 @@ jobs:
           # aws s3 rm "s3://$S3_BUCKET/_healthcheck.$GITHUB_RUN_ID" --endpoint-url "$AWS_ENDPOINT_URL_S3" --region "$AWS_DEFAULT_REGION"
 
       - name: Build (macOS universal)
-        run: pnpm electron-builder --mac dmg,zip --universal --publish never
+        run: pnpm electron-builder --mac dmg zip --universal --publish never
 
       - name: Show artifacts
         run: ls -lah dist || true
