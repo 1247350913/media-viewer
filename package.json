@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "type": "commonjs",
+  "description": "Personal Media Viewer (Electron + React)",
+  "author": "CJH",
   "main": "dist/electron/electron/main.js",
 
   "scripts": {
-
     "dev": "run-p -l dev:typecheck dev:vite dev:electron",
     "dev:typecheck": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
     "dev:vite": "vite --port 5173 --strictPort",
     "dev:electron": "wait-on tcp:5173 dist/electron/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 nodemon --watch dist/electron/electron --ext js,cjs,mjs --delay 1000ms --signal SIGINT --exec \"electron --inspect=9229 --remote-debugging-port=9223 dist/electron/electron/main.js\"",
-
 
     "build": "run-s build:renderer build:main",
     "build:renderer": "vite build",
@@ -44,8 +44,7 @@
 
     "win": {
       "target": "nsis",
-      "artifactName": "MediaViewer-${version}-Setup.${ext}",
-      "publisherName": "CJH"
+      "artifactName": "MediaViewer-${version}-Setup.${ext}"
     },
 
     "mac": {
