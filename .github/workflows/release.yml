@@ -82,29 +82,29 @@ jobs:
             exit 1
           fi
 
-        - name: Purge bucket (macOS)
-          run: |
-            set -euxo pipefail
-            echo "Emptying entire Backblaze bucket..."
-            aws s3 rm "s3://$S3_BUCKET" \
-              --recursive \
-              --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-              --region "$AWS_DEFAULT_REGION"
+      - name: Purge bucket (macOS)
+        run: |
+          set -euxo pipefail
+          echo "Emptying entire Backblaze bucket..."
+          aws s3 rm "s3://$S3_BUCKET" \
+            --recursive \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION"
 
-        - name: Upload to Backblaze (macOS)
-          run: |
-            set -euxo pipefail
-            echo "Uploading new macOS release artifacts..."
-            aws s3 cp "release/" "s3://$S3_BUCKET/" \
-              --recursive \
-              --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-              --region "$AWS_DEFAULT_REGION" \
-              --acl public-read \
-              --exclude "*" \
-              --include "latest-mac.yml" \
-              --include "*-mac-universal.dmg" \
-              --include "*-mac-universal.zip" \
-              --include "*-mac-universal.zip.blockmap"
+      - name: Upload to Backblaze (macOS)
+        run: |
+          set -euxo pipefail
+          echo "Uploading new macOS release artifacts..."
+          aws s3 cp "release/" "s3://$S3_BUCKET/" \
+            --recursive \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION" \
+            --acl public-read \
+            --exclude "*" \
+            --include "latest-mac.yml" \
+            --include "*-mac-universal.dmg" \
+            --include "*-mac-universal.zip" \
+            --include "*-mac-universal.zip.blockmap"
 
   # -----------------------------
   # Windows build (x64 NSIS)
