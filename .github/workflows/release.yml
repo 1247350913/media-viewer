@@ -3,32 +3,52 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'   # run on version tags
+      - 'v*'
 
 permissions:
   contents: write
 
 env:
-  # ---- Backblaze S3 (B2) config ----
   AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APP_KEY }}
   AWS_DEFAULT_REGION: us-east-005
   AWS_REGION: us-east-005
-  # Force PATH-STYLE so mixed-case bucket names work
   AWS_S3_USE_PATH_STYLE: "true"
-  # Set BOTH endpoint envs so every call picks it up
   AWS_ENDPOINT_URL: https://s3.us-east-005.backblazeb2.com
   AWS_ENDPOINT_URL_S3: https://s3.us-east-005.backblazeb2.com
-  # Bucket NAME:
   S3_BUCKET: 4gmXev0u4Um
 
-
 jobs:
+  # A) PURGE THE BUCKET
+  purge-bucket:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preflight S3 auth (Backblaze)
+        run: |
+          set -euxo pipefail
+          aws --version
+          aws s3api head-bucket --bucket "$S3_BUCKET" \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" --region "$AWS_DEFAULT_REGION"
 
-  # -----------------------------
-  # macOS build
-  # -----------------------------
+      - name: Purge entire bucket (recursive delete)
+        run: |
+          set -euxo pipefail
+          # Remove every object (root & any "folders")
+          aws s3 rm "s3://$S3_BUCKET" \
+            --recursive \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION"
+
+      - name: Verify empty
+        run: |
+          set -euxo pipefail
+          aws s3 ls "s3://$S3_BUCKET" \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION" || true
+
+  # B) macOS build & upload
   build-macos:
+    needs: purge-bucket
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
@@ -42,21 +62,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
 
       - name: Install deps
         run: pnpm install --no-frozen-lockfile
-
-      - name: Preflight S3 auth (Backblaze)
-        run: |
-          set -euo pipefail
-          aws --version
-          echo "Endpoint: $AWS_ENDPOINT_URL_S3"
-          echo "Region:   $AWS_DEFAULT_REGION"
-          echo "Bucket:   $S3_BUCKET"
-          aws s3api head-bucket --bucket "$S3_BUCKET" \
-            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-            --region "$AWS_DEFAULT_REGION"
 
       - name: Build app (TS + Vite)
         run: pnpm build
@@ -65,51 +74,40 @@ jobs:
         run: pnpm electron-builder --mac dmg zip --universal --publish never
 
       - name: Show artifacts
-        shell: bash
         run: |
-          set -x
-          pwd
+          set -euxo pipefail
           if [ -d release ]; then
-            ls -lah release
-            echo "Listing a few subpaths:"
-            find release -maxdepth 2 -type f | head -n 50
-          elif [ -d dist ]; then
-            echo "release/ not found, showing dist/:"
-            ls -lah dist
-            find dist -maxdepth 2 -type f | head -n 50
+            find release -maxdepth 2 -type f | sed 's/^/ - /'
           else
-            echo "No release/ or dist/ directory found"
-            exit 1
+            echo "No release/ directory"; exit 1
           fi
 
-      - name: Purge bucket (macOS)
+      # Upload binaries first…
+      - name: Upload macOS binaries (DMG/ZIP + blockmap)
         run: |
           set -euxo pipefail
-          echo "Emptying entire Backblaze bucket..."
-          aws s3 rm "s3://$S3_BUCKET" \
-            --recursive \
-            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-            --region "$AWS_DEFAULT_REGION"
-
-      - name: Upload to Backblaze (macOS)
-        run: |
-          set -euxo pipefail
-          echo "Uploading new macOS release artifacts..."
           aws s3 cp "release/" "s3://$S3_BUCKET/" \
             --recursive \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
             --region "$AWS_DEFAULT_REGION" \
             --acl public-read \
             --exclude "*" \
-            --include "latest-mac.yml" \
             --include "*-mac-universal.dmg" \
             --include "*-mac-universal.zip" \
             --include "*-mac-universal.zip.blockmap"
 
-  # -----------------------------
-  # Windows build (x64 NSIS)
-  # -----------------------------
+      # …then upload manifest last
+      - name: Upload macOS manifest (latest-mac.yml)
+        run: |
+          set -euxo pipefail
+          aws s3 cp "release/latest-mac.yml" "s3://$S3_BUCKET/latest-mac.yml" \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION" \
+            --acl public-read
+
+  # C) Windows build & upload
   build-windows:
+    needs: purge-bucket
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -123,64 +121,47 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
 
       - name: Install deps
         run: pnpm install --no-frozen-lockfile
         shell: bash
 
-      - name: Preflight S3 auth (Backblaze)
-        shell: pwsh
-        run: |
-          aws --version
-          Write-Host "Endpoint: $Env:AWS_ENDPOINT_URL_S3"
-          Write-Host "Region:   $Env:AWS_DEFAULT_REGION"
-          Write-Host "Bucket:   $Env:S3_BUCKET"
-          aws s3api head-bucket --bucket "$Env:S3_BUCKET" `
-            --endpoint-url "$Env:AWS_ENDPOINT_URL_S3" `
-            --region "$Env:AWS_DEFAULT_REGION"
-
       - name: Build app (TS + Vite)
         run: pnpm build
         shell: bash
-        
+
       - name: Build (Windows x64)
         run: pnpm electron-builder --win nsis zip --x64 --publish never
         shell: bash
-        
+
       - name: Show artifacts
         shell: pwsh
         run: |
-          Write-Host (Get-Location)
           if (Test-Path release) {
             Get-ChildItem -Recurse -File release | Select-Object FullName, Length | Format-Table -AutoSize
-          } elseif (Test-Path dist) {
-            Write-Host "release/ not found, showing dist/:"
-            Get-ChildItem -Recurse -File dist | Select-Object FullName, Length | Format-Table -AutoSize
           } else {
-            Write-Error "No release/ or dist/ directory found"
-            exit 1
+            Write-Error "No release/ directory"; exit 1
           }
-      
-      - name: Purge bucket (Windows)
-        shell: pwsh
-        run: |
-          Write-Host "Emptying entire Backblaze bucket..."
-          aws s3 rm "s3://$Env:S3_BUCKET" `
-            --recursive `
-            --endpoint-url "$Env:AWS_ENDPOINT_URL_S3" `
-            --region "$Env:AWS_DEFAULT_REGION"
 
-      - name: Upload to Backblaze (Windows)
+      # Upload binaries first…
+      - name: Upload Windows binaries (EXE + blockmap)
         shell: pwsh
         run: |
-          Write-Host "Uploading new Windows release artifacts..."
           aws s3 cp "release/" "s3://$Env:S3_BUCKET/" `
             --recursive `
             --endpoint-url "$Env:AWS_ENDPOINT_URL_S3" `
             --region "$Env:AWS_DEFAULT_REGION" `
             --acl public-read `
             --exclude "*" `
-            --include "latest.yml" `
             --include "*.exe" `
             --include "*.exe.blockmap"
+
+      # …then upload manifest last
+      - name: Upload Windows manifest (latest.yml)
+        shell: pwsh
+        run: |
+          aws s3 cp "release/latest.yml" "s3://$Env:S3_BUCKET/latest.yml" `
+            --endpoint-url "$Env:AWS_ENDPOINT_URL_S3" `
+            --region "$Env:AWS_DEFAULT_REGION" `
+            --acl public-read
