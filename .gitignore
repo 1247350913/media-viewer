@@ -103,3 +103,5 @@ nyc_output/
 .cache-loader/
 __pycache__/
 *.pyc
+#just in case
+package-lock.json
