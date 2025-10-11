@@ -61,8 +61,8 @@ jobs:
       - name: Build app (TS + Vite)
         run: pnpm build
 
-      - name: Show artifacts
-        run: ls -lah release || true
+      - name: Show artifacts (macOS)
+        run: ls -lah release
 
       - name: Package (macOS universal)
         run: pnpm electron-builder --mac dmg zip --universal --publish never --config.directories.output=release
@@ -119,10 +119,9 @@ jobs:
         run: pnpm build
         shell: bash
 
-      - name: Show artifacts
-        shell: bash
-        run: |
-          ls -lah release 2>/dev/null || ls -lah dist 2>/dev/null || echo "No release/ or dist/ directory found."
+      - name: Show artifacts (Windows)
+        shell: pwsh
+        run: Get-ChildItem -Recurse -File release | Format-Table Length, FullName
 
       - name: Package (Windows x64)
         run: pnpm electron-builder --win nsis --x64 --publish never --config.directories.output=release

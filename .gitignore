@@ -40,6 +40,8 @@ electron-builder.yml
 electron-builder-debug.yml
 electron-builder.json
 electron-builder-out/
+dist/**/*.tsbuildinfo
+
 
 # -----------------------------
 # OS / Platform junk

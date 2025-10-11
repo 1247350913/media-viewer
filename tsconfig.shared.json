@@ -11,7 +11,8 @@
     "rootDir": "shared",
     "outDir": "dist/shared",
     "skipLibCheck": true,
-    "noEmit": false
+    "noEmit": false,
+    "tsBuildInfoFile": "dist/shared/.tsbuildinfo"
   },
   "include": ["shared/**/*"]
 }

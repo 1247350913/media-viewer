@@ -15,7 +15,7 @@
       "oneClick": true,
       "perMachine": false,
       "allowToChangeInstallationDirectory": false,
-      "artifactName": "${productName} Setup ${version}.exe"
+      "artifactName": "${productName}-Setup-${version}.exe"
     },
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
   },
