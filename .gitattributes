@@ -1,0 +1,33 @@
+# Default: let Git detect text files
+*               text=auto
+
+# Force LF for source & config (good for CI/Linux/macOS)
+*.js            text eol=lf
+*.ts            text eol=lf
+*.tsx           text eol=lf
+*.jsx           text eol=lf
+*.json          text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.md            text eol=lf
+*.sh            text eol=lf
+*.css           text eol=lf
+*.html          text eol=lf
+pnpm-lock.yaml  text eol=lf
+.gitignore      text eol=lf
+
+# Windows-only scripts may use CRLF
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+*.ps1           text eol=crlf
+
+# Binary files (never touch line endings)
+*.png           binary
+*.jpg           binary
+*.gif           binary
+*.ico           binary
+*.zip           binary
+*.7z            binary
+*.exe           binary
+*.dmg           binary
+*.asar          binary
