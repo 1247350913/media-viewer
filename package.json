@@ -1,9 +1,10 @@
 {
-  "name": "media_viewer",
+  "name": "media-viewer",
+  "productName": "Media Viewer",
   "version": "1.0.0",
   "private": true,
   "type": "commonjs",
-  "description": "Personal Media Viewer (Electron + React)",
+  "description": "Custom Media Viewer (Electron + React)",
   "author": "CJH",
   "main": "dist/electron/main.js",
   "build": {
@@ -15,9 +16,9 @@
       "oneClick": true,
       "perMachine": false,
       "allowToChangeInstallationDirectory": false,
-      "artifactName": "${productName}-Setup-${version}.exe"
+      "artifactName": "${name}-setup-${version}.exe"
     },
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+    "artifactName": "${name}-${version}-${os}-${arch}.${ext}"
   },
   "scripts": {
     "clean": "rimraf dist && rimraf --glob \"shared/**/*.js\" \"shared/**/*.js.map\" \"electron/**/*.js\" \"electron/**/*.js.map\"",

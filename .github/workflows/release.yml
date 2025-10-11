@@ -61,11 +61,26 @@ jobs:
       - name: Build app (TS + Vite)
         run: pnpm build
 
-      - name: Show artifacts (macOS)
-        run: ls -lah release
+      - name: Build (macOS universal)
+        run: pnpm electron-builder --mac dmg zip --universal --publish never
 
-      - name: Package (macOS universal)
-        run: pnpm electron-builder --mac dmg zip --universal --publish never --config.directories.output=release
+      - name: Show artifacts
+        shell: bash
+        run: |
+          set -x
+          pwd
+          if [ -d release ]; then
+            ls -lah release
+            echo "Listing a few subpaths:"
+            find release -maxdepth 2 -type f | head -n 50
+          elif [ -d dist ]; then
+            echo "release/ not found, showing dist/:"
+            ls -lah dist
+            find dist -maxdepth 2 -type f | head -n 50
+          else
+            echo "No release/ or dist/ directory found"
+            exit 1
+          fi
 
       - name: Upload to Backblaze (macOS)
         run: |
@@ -118,14 +133,24 @@ jobs:
       - name: Build app (TS + Vite)
         run: pnpm build
         shell: bash
-
-      - name: Show artifacts (Windows)
-        shell: pwsh
-        run: Get-ChildItem -Recurse -File release | Format-Table Length, FullName
-
-      - name: Package (Windows x64)
-        run: pnpm electron-builder --win nsis --x64 --publish never --config.directories.output=release
+        
+      - name: Build (Windows x64)
+        run: pnpm electron-builder --win nsis zip --x64 --publish never
         shell: bash
+        
+      - name: Show artifacts
+        shell: pwsh
+        run: |
+          Write-Host (Get-Location)
+          if (Test-Path release) {
+            Get-ChildItem -Recurse -File release | Select-Object FullName, Length | Format-Table -AutoSize
+          } elseif (Test-Path dist) {
+            Write-Host "release/ not found, showing dist/:"
+            Get-ChildItem -Recurse -File dist | Select-Object FullName, Length | Format-Table -AutoSize
+          } else {
+            Write-Error "No release/ or dist/ directory found"
+            exit 1
+          }
 
       - name: Upload to Backblaze (Windows)
         shell: pwsh
