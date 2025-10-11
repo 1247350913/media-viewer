@@ -10,7 +10,8 @@
     "strict": true,
     "rootDir": "shared",
     "outDir": "dist/shared",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmit": false
   },
   "include": ["shared/**/*"]
 }

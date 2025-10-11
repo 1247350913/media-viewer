@@ -25,17 +25,17 @@
   },
   "scripts": {
     "clean": "rimraf dist && rimraf --glob \"shared/**/*.js\" \"shared/**/*.js.map\" \"electron/**/*.js\" \"electron/**/*.js.map\"",
-    "typecheck": "tsc -b --verbose",
 
     "build": "pnpm clean && pnpm build:shared && pnpm build:electron && pnpm build:app",
-    "build:electron": "tsc -p tsconfig.electron.json",
     "build:shared": "tsc -p tsconfig.shared.json",
+    "build:electron": "tsc -p tsconfig.electron.json",
     "build:app": "vite build",
 
-    "dev": "run-p -l dev:typecheck dev:vite dev:electron",
-    "dev:typecheck": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
-    "dev:electron": "wait-on tcp:5173 dist/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 nodemon --watch dist/electron --ext js,cjs,mjs --delay 1000ms --signal SIGINT --exec \"electron --inspect=9229 --remote-debugging-port=9223 dist/electron/main.js\"",
+    "dev": "run-p -l dev:shared dev:electron:build dev:vite dev:electron",
+    "dev:shared": "tsc -p tsconfig.shared.json --watch --preserveWatchOutput",
+    "dev:electron:build": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
     "dev:vite": "vite --port 5173 --strictPort",
+    "dev:electron": "wait-on tcp:5173 dist/shared/index.js dist/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 nodemon --watch dist/electron --watch dist/shared --ext js,cjs,mjs --delay 1000ms --signal SIGINT --exec \"electron --inspect=9229 --remote-debugging-port=9223 dist/electron/main.js\"",
 
     "pack:mac:universal": "electron-builder --mac dmg zip --universal --publish never",
     "pack:mac:x64": "electron-builder --mac dmg zip --x64 --publish never",

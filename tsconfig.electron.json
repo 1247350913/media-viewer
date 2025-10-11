@@ -10,6 +10,7 @@
     "rootDir": "electron",
     "outDir": "dist/electron",
     "skipLibCheck": true,
+    "noEmit": false,
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
