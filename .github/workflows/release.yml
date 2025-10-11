@@ -66,7 +66,7 @@ jobs:
         run: ls -lah release || true
 
       - name: Package (macOS universal)
-        run: pnpm electron-builder --mac dmg zip --universal --publish never
+        run: pnpm electron-builder --mac dmg zip --universal --publish never --config.directories.output=release
 
       - name: Upload to Backblaze (macOS artifacts)
         run: |
@@ -118,11 +118,12 @@ jobs:
         shell: bash
 
       - name: Show artifacts
-        run: ls -lah release || dir release
         shell: bash
+        run: |
+          ls -lah release 2>/dev/null || ls -lah dist 2>/dev/null || echo "No release/ or dist/ directory found."
 
       - name: Package (Windows x64)
-        run: pnpm electron-builder --win nsis zip --x64 --publish never
+        run: pnpm electron-builder --win nsis --x64 --publish never --config.directories.output=release
         shell: bash
 
       - name: Upload to Backblaze (Windows artifacts)
