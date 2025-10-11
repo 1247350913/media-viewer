@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -30,21 +31,61 @@ jobs:
           aws s3api head-bucket --bucket "$S3_BUCKET" \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" --region "$AWS_DEFAULT_REGION"
 
-      - name: Purge entire bucket (recursive delete)
+      # 1) Best-effort normal delete
+      - name: Purge (simple recursive delete)
         run: |
           set -euxo pipefail
-          # Remove every object (root & any "folders")
           aws s3 rm "s3://$S3_BUCKET" \
             --recursive \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
             --region "$AWS_DEFAULT_REGION"
 
+      # 2) DEEP PURGE: remove ANY lingering versions & delete markers
+      - name: Purge (remove all versions & delete-markers)
+        run: |
+          set -euxo pipefail
+
+          # paginate list-object-versions and delete in batches of 1000
+          while true; do
+            JSON=$(aws s3api list-object-versions \
+              --bucket "$S3_BUCKET" \
+              --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+              --region "$AWS_DEFAULT_REGION" \
+              --max-items 1000)
+
+            IDS=$(echo "$JSON" | jq -c '[ 
+              ( .Versions // [] | map({Key:.Key, VersionId:.VersionId}) ) + 
+              ( .DeleteMarkers // [] | map({Key:.Key, VersionId:.VersionId}) ) 
+            ]')
+
+            # nothing to delete?
+            if [ "$(echo "$IDS" | jq 'length')" -eq 0 ]; then
+              break
+            fi
+
+            echo "$IDS" | jq '{Objects: ., Quiet: false}' > /tmp/delete.json
+
+            aws s3api delete-objects \
+              --bucket "$S3_BUCKET" \
+              --delete file:///tmp/delete.json \
+              --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+              --region "$AWS_DEFAULT_REGION"
+          done
+
       - name: Verify empty
         run: |
           set -euxo pipefail
+          echo "List (s3):"
           aws s3 ls "s3://$S3_BUCKET" \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
             --region "$AWS_DEFAULT_REGION" || true
+
+          echo "List (API):"
+          aws s3api list-objects-v2 \
+            --bucket "$S3_BUCKET" \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION" \
+            --query 'Contents' || true
 
   # B) macOS build & upload
   build-macos:
