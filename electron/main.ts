@@ -30,79 +30,33 @@ async function createWindow() {
     height: 800,
     show: false,
     webPreferences: {
-      // Adjust if you use preload:
-      // preload: join(__dirname, "preload.js"),
+      preload: join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true
     }
   });
 
-  // Dev vs Prod URL
   const isDev = !app.isPackaged;
   if (isDev) {
-    const devUrl = process.env.ELECTRON_START_URL || process.env.VITE_DEV_SERVER_URL || "http://localhost:5173";
+    const devUrl =
+      process.env.ELECTRON_START_URL ||
+      process.env.VITE_DEV_SERVER_URL ||
+      "http://localhost:5173";
     await mainWindow.loadURL(devUrl);
     mainWindow.webContents.openDevTools({ mode: "detach" });
   } else {
-    // Load the built index.html – adjust the path if your vite build outputs elsewhere
-    // If your vite index ends up in dist/index.html at project root, this is correct:
-    await mainWindow.loadFile(join(__dirname, "..", "..", "index.html"));
-    // If your renderer build outputs into dist/src/index.html instead, use:
-    // await mainWindow.loadFile(join(__dirname, "..", "..", "src", "index.html"));
+    const indexHtmlPath = path.join(__dirname, "..", "src", "index.html");
+    await mainWindow.loadFile(indexHtmlPath);
   }
 
-  mainWindow.once("ready-to-show", () => {
-    mainWindow?.show();
-  });
-
-  mainWindow.on("closed", () => {
-    mainWindow = null;
-  });
+  mainWindow.once("ready-to-show", () => mainWindow?.show());
+  mainWindow.on("closed", () => (mainWindow = null));
 }
 
-app.whenReady().then(async () => {
-  await createWindow();
-
-  // Auto-updates only in packaged (production) builds
-  if (app.isPackaged) {
-    // This uses the "build.publish" config in package.json.
-    // It fetches latest.yml from your generic URL and compares versions.
-    autoUpdater.checkForUpdatesAndNotify();
-
-    // Optional: respond to update events (logs, prompts, etc.)
-    autoUpdater.on("update-available", () => {
-      // You can show a toast/notification in the renderer via IPC if you like.
-      console.log("[autoUpdater] update available");
-    });
-
-    autoUpdater.on("update-downloaded", () => {
-      console.log("[autoUpdater] update downloaded");
-      // Behavior options:
-      // 1) Prompt the user in your UI and then:
-      // autoUpdater.quitAndInstall();
-      // 2) Or silently install on quit:
-      // app.on("before-quit", () => autoUpdater.quitAndInstall());
-    });
-
-    autoUpdater.on("error", (err) => {
-      console.error("[autoUpdater] error:", err);
-    });
-  }
-});
-
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
-
-app.on("activate", () => {
-  // Re-create a window on macOS when clicking the dock icon and no windows are open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    void createWindow();
-  }
-});
+app.whenReady().then(createWindow);
+app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
+app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) void createWindow(); });
 
 
 // ============================ Handlers ============================
