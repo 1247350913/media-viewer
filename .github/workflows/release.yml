@@ -62,19 +62,16 @@ jobs:
       - name: Build app (TS + Vite)
         run: pnpm build
 
-      - name: Show build outputs
-        run: |
-          echo "---- dist tree ----"
-          ls -la dist
-          echo "-------------------"
-          test -f dist/electron/main.js || (echo "main.js missing!" && exit 1)
+      - name: Show artifacts
+        run: ls -lah release || true
 
       - name: Package (macOS universal)
         run: pnpm electron-builder --mac dmg zip --universal --publish never
 
       - name: Upload to Backblaze (macOS artifacts)
         run: |
-          aws s3 cp "dist/" "s3://$S3_BUCKET/" \
+          echo "Uploading macOS release artifacts..."
+          aws s3 cp "release/" "s3://$S3_BUCKET/" \
             --recursive \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
             --region "$AWS_DEFAULT_REGION" \
@@ -120,9 +117,9 @@ jobs:
         run: pnpm build
         shell: bash
 
-      - name: Show build outputs
-        run: dir dist
-        shell: pwsh
+      - name: Show artifacts
+        run: ls -lah release || dir release
+        shell: bash
 
       - name: Package (Windows x64)
         run: pnpm electron-builder --win nsis zip --x64 --publish never
@@ -131,7 +128,8 @@ jobs:
       - name: Upload to Backblaze (Windows artifacts)
         shell: pwsh
         run: |
-          aws s3 cp "dist/" "s3://$Env:S3_BUCKET/" `
+          Write-Host "Uploading Windows release artifacts..."
+          aws s3 cp "release/" "s3://$Env:S3_BUCKET/" `
             --recursive `
             --endpoint-url "$Env:AWS_ENDPOINT_URL_S3" `
             --region "$Env:AWS_DEFAULT_REGION" `

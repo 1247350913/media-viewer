@@ -7,21 +7,15 @@
   "author": "CJH",
   "main": "dist/electron/main.js",
   "build": {
+    "directories": { "output": "release" },
     "files": [
       "dist/**",
       "package.json",
       "!**/*.map"
     ],
-    "mac": {
-      "target": ["dmg", "zip"],
-      "category": "public.app-category.utilities"
-    },
-    "win": {
-      "target": ["nsis", "zip"]
-    },
-    "linux": {
-      "target": ["AppImage", "deb"]
-    }
+    "mac": { "target": ["dmg", "zip"], "category": "public.app-category.utilities" },
+    "win": { "target": ["nsis", "zip"] },
+    "linux": { "target": ["AppImage", "deb"] }
   },
   "scripts": {
     "clean": "rimraf dist && rimraf --glob \"shared/**/*.js\" \"shared/**/*.js.map\" \"electron/**/*.js\" \"electron/**/*.js.map\"",
