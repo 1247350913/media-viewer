@@ -29,58 +29,91 @@ jobs:
           set -euxo pipefail
           aws --version
           aws s3api head-bucket --bucket "$S3_BUCKET" \
-            --endpoint-url "$AWS_ENDPOINT_URL_S3" --region "$AWS_DEFAULT_REGION"
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION"
 
-      # 1) Best-effort normal delete
+      # Best-effort normal delete first (quick path)
       - name: Purge (simple recursive delete)
         run: |
           set -euxo pipefail
           aws s3 rm "s3://$S3_BUCKET" \
             --recursive \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-            --region "$AWS_DEFAULT_REGION"
+            --region "$AWS_DEFAULT_REGION" || true
 
-      # 2) DEEP PURGE: remove ANY lingering versions & delete markers
+      # Deep purge: remove all versions and delete-markers (handles any leftovers)
       - name: Purge (remove all versions & delete-markers)
         run: |
           set -euxo pipefail
 
-          # paginate list-object-versions and delete in batches of 1000
+          STARTING_TOKEN=""
           while true; do
-            JSON=$(aws s3api list-object-versions \
-              --bucket "$S3_BUCKET" \
-              --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-              --region "$AWS_DEFAULT_REGION" \
-              --max-items 1000)
-
-            IDS=$(echo "$JSON" | jq -c '[ 
-              ( .Versions // [] | map({Key:.Key, VersionId:.VersionId}) ) + 
-              ( .DeleteMarkers // [] | map({Key:.Key, VersionId:.VersionId}) ) 
-            ]')
-
-            # nothing to delete?
-            if [ "$(echo "$IDS" | jq 'length')" -eq 0 ]; then
-              break
+            if [ -z "$STARTING_TOKEN" ]; then
+              JSON=$(aws s3api list-object-versions \
+                --bucket "$S3_BUCKET" \
+                --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+                --region "$AWS_DEFAULT_REGION" \
+                --max-items 1000)
+            else
+              JSON=$(aws s3api list-object-versions \
+                --bucket "$S3_BUCKET" \
+                --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+                --region "$AWS_DEFAULT_REGION" \
+                --max-items 1000 \
+                --starting-token "$STARTING_TOKEN")
             fi
 
-            echo "$IDS" | jq '{Objects: ., Quiet: false}' > /tmp/delete.json
+            # Flatten Versions + DeleteMarkers into a single array of {Key, VersionId}
+            IDS=$(echo "$JSON" | jq -c '
+              ( (.Versions // []) + (.DeleteMarkers // []) )
+              | map({Key:.Key, VersionId:.VersionId})
+            ')
+
+            # Nothing in this page?
+            if [ "$(echo "$IDS" | jq 'length')" -eq 0 ]; then
+              # Check if there are more pages to scan:
+              STARTING_TOKEN=$(echo "$JSON" | jq -r '.NextToken // empty')
+              if [ -z "$STARTING_TOKEN" ]; then
+                break
+              else
+                continue
+              fi
+            fi
+
+            echo "{\"Objects\":$IDS, \"Quiet\": false}" > /tmp/delete.json
 
             aws s3api delete-objects \
               --bucket "$S3_BUCKET" \
               --delete file:///tmp/delete.json \
               --endpoint-url "$AWS_ENDPOINT_URL_S3" \
               --region "$AWS_DEFAULT_REGION"
+
+            # Move to next page if any
+            STARTING_TOKEN=$(echo "$JSON" | jq -r '.NextToken // empty')
+            if [ -z "$STARTING_TOKEN" ]; then
+              # No more pages; loop again once to ensure nothing new appeared
+              # (defensive when uploads happen concurrently)
+              JSON=$(aws s3api list-object-versions \
+                --bucket "$S3_BUCKET" \
+                --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+                --region "$AWS_DEFAULT_REGION" \
+                --max-items 1000)
+              LEFT=$(echo "$JSON" | jq '
+                ((.Versions // []) | length) + ((.DeleteMarkers // []) | length)
+              ')
+              if [ "$LEFT" -eq 0 ]; then break; fi
+            fi
           done
 
-      - name: Verify empty
+      - name: Verify empty (s3 and API views)
         run: |
           set -euxo pipefail
-          echo "List (s3):"
+          echo "s3 ls:"
           aws s3 ls "s3://$S3_BUCKET" \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
             --region "$AWS_DEFAULT_REGION" || true
 
-          echo "List (API):"
+          echo "list-objects-v2 (should be null/empty):"
           aws s3api list-objects-v2 \
             --bucket "$S3_BUCKET" \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
