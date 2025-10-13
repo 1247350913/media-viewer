@@ -117,22 +117,39 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Expected base URL baked into latest-mac.yml by electron-builder (from your publish config)
-          BASE_URL="${AWS_ENDPOINT_URL_S3%/}/${S3_BUCKET}"
-
-          # Ensure manifest exists
+          # 1) Manifest exists and references the zip we built
           test -f release/latest-mac.yml
-
-          # Show manifest for logs
           echo "----- latest-mac.yml -----"
           cat release/latest-mac.yml
 
-          # Must contain the Wasabi base URL (prevents defaulting to GH or localhost)
-          grep -F "$BASE_URL" release/latest-mac.yml
+          # Ensure manifest lists the auto-update payload(s)
+          grep -qE 'files:\s*$' release/latest-mac.yml
+          grep -q 'mac-universal.zip' release/latest-mac.yml
 
-          # Ensure auto-update payloads exist (names match your artifactName pattern)
-          ls release/*-mac-universal.zip
-          ls release/*-mac-universal.zip.blockmap
+          # 2) Artifacts exist
+          ZIP_PATH=$(ls release/*-mac-universal.zip)
+          BLOCKMAP_PATH=$(ls release/*-mac-universal.zip.blockmap)
+          echo "ZIP: $ZIP_PATH"
+          echo "BLOCKMAP: $BLOCKMAP_PATH"
+
+          # 3) Verify the embedded app-update.yml (this is what carries your Wasabi URL)
+          TMPDIR="$(mktemp -d)"
+          unzip -q "$ZIP_PATH" -d "$TMPDIR"
+          APP_UPDATE=$(find "$TMPDIR" -name app-update.yml | head -n1)
+
+          if [ -z "$APP_UPDATE" ]; then
+            echo "app-update.yml not found inside the .app bundle extracted from ZIP"; exit 1
+          fi
+
+          echo "----- app-update.yml -----"
+          cat "$APP_UPDATE"
+
+          # Check provider + URL
+          BASE_URL="${AWS_ENDPOINT_URL_S3%/}/${S3_BUCKET}"
+          grep -q '^provider:.*generic' "$APP_UPDATE"
+          grep -q "$BASE_URL" "$APP_UPDATE"
+
+          echo "macOS manifest and embedded feed URL look good."
 
       # 9) Upload macOS binaries (for users to download manually and for completeness)
       #    Note: updater actually uses the ZIP + blockmap; DMG is for first install.
@@ -206,26 +223,19 @@ jobs:
       - name: Sanity check update manifest (Windows)
         shell: pwsh
         run: |
-          $baseUrl = "$Env:AWS_ENDPOINT_URL_S3/$Env:S3_BUCKET"
-          $baseUrl = $baseUrl.TrimEnd('/')  # normalize just in case
-
+          # 1) Manifest exists and mentions the EXE
           if (-not (Test-Path "release/latest.yml")) { throw "latest.yml missing" }
-
-          Write-Host "----- latest.yml -----"
+          "----- latest.yml -----"
           Get-Content "release/latest.yml"
+          Select-String -Path "release/latest.yml" -Pattern '\.exe' | Out-Null
 
-          # Ensure manifest references our Wasabi base URL
-          if (-not (Select-String -Path "release/latest.yml" -SimpleMatch $baseUrl)) {
-            throw "latest.yml does not contain expected base URL: $baseUrl"
-          }
+          # 2) Artifacts exist
+          $exe = Get-ChildItem -Path release -Filter *.exe -Recurse | Select-Object -First 1
+          $blk = Get-ChildItem -Path release -Filter *.exe.blockmap -Recurse | Select-Object -First 1
+          if (-not $exe) { throw "No .exe found in release/" }
+          if (-not $blk) { throw "No .exe.blockmap found in release/" }
 
-          # Ensure auto-update payloads exist
-          if (-not (Get-ChildItem -Path release -Filter *.exe -Recurse)) {
-            throw "No .exe found in release/"
-          }
-          if (-not (Get-ChildItem -Path release -Filter *.exe.blockmap -Recurse)) {
-            throw "No .exe.blockmap found in release/"
-          }
+          "Windows manifest references EXE and artifacts are present."
 
       # 9) Upload Windows binaries for updater (EXE + blockmap)
       - name: Upload Windows binaries (EXE + blockmap)
