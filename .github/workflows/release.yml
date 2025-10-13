@@ -10,143 +10,94 @@ permissions:
   contents: write
 
 env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.B2_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.B2_APP_KEY }}
-  AWS_DEFAULT_REGION: us-east-005
-  AWS_REGION: us-east-005
+  AWS_ACCESS_KEY_ID: ${{ secrets.WASABI_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.WASABI_SECRET_KEY }}
+  AWS_DEFAULT_REGION: us-central-1
+  AWS_REGION: us-central-1
   AWS_S3_USE_PATH_STYLE: "true"
-  AWS_ENDPOINT_URL: https://s3.us-east-005.backblazeb2.com
-  AWS_ENDPOINT_URL_S3: https://s3.us-east-005.backblazeb2.com
-  S3_BUCKET: 4gmXev0u4Um
+  AWS_ENDPOINT_URL: https://s3.us-central-1.wasabisys.com
+  AWS_ENDPOINT_URL_S3: https://s3.us-central-1.wasabisys.com
+  S3_BUCKET: 4gmxev0u4um
 
 jobs:
-  # A) PURGE THE BUCKET
+
+# --- purge to be safe -----------------------------------------------------
   purge-bucket:
     runs-on: ubuntu-latest
     steps:
-      - name: Preflight S3 auth (Backblaze)
+
+      # 1) Connect to Wasabi
+      - name: Preflight S3 auth (Wasabi)
         run: |
-          set -euxo pipefail
+          set -euo pipefail
           aws --version
           aws s3api head-bucket --bucket "$S3_BUCKET" \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
             --region "$AWS_DEFAULT_REGION"
 
-      # Best-effort normal delete first (quick path)
-      - name: Purge (simple recursive delete)
+      # 2) Recursive Purge
+      - name: Purge bucket (non-versioned nuke)
         run: |
-          set -euxo pipefail
+          set -euo pipefail
+          # Delete all objects in the bucket (no versioning -> one shot)
           aws s3 rm "s3://$S3_BUCKET" \
             --recursive \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-            --region "$AWS_DEFAULT_REGION" || true
+            --region "$AWS_DEFAULT_REGION" \
+            --only-show-errors || true
 
-      # Deep purge: remove all versions and delete-markers (handles any leftovers)
-      - name: Purge (remove all versions & delete-markers)
+      # 3) Ensure it's empty
+      - name: Verify empty
         run: |
-          set -euxo pipefail
-
-          STARTING_TOKEN=""
-          while true; do
-            if [ -z "$STARTING_TOKEN" ]; then
-              JSON=$(aws s3api list-object-versions \
-                --bucket "$S3_BUCKET" \
-                --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-                --region "$AWS_DEFAULT_REGION" \
-                --max-items 1000)
-            else
-              JSON=$(aws s3api list-object-versions \
-                --bucket "$S3_BUCKET" \
-                --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-                --region "$AWS_DEFAULT_REGION" \
-                --max-items 1000 \
-                --starting-token "$STARTING_TOKEN")
-            fi
-
-            # Flatten Versions + DeleteMarkers into a single array of {Key, VersionId}
-            IDS=$(echo "$JSON" | jq -c '
-              ( (.Versions // []) + (.DeleteMarkers // []) )
-              | map({Key:.Key, VersionId:.VersionId})
-            ')
-
-            # Nothing in this page?
-            if [ "$(echo "$IDS" | jq 'length')" -eq 0 ]; then
-              # Check if there are more pages to scan:
-              STARTING_TOKEN=$(echo "$JSON" | jq -r '.NextToken // empty')
-              if [ -z "$STARTING_TOKEN" ]; then
-                break
-              else
-                continue
-              fi
-            fi
-
-            echo "{\"Objects\":$IDS, \"Quiet\": false}" > /tmp/delete.json
-
-            aws s3api delete-objects \
-              --bucket "$S3_BUCKET" \
-              --delete file:///tmp/delete.json \
-              --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-              --region "$AWS_DEFAULT_REGION"
-
-            # Move to next page if any
-            STARTING_TOKEN=$(echo "$JSON" | jq -r '.NextToken // empty')
-            if [ -z "$STARTING_TOKEN" ]; then
-              # No more pages; loop again once to ensure nothing new appeared
-              # (defensive when uploads happen concurrently)
-              JSON=$(aws s3api list-object-versions \
-                --bucket "$S3_BUCKET" \
-                --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-                --region "$AWS_DEFAULT_REGION" \
-                --max-items 1000)
-              LEFT=$(echo "$JSON" | jq '
-                ((.Versions // []) | length) + ((.DeleteMarkers // []) | length)
-              ')
-              if [ "$LEFT" -eq 0 ]; then break; fi
-            fi
-          done
-
-      - name: Verify empty (s3 and API views)
-        run: |
-          set -euxo pipefail
-          echo "s3 ls:"
-          aws s3 ls "s3://$S3_BUCKET" \
-            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-            --region "$AWS_DEFAULT_REGION" || true
-
-          echo "list-objects-v2 (should be null/empty):"
-          aws s3api list-objects-v2 \
+          set -euo pipefail
+          # Ask for at most 1 object. If any object exists, it's not empty.
+          COUNT=$(aws s3api list-objects-v2 \
             --bucket "$S3_BUCKET" \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
             --region "$AWS_DEFAULT_REGION" \
-            --query 'Contents' || true
+            --max-items 1 \
+            --query 'length(Contents)')
+          if [ "${COUNT:-0}" -ne 0 ]; then
+            echo "Bucket is NOT empty."
+            # Show a quick listing to help debug
+            aws s3 ls "s3://$S3_BUCKET" \
+              --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+              --region "$AWS_DEFAULT_REGION" || true
+            exit 1
+          fi
+          echo "Bucket is empty."
 
-  # B) macOS build & upload
+  # --- macOS build & upload -----------------------------------------------------
   build-macos:
     needs: purge-bucket
     runs-on: macos-14
     steps:
+      # 1) Checkout repo at the tagged commit
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      # 2) Install pnpm
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
+      # 3) Install Node 20 and enable pnpm cache
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
 
-      - name: Install deps
+      # 4) Install deps (no lockfile strictness so CI can resolve if needed)
+      - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Build app (TS + Vite)
+      # 5) Build shared/electron/vite bundles via package.json script
+      - name: Build app
         run: pnpm build
 
-      - name: Build (macOS universal)
+      # 6) Package macOS: 
+        # DMG (first install) + ZIP (auto-update payload) as universal binary
+        # --publish never: upload manually awscli
+      - name: Package (electron-builder)
         run: pnpm electron-builder --mac dmg zip --universal --publish never
 
+      # 7) List produced files for easy debugging if something goes wrong
       - name: Show artifacts
         run: |
           set -euxo pipefail
@@ -156,7 +107,31 @@ jobs:
             echo "No release/ directory"; exit 1
           fi
 
-      # Upload binaries first…
+      # 8) Sanity check: confirm the update manifest exists and points to Wasabi,
+      #    and that the expected ZIP + blockmap are present before uploading.
+      - name: Sanity check update manifest (macOS)
+        run: |
+          set -euo pipefail
+
+          # Expected base URL baked into latest-mac.yml by electron-builder (from your publish config)
+          BASE_URL="${AWS_ENDPOINT_URL_S3%/}/${S3_BUCKET}"
+
+          # Ensure manifest exists
+          test -f release/latest-mac.yml
+
+          # Show manifest for logs
+          echo "----- latest-mac.yml -----"
+          cat release/latest-mac.yml
+
+          # Must contain the Wasabi base URL (prevents defaulting to GH or localhost)
+          grep -F "$BASE_URL" release/latest-mac.yml
+
+          # Ensure auto-update payloads exist (names match your artifactName pattern)
+          ls release/*-mac-universal.zip
+          ls release/*-mac-universal.zip.blockmap
+
+      # 9) Upload macOS binaries (for users to download manually and for completeness)
+      #    Note: updater actually uses the ZIP + blockmap; DMG is for first install.
       - name: Upload macOS binaries (DMG/ZIP + blockmap)
         run: |
           set -euxo pipefail
@@ -170,7 +145,7 @@ jobs:
             --include "*-mac-universal.zip" \
             --include "*-mac-universal.zip.blockmap"
 
-      # …then upload manifest last
+      # 10) Upload macOS update manifest (what electron-updater fetches first)
       - name: Upload macOS manifest (latest-mac.yml)
         run: |
           set -euxo pipefail
@@ -179,36 +154,40 @@ jobs:
             --region "$AWS_DEFAULT_REGION" \
             --acl public-read
 
-  # C) Windows build & upload
+
+# --- Windows build & upload ---------------------------------------------------
   build-windows:
     needs: purge-bucket
     runs-on: windows-latest
     steps:
+      # 1) Checkout repo at the tagged commit
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      # 2) Install pnpm
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
+      # 3) Install Node 20 and enable pnpm cache
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: pnpm }
 
-      - name: Install deps
+      # 4) Install deps
+      - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
         shell: bash
 
-      - name: Build app (TS + Vite)
+      # 5) Build your shared/electron/vite bundles via your package.json scripts
+      - name: Build app
         run: pnpm build
         shell: bash
 
-      - name: Build (Windows x64)
+      # 6) Package Windows: NSIS (EXE) + ZIP (ZIP not needed for updater but harmless)
+      #    --publish never: we upload ourselves with awscli
+      - name: Package (electron-builder)
         run: pnpm electron-builder --win nsis zip --x64 --publish never
         shell: bash
 
+      # 7) List produced files for easy debugging
       - name: Show artifacts
         shell: pwsh
         run: |
@@ -218,7 +197,33 @@ jobs:
             Write-Error "No release/ directory"; exit 1
           }
 
-      # Upload binaries first…
+      # 8) Sanity check: confirm the update manifest exists and points to Wasabi,
+      #    and that the expected EXE + blockmap are present before uploading.
+      - name: Sanity check update manifest (Windows)
+        shell: pwsh
+        run: |
+          $baseUrl = "$Env:AWS_ENDPOINT_URL_S3/$Env:S3_BUCKET"
+          $baseUrl = $baseUrl.TrimEnd('/')  # normalize just in case
+
+          if (-not (Test-Path "release/latest.yml")) { throw "latest.yml missing" }
+
+          Write-Host "----- latest.yml -----"
+          Get-Content "release/latest.yml"
+
+          # Ensure manifest references our Wasabi base URL
+          if (-not (Select-String -Path "release/latest.yml" -SimpleMatch $baseUrl)) {
+            throw "latest.yml does not contain expected base URL: $baseUrl"
+          }
+
+          # Ensure auto-update payloads exist
+          if (-not (Get-ChildItem -Path release -Filter *.exe -Recurse)) {
+            throw "No .exe found in release/"
+          }
+          if (-not (Get-ChildItem -Path release -Filter *.exe.blockmap -Recurse)) {
+            throw "No .exe.blockmap found in release/"
+          }
+
+      # 9) Upload Windows binaries for updater (EXE + blockmap)
       - name: Upload Windows binaries (EXE + blockmap)
         shell: pwsh
         run: |
@@ -231,7 +236,7 @@ jobs:
             --include "*.exe" `
             --include "*.exe.blockmap"
 
-      # …then upload manifest last
+      # 10) Upload Windows update manifest (what electron-updater fetches first)
       - name: Upload Windows manifest (latest.yml)
         shell: pwsh
         run: |

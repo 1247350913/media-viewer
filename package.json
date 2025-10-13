@@ -8,6 +8,13 @@
   "author": "CJH",
   "main": "dist/electron/main.js",
   "build": {
+    "asar": true,
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://s3.us-central-1.wasabisys.com/q7pn0qykwq4q"
+      }
+    ],
     "directories": { "output": "release" },
     "files": ["dist/**"],
     "mac": { "target": ["dmg", "zip"] },

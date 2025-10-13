@@ -4,8 +4,10 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [react()],
+  base: './',              
   build: {
-    outDir: 'dist/src',     
+    outDir: 'dist/src',
+    assetsDir: 'assets',    
     emptyOutDir: true,      
   },
   resolve: {

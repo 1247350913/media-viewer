@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
 import { autoUpdater } from "electron-updater";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 import * as path from "path";
@@ -25,33 +26,39 @@ if (!app.isPackaged) {
 }
 
 async function createWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
+  const devUrl =
+    process.env.ELECTRON_START_URL ||
+    process.env.VITE_DEV_SERVER_URL ||
+    "http://localhost:5173";
+
+  const indexHtmlPath = path.join(__dirname, "..", "src", "index.html");
+  const isProdLike =
+    app.isPackaged || process.env.FORCE_PROD === "1" || existsSync(indexHtmlPath);
+
+  const winOpts: Electron.BrowserWindowConstructorOptions = {
+    // keep the normal frame so you have the close/min/max controls
+    frame: true,
+    autoHideMenuBar: false,              // show menu bar on Windows
     show: false,
     webPreferences: {
       preload: join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true
-    }
-  });
+      sandbox: true,
+    },
+    ...(isProdLike ? { width: 1280, height: 800 } : { width: 1280, height: 800 }),
+  };
 
-  const isDev = !app.isPackaged;
-  if (isDev) {
-    const devUrl =
-      process.env.ELECTRON_START_URL ||
-      process.env.VITE_DEV_SERVER_URL ||
-      "http://localhost:5173";
+  mainWindow = new BrowserWindow(winOpts);
+
+  if (isProdLike) {
+    await mainWindow.loadFile(indexHtmlPath);
+    // maximize instead of fullscreen so the title bar stays visible
+    mainWindow.maximize();
+  } else {
     await mainWindow.loadURL(devUrl);
     mainWindow.webContents.openDevTools({ mode: "detach" });
-  } else {
-    const indexHtmlPath = path.join(__dirname, "..", "src", "index.html");
-    await mainWindow.loadFile(indexHtmlPath);
   }
-
-  mainWindow.once("ready-to-show", () => mainWindow?.show());
-  mainWindow.on("closed", () => (mainWindow = null));
 }
 
 app.whenReady().then(createWindow);
