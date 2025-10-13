@@ -50,21 +50,25 @@ jobs:
       - name: Verify empty
         run: |
           set -euo pipefail
-          # Ask for at most 1 object. If any object exists, it's not empty.
-          COUNT=$(aws s3api list-objects-v2 \
+
+          # Get at most one object and extract its Key (text). If bucket is empty, this prints "None".
+          FIRST_KEY=$(aws s3api list-objects-v2 \
             --bucket "$S3_BUCKET" \
             --endpoint-url "$AWS_ENDPOINT_URL_S3" \
             --region "$AWS_DEFAULT_REGION" \
             --max-items 1 \
-            --query 'length(Contents)')
-          if [ "${COUNT:-0}" -ne 0 ]; then
-            echo "Bucket is NOT empty."
-            # Show a quick listing to help debug
+            --query 'Contents[0].Key' \
+            --output text)
+
+          if [ "${FIRST_KEY:-None}" != "None" ]; then
+            echo "Bucket is NOT empty. Example key: $FIRST_KEY"
+            # quick listing to help debug
             aws s3 ls "s3://$S3_BUCKET" \
               --endpoint-url "$AWS_ENDPOINT_URL_S3" \
               --region "$AWS_DEFAULT_REGION" || true
             exit 1
           fi
+
           echo "Bucket is empty."
 
   # --- macOS build & upload -----------------------------------------------------
