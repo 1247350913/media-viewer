@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
 import { autoUpdater } from "electron-updater";
 import { execFile } from "node:child_process";
+import { initAutoUpdates } from "./updates";
 import { promisify } from "node:util";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
@@ -61,9 +62,18 @@ async function createWindow() {
   }
 }
 
-app.whenReady().then(createWindow);
-app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
-app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) void createWindow(); });
+app.whenReady().then(async () => {
+  await createWindow();
+  initAutoUpdates();
+});
+
+app.on("window-all-closed", () => { 
+  if (process.platform !== "darwin") app.quit(); 
+});
+
+app.on("activate", () => { 
+  if (BrowserWindow.getAllWindows().length === 0) void createWindow(); 
+});
 
 
 // ============================ Handlers ============================
