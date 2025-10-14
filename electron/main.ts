@@ -1,5 +1,4 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from "electron";
-import { autoUpdater } from "electron-updater";
 import { execFile } from "node:child_process";
 import { initAutoUpdates } from "./updates";
 import { promisify } from "node:util";
@@ -32,7 +31,7 @@ async function createWindow() {
     process.env.VITE_DEV_SERVER_URL ||
     "http://localhost:5173";
 
-  const indexHtmlPath = path.join(__dirname, "..", "src", "index.html");
+  const indexHtmlPath = path.join(__dirname, "..", "app", "index.html");
   const isProdLike =
     app.isPackaged || process.env.FORCE_PROD === "1" || existsSync(indexHtmlPath);
 
@@ -51,6 +50,11 @@ async function createWindow() {
   };
 
   mainWindow = new BrowserWindow(winOpts);
+
+  mainWindow.once("ready-to-show", () => {
+    mainWindow!.show();
+    mainWindow!.focus();
+  });
 
   if (isProdLike) {
     await mainWindow.loadFile(indexHtmlPath);

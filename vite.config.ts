@@ -4,15 +4,19 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [react()],
-  base: './',              
+  base: './',
+  publicDir: 'public',              
   build: {
-    outDir: 'dist/src',
+    outDir: 'dist/app',
     assetsDir: 'assets',    
-    emptyOutDir: true,      
+    emptyOutDir: true,
+    sourcemap: true, 
   },
   resolve: {
     alias: {
       '@shared': path.resolve(__dirname, 'shared'),
+      '@assets': path.resolve(__dirname, 'src/assets'),
+      '@comps':  path.resolve(__dirname, 'src/components'),
     },
   },
 })

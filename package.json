@@ -35,7 +35,10 @@
     "build:electron": "tsc -p tsconfig.electron.json",
     "build:app": "vite build",
 
-    "dev": "run-p -l dev:shared dev:electron:build dev:vite dev:electron",
+    "run:prod": "pnpm build && cross-env NODE_ENV=production electron dist/electron/main.js",
+    "start": "pnpm run:prod",
+
+    "dev": "pnpm clean && pnpm build:shared && pnpm build:electron && run-p -l dev:shared dev:electron:build dev:vite dev:electron",
     "dev:shared": "tsc -p tsconfig.shared.json --watch --preserveWatchOutput",
     "dev:electron:build": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
     "dev:vite": "vite --port 5173 --strictPort",

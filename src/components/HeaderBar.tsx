@@ -1,3 +1,4 @@
+import icon from "../assets/default-profile-icon.png";
 import * as Shared from "../../shared";
 
 type Props = Shared.ComponentProps["HeaderBar"];
@@ -39,7 +40,7 @@ function HeaderBar({ screenName, onBack, onProfileClick, q, onChange, mediaCard,
       <button className="btn btn--circle btn--bare" title="Profile" onClick={onProfileClick}>
         <img
           className="header-bar__profile-icon"
-          src="/default-profile-icon.png"
+          src={icon}
           alt="Profile"
         />
       </button>
