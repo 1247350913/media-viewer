@@ -113,7 +113,7 @@ jobs:
 
       # 8) Sanity check: confirm the update manifest exists and points to Wasabi,
       #    and that the expected ZIP + blockmap are present before uploading.
-      - name: Sanity check update manifest (macOS)
+      - name: Sanity check for the update manifest (macOS)
         run: |
           set -euo pipefail
 
@@ -220,7 +220,7 @@ jobs:
 
       # 8) Sanity check: confirm the update manifest exists and points to Wasabi,
       #    and that the expected EXE + blockmap are present before uploading.
-      - name: Sanity check update manifest (Windows)
+      - name: Sanity check for the update manifest (Windows)
         shell: pwsh
         run: |
           # 1) Manifest exists and mentions the EXE

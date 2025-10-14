@@ -12,7 +12,7 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "https://s3.us-central-1.wasabisys.com/q7pn0qykwq4q"
+        "url": "https://s3.us-central-1.wasabisys.com/4gmxev0u4um"
       }
     ],
     "directories": { "output": "release" },
