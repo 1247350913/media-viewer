@@ -9,12 +9,7 @@
   "main": "dist/electron/main.js",
   "build": {
     "asar": true,
-    "publish": [
-      {
-        "provider": "generic",
-        "url": "https://s3.us-central-1.wasabisys.com/4gmxev0u4um"
-      }
-    ],
+    "publish": [{ "provider": "generic", "url": "https://downloads.lnks.rip" }],
     "directories": { "output": "release" },
     "files": ["dist/**"],
     "mac": { "target": ["dmg", "zip"] },
