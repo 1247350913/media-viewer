@@ -166,29 +166,29 @@ jobs:
 
           echo "✅ macOS manifest and embedded feed URL look good."
 
-            # 9) Upload macOS binaries (for users to download manually and for completeness)
-            #    Note: updater actually uses the ZIP + blockmap; DMG is for first install.
-            - name: Upload macOS binaries (DMG/ZIP + blockmap)
-              run: |
-                set -euxo pipefail
-                aws s3 cp "release/" "s3://$S3_BUCKET/" \
-                  --recursive \
-                  --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-                  --region "$AWS_DEFAULT_REGION" \
-                  --acl public-read \
-                  --exclude "*" \
-                  --include "*-mac-universal.dmg" \
-                  --include "*-mac-universal.zip" \
-                  --include "*-mac-universal.zip.blockmap"
+      # 9) Upload macOS binaries (for users to download manually and for completeness)
+      #    Note: updater actually uses the ZIP + blockmap; DMG is for first install.
+      - name: Upload macOS binaries (DMG/ZIP + blockmap)
+        run: |
+          set -euxo pipefail
+          aws s3 cp "release/" "s3://$S3_BUCKET/" \
+            --recursive \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION" \
+            --acl public-read \
+            --exclude "*" \
+            --include "*-mac-universal.dmg" \
+            --include "*-mac-universal.zip" \
+            --include "*-mac-universal.zip.blockmap"
 
-            # 10) Upload macOS update manifest (what electron-updater fetches first)
-            - name: Upload macOS manifest (latest-mac.yml)
-              run: |
-                set -euxo pipefail
-                aws s3 cp "release/latest-mac.yml" "s3://$S3_BUCKET/latest-mac.yml" \
-                  --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-                  --region "$AWS_DEFAULT_REGION" \
-                  --acl public-read
+      # 10) Upload macOS update manifest (what electron-updater fetches first)
+      - name: Upload macOS manifest (latest-mac.yml)
+        run: |
+          set -euxo pipefail
+          aws s3 cp "release/latest-mac.yml" "s3://$S3_BUCKET/latest-mac.yml" \
+            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+            --region "$AWS_DEFAULT_REGION" \
+            --acl public-read
 
 
 # --- Windows build & upload ---------------------------------------------------
