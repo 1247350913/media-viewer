@@ -53,7 +53,6 @@ async function createWindow() {
 
   mainWindow.once("ready-to-show", () => {
     mainWindow!.show();
-    mainWindow!.focus();
   });
 
   if (isProdLike) {
@@ -71,12 +70,12 @@ app.whenReady().then(async () => {
   initAutoUpdates();
 });
 
-app.on("window-all-closed", () => { 
-  if (process.platform !== "darwin") app.quit(); 
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
 });
 
-app.on("activate", () => { 
-  if (BrowserWindow.getAllWindows().length === 0) void createWindow(); 
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) void createWindow();
 });
 
 
@@ -103,7 +102,7 @@ ipcMain.handle('vault:select', async () => {
 /** level1-all */
 ipcMain.handle('content:list-level1-all', async (_evt, contentPath: string) => {
   let subdirs: import("node:fs").Dirent[] = [];
-  try { 
+  try {
     subdirs = (await fsp.readdir(contentPath, { withFileTypes: true })).filter(e => e.isDirectory());
   } catch {
     return [];
@@ -238,11 +237,11 @@ async function probeVideo(videoFilePath: string) {
 
   const streams: any[] = json?.streams ?? [];
   const format: any = json?.format ?? {};
-  
+
   const v = streams.find((s) => s.codec_type === "video");
   const height: number | undefined = v?.height;
   const videoCodec: string | undefined = v?.codec_name;
-  
+
   const durStr: string | undefined = format?.duration || v?.duration;
   const runtimeSeconds = durStr ? Number.parseFloat(durStr) : undefined;
 
@@ -252,7 +251,7 @@ async function probeVideo(videoFilePath: string) {
     .map((s) => langFromTags(s?.tags))
     .filter(Boolean) as string[]
   );
-  
+
   const subStreams = streams.filter((s) => s.codec_type === "subtitle");
   const subs = dedupe(
     subStreams
@@ -292,7 +291,7 @@ async function getvideoDetails(dirPath: string,  exts: string[] = [".mkv", ".mp4
   try {
     const stat = await fsp.stat(dirPath).catch(() => null);
     if (!stat || !stat.isDirectory()) return null;
-    
+
     const files = await fsp.readdir(dirPath);
     const candidates = files
       .filter((f) => !f.startsWith("."))
@@ -323,16 +322,16 @@ async function listLevel1(mediaKindPath: string) {
     if (dirDetails && dirDetails.title) {
       const videoDetails = await getvideoDetails(dirPath);
       if (videoDetails) {
-        cardDetails = { 
-          kind: mediaKind, 
-          ...dirDetails, 
-          ...videoDetails, 
-          posterPath: path.join(dirPath, "poster.webp") 
+        cardDetails = {
+          kind: mediaKind,
+          ...dirDetails,
+          ...videoDetails,
+          posterPath: path.join(dirPath, "poster.webp")
         };
       } else {
-        cardDetails = { 
-          kind: mediaKind, 
-          ...dirDetails, 
+        cardDetails = {
+          kind: mediaKind,
+          ...dirDetails,
           posterPath: path.join(dirPath, "poster.webp"),
           dirPath
         }
@@ -369,11 +368,11 @@ async function listSeries(mediaCard: MediaCard) {
     if (dirDetails && dirDetails.title) {
       const videoDetails = await getvideoDetails(dirPath);
       if (videoDetails) {
-        cardDetails = { 
-          kind: mediaCard.kind, 
-          ...dirDetails, 
-          ...videoDetails, 
-          posterPath: path.join(dirPath, "poster.webp") 
+        cardDetails = {
+          kind: mediaCard.kind,
+          ...dirDetails,
+          ...videoDetails,
+          posterPath: path.join(dirPath, "poster.webp")
         };
       } else {
         console.warn(`Video file not found in movie folder: ${entry.name}`);
@@ -410,7 +409,7 @@ async function listSeasonsAndEpisodes(mediaCard: MediaCard) {
       seasonNumber,
       ...seasonJsonDetails
     }
- 
+
     const episodeEntries = fs.readdirSync(seasonDirPath, { withFileTypes: true })
     const episodeCards: MediaCard[] = [];
 
@@ -462,7 +461,7 @@ async function listFranchise(mediaCard: MediaCard) {
     let cardDetails = <MediaCard>{
       ...dirDetails,
       kind: mediaCard.kind,
-      posterPath: path.join(dirPath, "poster.webp"), 
+      posterPath: path.join(dirPath, "poster.webp"),
       dirPath,
       franchiseNumber
     };
