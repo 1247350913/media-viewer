@@ -18,6 +18,7 @@ env:
   AWS_ENDPOINT_URL: https://s3.us-central-1.wasabisys.com
   AWS_ENDPOINT_URL_S3: https://s3.us-central-1.wasabisys.com
   S3_BUCKET: 4gmxev0u4um
+  FEED_URL: https://downloads.lnks.rip
 
 jobs:
 
@@ -111,8 +112,9 @@ jobs:
             echo "No release/ directory"; exit 1
           fi
 
-      # 8) Sanity check: confirm the update manifest exists and points to Wasabi,
-      #    and that the expected ZIP + blockmap are present before uploading.
+      # 8) Sanity check: 
+        # Confirm the update manifest exists and points to Wasabi.
+        # And that the expected ZIP + blockmap are present before uploading.
       - name: Sanity check for the update manifest (macOS)
         run: |
           set -euo pipefail
@@ -132,7 +134,7 @@ jobs:
           echo "ZIP: $ZIP_PATH"
           echo "BLOCKMAP: $BLOCKMAP_PATH"
 
-          # 3) Verify the embedded app-update.yml (this is what carries your Wasabi URL)
+          # 3) Verify the embedded app-update.yml (this carries your feed URL)
           TMPDIR="$(mktemp -d)"
           unzip -q "$ZIP_PATH" -d "$TMPDIR"
           APP_UPDATE=$(find "$TMPDIR" -name app-update.yml | head -n1)
@@ -144,36 +146,49 @@ jobs:
           echo "----- app-update.yml -----"
           cat "$APP_UPDATE"
 
-          # Check provider + URL
-          BASE_URL="${AWS_ENDPOINT_URL_S3%/}/${S3_BUCKET}"
+          # Expected feed URL (prefer FEED_URL; else Wasabi base)
+          FEED="${FEED_URL:-}"
+          if [ -z "$FEED" ]; then
+            FEED="${AWS_ENDPOINT_URL_S3%/}/${S3_BUCKET}"
+          fi
+          # normalize: strip trailing slash in both
+          FEED="${FEED%/}"
+          ACTUAL=$(awk -F': ' '/^url:/{print $2}' "$APP_UPDATE" | tr -d '\r' | sed 's:/*$::')
+
+          echo "Expected feed: $FEED"
+          echo "Actual feed  : $ACTUAL"
+
+          # Checks
           grep -q '^provider:.*generic' "$APP_UPDATE"
-          grep -q "$BASE_URL" "$APP_UPDATE"
+          if [ "$ACTUAL" != "$FEED" ]; then
+            echo "❌ Feed URL mismatch"; exit 1
+          fi
 
-          echo "macOS manifest and embedded feed URL look good."
+          echo "✅ macOS manifest and embedded feed URL look good."
 
-      # 9) Upload macOS binaries (for users to download manually and for completeness)
-      #    Note: updater actually uses the ZIP + blockmap; DMG is for first install.
-      - name: Upload macOS binaries (DMG/ZIP + blockmap)
-        run: |
-          set -euxo pipefail
-          aws s3 cp "release/" "s3://$S3_BUCKET/" \
-            --recursive \
-            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-            --region "$AWS_DEFAULT_REGION" \
-            --acl public-read \
-            --exclude "*" \
-            --include "*-mac-universal.dmg" \
-            --include "*-mac-universal.zip" \
-            --include "*-mac-universal.zip.blockmap"
+            # 9) Upload macOS binaries (for users to download manually and for completeness)
+            #    Note: updater actually uses the ZIP + blockmap; DMG is for first install.
+            - name: Upload macOS binaries (DMG/ZIP + blockmap)
+              run: |
+                set -euxo pipefail
+                aws s3 cp "release/" "s3://$S3_BUCKET/" \
+                  --recursive \
+                  --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+                  --region "$AWS_DEFAULT_REGION" \
+                  --acl public-read \
+                  --exclude "*" \
+                  --include "*-mac-universal.dmg" \
+                  --include "*-mac-universal.zip" \
+                  --include "*-mac-universal.zip.blockmap"
 
-      # 10) Upload macOS update manifest (what electron-updater fetches first)
-      - name: Upload macOS manifest (latest-mac.yml)
-        run: |
-          set -euxo pipefail
-          aws s3 cp "release/latest-mac.yml" "s3://$S3_BUCKET/latest-mac.yml" \
-            --endpoint-url "$AWS_ENDPOINT_URL_S3" \
-            --region "$AWS_DEFAULT_REGION" \
-            --acl public-read
+            # 10) Upload macOS update manifest (what electron-updater fetches first)
+            - name: Upload macOS manifest (latest-mac.yml)
+              run: |
+                set -euxo pipefail
+                aws s3 cp "release/latest-mac.yml" "s3://$S3_BUCKET/latest-mac.yml" \
+                  --endpoint-url "$AWS_ENDPOINT_URL_S3" \
+                  --region "$AWS_DEFAULT_REGION" \
+                  --acl public-read
 
 
 # --- Windows build & upload ---------------------------------------------------
@@ -258,3 +273,4 @@ jobs:
             --endpoint-url "$Env:AWS_ENDPOINT_URL_S3" `
             --region "$Env:AWS_DEFAULT_REGION" `
             --acl public-read
+            
