@@ -52,7 +52,7 @@ function App() {
     case "Login":
       return (<Screens.Login onSuccess={handleLoginSuccess}/>)
     case "Launch":
-      return (<Screens.Launch onLoaded={handleLoaded}/>);
+      return (<Screens.Launch onLoaded={handleLoaded} onBack={back} onProfileClick={onProfileClick}/>);
     case "Browse":
       return (<Screens.Browse contentPath={contentPath} onOpenCard={handleOpenCard} onBack={back} onProfileClick={onProfileClick}/>);
     case "Franchise":

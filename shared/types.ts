@@ -138,6 +138,8 @@ export type ScreenProps = {
   }
   Launch: {
     onLoaded: (contentPath: string) => void
+    onBack: () => void
+    onProfileClick: () => void
   };
   Browse: {
     contentPath: string
