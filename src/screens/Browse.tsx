@@ -7,19 +7,30 @@ const screenName: Shared.ScreenName = "Browse"
 type Props = Shared.ScreenProps[typeof screenName];
 
 function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
-  // --- Data state ---
+  // Data state
   const [isLoading, setIsLoading] = useState(true);
   const [cards, setCards] = useState<Shared.MediaCard[]>([]);
   const [q, setQ] = useState("");
 
-  //kind multiselect
+  // Dropdowns
   const [kindFilters, setKindFilters] = useState<Shared.MediaKind[]>([]);
   const [showKindsDropdown, setShowKindsDropdown] = useState(false);
   const kindsWrapRef = useRef<HTMLDivElement | null>(null);  //click away to close menu
+  const [genreFilters, setGenreFilters] = useState<Shared.Genre[]>([]);
+  const [showGenresDropdown, setShowGenresDropdown] = useState(false);
+  const genresWrapRef = useRef<HTMLDivElement | null>(null);  //click away to close menu
+  const [yearFilter, setYearFilter] = useState<number | {} | null>(null);
+  const [showYearDropdown, setShowYearDropdown] = useState(false);
+  const yearWrapRef = useRef<HTMLDivElement | null>(null);  //click away to close menu
+  const [ratingFilters, setRatingFilters] = useState<Shared.Rating[]>([]);
+  const [showRatingDropdown, setShowRatingDropdown] = useState(false);
+  const ratingWrapRef = useRef<HTMLDivElement | null>(null);  //click away to close menu
 
   const KIND_OPTIONS: Shared.MediaKind[] = ["movie", "show", "documentary"];
+  const GENRE_OPTIONS: Shared.Genre[] = ["Action", "Adventure", "Horror"];
+  const RATING_OPTIONS: Shared.Rating[] = ["S", "A", "B", "C"];
 
-  // --- Load level-1 across all kinds ---
+  // Load level-1 across all kinds
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -70,6 +81,9 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
 
   // Mark the chip active when any kind is selected
   const kindsActive = kindFilters.length > 0;
+  const genresActive = genreFilters.length > 0;
+  const yearFilterActive = yearFilter !== null;
+  const ratingFilterActive = ratingFilters.length >0;
 
   // Toggle a single kind in multiselect; do NOT close the menu
   function toggleKind(k: Shared.MediaKind) {
@@ -77,10 +91,26 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
       prev.includes(k) ? prev.filter((x) => x !== k) : [...prev, k]
     );
   }
+  function toggleGenre(g: Shared.Genre) {
+    setGenreFilters((prev) =>
+      prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]
+    );
+  }
+  function toggleRating(r: Shared.Rating) {
+    setRatingFilters((prev) =>
+      prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]
+    );
+  }
 
-  // Clear Current Filters
+  // Clear Filters
   function clearKinds() {
     setKindFilters([]);
+  }
+  function clearGenres() {
+    setGenreFilters([]);
+  }
+  function clearRatings() {
+    setRatingFilters([]);
   }
 
   // Search + kind filtering
@@ -159,15 +189,141 @@ function Browse({ contentPath, onOpenCard, onBack, onProfileClick }: Props) {
           )}
         </div>
 
-        <button className="btn btn--secondary btn--md btn--oval btn--filter" disabled>
-          Genre
-        </button>
-        <button className="btn btn--secondary btn--md btn--oval btn--filter" disabled>
-          Year
-        </button>
-        <button className="btn btn--secondary btn--md btn--oval btn--filter" disabled>
-          Rating
-        </button>
+        <div className="subheader-bar__btn-wrap" ref={genresWrapRef}>
+          <button
+              className={`btn btn--secondary btn--md btn--oval btn--filter${genresActive ? " is-active" : ""}`}
+              aria-expanded={showGenresDropdown}
+              aria-haspopup="menu"
+              onClick={() => setShowGenresDropdown((v) => !v)}
+          >
+            Genre
+          </button>
+
+          {showGenresDropdown && (
+              <div className="dropdown-menu" role="menu" aria-label="Genre filters">
+                {/* Clear Filters action*/}
+                <button
+                  type="button"
+                  className="dropdown-menu__entry--clear"
+                  role="menuitem"
+                  onClick={clearGenres}
+                >
+                  Clear Filters
+                </button>
+
+                {/* Multiselect entries with checkboxes */}
+                {GENRE_OPTIONS.map((g) => {
+                  const active = genreFilters.includes(g);
+
+                  return (
+                    <label
+                      key={g}
+                      className={`dropdown-menu__entry${active ? " is-active" : ""}`}
+                      role="menuitemcheckbox"
+                      aria-checked={active}
+                      // clicking label toggles checkbox, but keep clicks inside
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type="checkbox"
+                        className="dropdown-menu__check"
+                        checked={active}
+                        onChange={() => toggleGenre(g)}
+                      />
+                      <span className="dropdown-menu__entry-label">{g}</span>
+                    </label>
+                  );
+                })}
+              </div>
+          )}
+        </div>
+
+        <div className="subheader-bar__btn-wrap" ref={yearWrapRef}>
+          <button
+              className={`btn btn--secondary btn--md btn--oval btn--filter${yearFilterActive ? " is-active" : ""}`}
+              aria-expanded={showYearDropdown}
+              aria-haspopup="menu"
+              onClick={() => setShowYearDropdown((v) => !v)}
+          >
+            Year
+          </button>
+
+          {showYearDropdown && (
+              <div className="dropdown-menu" role="menu" aria-label="Year filters">
+                {/* Clear Filters action*/}
+                <button
+                  type="button"
+                  className="dropdown-menu__entry--clear"
+                  role="menuitem"
+                  onClick={clearGenres}
+                >
+                  Clear Filters
+                </button>
+                <div>
+                  <p>Specific Year:</p>
+                  <input></input>
+                </div>
+                <div>
+                  <p>Start Year:</p>
+                  <input></input>
+                </div>
+                <div>
+                  <p>End Year:</p>
+                  <input></input>
+                </div>
+
+              </div>
+          )}
+        </div>
+
+        <div className="subheader-bar__btn-wrap" ref={ratingWrapRef}>
+          <button
+            className={`btn btn--secondary btn--md btn--oval btn--filter${ratingFilterActive ? " is-active" : ""}`}
+            aria-expanded={showRatingDropdown}
+            aria-haspopup="menu"
+            onClick={() => setShowRatingDropdown((v) => !v)}
+          >
+            Rating
+          </button>
+
+          {showRatingDropdown && (
+            <div className="dropdown-menu" role="menu" aria-label="Rating filters">
+              {/* Clear Filters action*/}
+              <button
+                type="button"
+                className="dropdown-menu__entry--clear"
+                role="menuitem"
+                onClick={clearRatings}
+              >
+                Clear Filters
+              </button>
+
+              {/* Multiselect entries with checkboxes */}
+              {RATING_OPTIONS.map((r) => {
+                const active = ratingFilters.includes(r);
+                return (
+                  <label
+                    key={r}
+                    className={`dropdown-menu__entry${active ? " is-active" : ""}`}
+                    role="menuitemcheckbox"
+                    aria-checked={active}
+                    // clicking label toggles checkbox, but keep clicks inside
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      className="dropdown-menu__check"
+                      checked={active}
+                      onChange={() => toggleRating(r)}
+                    />
+                    <span className="dropdown-menu__entry-label">{r}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
       </div>
 
       {isLoading && (

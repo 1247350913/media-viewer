@@ -1,9 +1,11 @@
 import { useState } from "react";
-import type { ScreenProps } from "../../shared";
+import * as Shared from "../../shared";
+import * as Components from "../components";
 
-type LaunchProps = ScreenProps["Launch"];
+const screenName: Shared.ScreenName = "Launch"
+type LaunchProps = Shared.ScreenProps[typeof screenName];
 
-function Launch({ onLoaded }: LaunchProps) {
+function Launch({ onLoaded, onBack, onProfileClick }: LaunchProps) {
   const [status, setStatus] = useState("Select the Content folder");
 
   const handleLoad = async () => {
@@ -23,11 +25,14 @@ function Launch({ onLoaded }: LaunchProps) {
   };
 
   return (
+  <div>
+    <Components.HeaderBar screenName={screenName} onBack={onBack} onProfileClick={onProfileClick}/>
     <div className="screen--wrap launch--wrap">
       <h1>Vault Viewer</h1>
       <button className="btn btn--launch btn--md btn--oval" onClick={handleLoad}>Load Vault</button>
       <p style={{opacity:.7,marginTop:8}}>{status !== "Loaded" ? status : null}</p>
     </div>
+  </div>
   );
 }
 

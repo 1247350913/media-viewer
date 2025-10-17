@@ -87,6 +87,7 @@ export type NavHistoryEntry = {
 };
 
 export type ScreenName =
+  | "Login"
   | "Launch"
   | "Browse"
   | "Franchise"
@@ -102,7 +103,7 @@ export type ScreenName =
   /* ============== Screens ============== */
 
 // [seasonNum, [seasonCard, [episodeCards..]]]
-export type SeasonTuple = [number, [MediaCard, MediaCard[]]] | null; 
+export type SeasonTuple = [number, [MediaCard, MediaCard[]]] | null;
 
   /* ============== Props ============== */
 
@@ -132,8 +133,13 @@ export type ComponentProps = {
 }
 
 export type ScreenProps = {
+  Login: {
+    onSuccess: () => void
+  }
   Launch: {
     onLoaded: (contentPath: string) => void
+    onBack: () => void
+    onProfileClick: () => void
   };
   Browse: {
     contentPath: string

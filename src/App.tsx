@@ -6,19 +6,21 @@ import "./App.css";
 
 
 function App() {
-  const [historyStack, setHistoryStack] = useState<Shared.NavHistoryEntry[]>([{screenName: "Launch", mediaCard: null}]);
+  const [historyStack, setHistoryStack] = useState<Shared.NavHistoryEntry[]>([{screenName: "Login", mediaCard: null}]);
   const [contentPath, setContentPath] = useState<string>("");
   const [seasons, setSeasons] = useState<Shared.SeasonTuple>(null);
 
+  const current = historyStack[historyStack.length - 1];
   const go = (entry: Shared.NavHistoryEntry) => setHistoryStack((s) => [...s, entry]);
   const back = () => setHistoryStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
-  const current = historyStack[historyStack.length - 1];
-
   const onProfileClick = () => { go({ screenName: "Profile", mediaCard: null})}
 
+  const handleLoginSuccess = () => {
+     go({ screenName: "Launch", mediaCard: null });
+  }
   const handleLoaded = (folderPath: string) => {
     setContentPath(folderPath);
-     go({ screenName: "Browse", mediaCard: null });
+    go({ screenName: "Browse", mediaCard: null });
   };
 
   const handleOpenCard = (mediaCard: Shared.MediaCard) => {
@@ -47,8 +49,10 @@ function App() {
   }
 
   switch (current.screenName) {
+    case "Login":
+      return (<Screens.Login onSuccess={handleLoginSuccess}/>)
     case "Launch":
-      return (<Screens.Launch onLoaded={handleLoaded}/>);
+      return (<Screens.Launch onLoaded={handleLoaded} onBack={back} onProfileClick={onProfileClick}/>);
     case "Browse":
       return (<Screens.Browse contentPath={contentPath} onOpenCard={handleOpenCard} onBack={back} onProfileClick={onProfileClick}/>);
     case "Franchise":
