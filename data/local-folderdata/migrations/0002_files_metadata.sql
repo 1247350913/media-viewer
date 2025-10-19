@@ -1,0 +1,9 @@
+ALTER TABLE files ADD COLUMN quality TEXT;
+ALTER TABLE files ADD COLUMN runtime_sec INTEGER;
+ALTER TABLE files ADD COLUMN resolution_w INTEGER;
+ALTER TABLE files ADD COLUMN resolution_h INTEGER;
+ALTER TABLE files ADD COLUMN codec_video TEXT;
+ALTER TABLE files ADD COLUMN codec_audio TEXT;
+ALTER TABLE files ADD COLUMN bitrate_kbps INTEGER;
+ALTER TABLE files ADD COLUMN audio_langs TEXT;
+ALTER TABLE files ADD COLUMN subs_langs TEXT;

@@ -1,0 +1,28 @@
+{
+  "name": "@packages/utils",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./isomorphic": {
+      "types": "./dist/isomorphic/index.d.ts",
+      "import": "./dist/isomorphic/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.js",
+      "default": "./dist/node/index.js"
+    },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {}
+}

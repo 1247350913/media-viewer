@@ -1,81 +1,31 @@
 {
   "name": "media-viewer",
-  "productName": "Media Viewer",
-  "version": "1.0.0",
   "private": true,
-  "type": "commonjs",
-  "description": "Custom Media Viewer (Electron + React)",
-  "author": "CJH",
-  "main": "dist/electron/main.js",
-  "build": {
-    "asar": true,
-    "publish": [{ "provider": "generic", "url": "https://downloads.lnks.rip" }],
-    "directories": { "output": "release" },
-    "files": ["dist/**"],
-    "mac": { "target": ["dmg", "zip"] },
-    "win": { "target": ["nsis"] },         
-    "nsis": {
-      "oneClick": true,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": false,
-      "artifactName": "${name}-setup-${version}.exe"
-    },
-    "artifactName": "${name}-${version}-${os}-${arch}.${ext}"
-  },
+  "packageManager": "pnpm@10.18.3",
+  "type": "module",
   "scripts": {
-    "clean": "rimraf dist && rimraf --glob \"shared/**/*.js\" \"shared/**/*.js.map\" \"electron/**/*.js\" \"electron/**/*.js.map\"",
+    "clean": "turbo clean && pnpm -r exec rimraf dist .turbo release",
+    "nuke": "pnpm exec turbo clean || pnpm dlx turbo@^2 clean && pnpm -r exec rimraf dist .turbo release && pnpm -r exec rimraf node_modules && rimraf pnpm-lock.yaml && pnpm install && pnpm store prune",
 
-    "build": "pnpm clean && pnpm build:shared && pnpm build:electron && pnpm build:app",
-    "build:shared": "tsc -p tsconfig.shared.json",
-    "build:electron": "tsc -p tsconfig.electron.json",
-    "build:app": "vite build",
-
-    "run:prod": "pnpm build && cross-env NODE_ENV=production electron dist/electron/main.js",
-    "start": "pnpm run:prod",
-
-    "dev": "pnpm clean && pnpm build:shared && pnpm build:electron && run-p -l dev:shared dev:electron:build dev:vite dev:electron",
-    "dev:shared": "tsc -p tsconfig.shared.json --watch --preserveWatchOutput",
-    "dev:electron:build": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
-    "dev:vite": "vite --port 5173 --strictPort",
-    "dev:electron": "wait-on tcp:5173 dist/shared/index.js dist/electron/main.js && cross-env ELECTRON_START_URL=http://localhost:5173 nodemon --watch dist/electron --watch dist/shared --ext js,cjs,mjs --delay 1000ms --signal SIGINT --exec \"electron --inspect=9229 --remote-debugging-port=9223 dist/electron/main.js\"",
-
-    "pack:mac:universal": "electron-builder --mac dmg zip --universal --publish never",
-    "pack:mac:x64": "electron-builder --mac dmg zip --x64 --publish never",
-    "pack:mac:arm64": "electron-builder --mac dmg zip --arm64 --publish never",
-    "pack:win": "electron-builder --win nsis zip --publish never",
-    "pack:linux": "electron-builder --linux AppImage deb --publish never"
-  },
-  "dependencies": {
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "electron-updater": "6.6.2"
+    "dev": "turbo run dev",
+    "dev:desktop": "turbo run dev --filter=@apps/desktop",
+    "dev:web": "turbo run dev --filter=@apps/web",
+    "dev:api": "turbo run dev --filter=@apps/api",
+    
+    "build": "turbo run build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test"
   },
   "devDependencies": {
-    "@eslint/js": "9.32.0",
-    "@types/node": "24.2.0",
-    "@types/react": "19.1.9",
-    "@types/react-dom": "19.1.7",
-    "@vitejs/plugin-react": "4.7.0",
-    "concurrently": "9.2.0",
-    "cross-env": "10.0.0",
-    "electron": "37.2.6",
-    "electron-builder": "26.0.12",
-    "eslint": "9.32.0",
-    "eslint-plugin-react-hooks": "5.2.0",
-    "eslint-plugin-react-refresh": "0.4.20",
-    "globals": "16.3.0",
-    "nodemon": "3.1.10",
-    "npm-run-all": "4.1.5",
-    "rimraf": "6.0.0",
-    "shell-quote": "1.8.3",
-    "typescript": "5.8.3",
-    "typescript-eslint": "8.39.0",
-    "vite": "7.0.6",
-    "wait-on": "8.0.4"
-  },
-  "trustedDependencies": [
-    "electron",
-    "electron-winstaller",
-    "esbuild"
-  ]
+    "rimraf": "^6.0.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.6.3",
+    "@eslint/js": "^9.32.0",
+    "eslint": "^9.32.0",
+    "typescript-eslint": "^8.39.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0"
+  }
 }

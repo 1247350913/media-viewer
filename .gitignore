@@ -17,6 +17,7 @@ build/
 # TypeScript build output
 *.tsbuildinfo
 tsconfig.tsbuildinfo
+dist/**/*.tsbuildinfo
 
 # -----------------------------
 # Logs & diagnostics
@@ -33,15 +34,12 @@ lerna-debug.log*
 # -----------------------------
 # Electron / Vite / Bundler caches
 # -----------------------------
-.cache/
-vite.config.ts.timestamp-*
-vite.config.js.timestamp-*
-electron-builder.yml
-electron-builder-debug.yml
-electron-builder.json
+.vite/
+vite.config.*.timestamp-*
 electron-builder-out/
-dist/**/*.tsbuildinfo
 
+# NOTE: keep electron-builder config tracked if you store it in repo
+# (so don't ignore electron-builder.yml/json here)
 
 # -----------------------------
 # OS / Platform junk
@@ -64,6 +62,7 @@ $RECYCLE.BIN/
 *.njsproj
 *.sln
 *.sw?
+.vscode-test/
 
 # -----------------------------
 # Env / Secrets
@@ -98,12 +97,12 @@ $RECYCLE.BIN/
 *.orig
 *.lock
 *.log.*
-.vscode-test/
 coverage/
 coverage-final.json
 nyc_output/
 .cache-loader/
 __pycache__/
 *.pyc
-#just in case
+
+# just in case
 package-lock.json
